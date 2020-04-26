@@ -1,19 +1,17 @@
+import 'package:flutter_tindercard/flutter_tindercard.dart';
 import 'package:wm3k/wm3k/screens/dictionary_page.dart';
 import 'package:wm3k/wm3k/themes/app_theme.dart';
 import 'package:wm3k/wm3k/themes/dictionary_text_theme.dart';
-import 'package:wm3k/wm3k/themes/wm3k_app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:flutter_tindercard/flutter_tindercard.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class MemorizationCard3 extends StatefulWidget {
+class SpellingCard extends StatefulWidget {
   @override
-  _MemorizationCard3State createState() => _MemorizationCard3State();
+  _SpellingCardState createState() => _SpellingCardState();
 }
 
-class _MemorizationCard3State extends State<MemorizationCard3> {
+class _SpellingCardState extends State<SpellingCard> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -29,6 +27,7 @@ class _MemorizationCard3State extends State<MemorizationCard3> {
           ),
           SafeArea(
             child: Scaffold(
+              resizeToAvoidBottomInset: false,
               backgroundColor: Colors.transparent,
               body: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -37,80 +36,9 @@ class _MemorizationCard3State extends State<MemorizationCard3> {
                     padding: const EdgeInsets.all(8.0),
                     child: getAppBar(context),
                   ),
-                  /*Container(
-                    height: height * 0.835,
-                    //height: height * 0.86,
-                    width: width * 0.906,
-                    child: PageView(
-                      children: <Widget>[
-                        Center(
-                          child: LearnCard(
-                            height: height * 0.75,
-                            width: width * 0.85,
-                            cardTheme:
-                                MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                          ),
-                        ),
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                        ),
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                        ),
-                      ],
-                    ),
-                  ),*/
-                  /*LearnCard(
-                    height: height * 0.75,
-                    width: width * 0.85,
-                    cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                  ),*/
-                  /*Container(
-                    height: height * 0.9,
-                    width: width,
-                    child: ListView(
-                      children: <Widget>[
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                        ),
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                        ),
-                      ],
-                    ),
-                  ),*/
-                  /*new Swiper(
-                    itemBuilder: (BuildContext context, int index) {
-                      return LearnCard(
-                        height: height * 0.75,
-                        width: width * 0.85,
-                        cardTheme:
-                            MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                        word: 'word - $index',
-                      );
-                    },
-                    itemCount: 3,
-                    itemWidth: width * 0.92,
-                    itemHeight: height * 0.75,
-                    layout: SwiperLayout.TINDER,
-                    containerHeight: height,
-                    viewportFraction: 0.5,
-                  )*/
                   Container(
-                    width: width,
-                    height: height * 0.8,
+                    width: width * 1,
+                    height: height * 0.9,
                     child: TinderSwapCard(
                       orientation: AmassOrientation.LEFT,
                       totalNum: 6,
@@ -121,17 +49,11 @@ class _MemorizationCard3State extends State<MemorizationCard3> {
                       minWidth: width - 11,
                       minHeight: height * 0.9,
                       cardBuilder: (context, index) => Center(
-                        child: ClipRRect(
-                          child: Align(
-                            alignment: Alignment.topCenter,
-                            heightFactor: 0.4855,
-                            child: LearnCard(
-                              height: height * 0.75,
-                              width: width * 0.85,
-                              cardTheme: MyCardTheme(
-                                  imagePath: 'assets/bgs/cardbg.jpg'),
-                            ),
-                          ),
+                        child: SpellingLearnCard(
+                          height: height * 0.75,
+                          width: width * 0.85,
+                          cardTheme:
+                              MyCardTheme(imagePath: 'assets/bgs/cardbg2.jpg'),
                         ),
                       ),
                       cardController: CardController(),
@@ -149,6 +71,9 @@ class _MemorizationCard3State extends State<MemorizationCard3> {
                         /// Get orientation & index of swiped card!
                       },
                     ),
+                  ),
+                  Expanded(
+                    child: Container(),
                   ),
                 ],
               ),
@@ -180,7 +105,7 @@ class _MemorizationCard3State extends State<MemorizationCard3> {
         ),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           Text(
-            'Memorize words',
+            'Spelling Bee',
             style: TextStyle(
               fontSize: 23,
               fontWeight: FontWeight.bold,
@@ -207,13 +132,13 @@ class MyCardTheme {
   }
 }
 
-class LearnCard extends StatefulWidget {
+class SpellingLearnCard extends StatefulWidget {
   final double height, width;
   final Color lightColor, darkColor;
   final MyCardTheme cardTheme;
   final String word;
 
-  LearnCard({
+  SpellingLearnCard({
     this.height,
     this.width,
     this.lightColor,
@@ -223,10 +148,10 @@ class LearnCard extends StatefulWidget {
   });
 
   @override
-  _LearnCardState createState() => _LearnCardState();
+  _SpellingLearnCardState createState() => _SpellingLearnCardState();
 }
 
-class _LearnCardState extends State<LearnCard> {
+class _SpellingLearnCardState extends State<SpellingLearnCard> {
   Widget mainView;
 
   @override
@@ -272,7 +197,7 @@ class _LearnCardState extends State<LearnCard> {
                         GradientButton(
                           height: height * 0.05,
                           width: width * 0.4,
-                          startColor: Color(0xFFE0154D),
+                          startColor: Color(0xFF192221),
                           endColor: Color(0xFFFF34AB),
                           text: '1 / 2 Completed',
                         ),
@@ -294,8 +219,8 @@ class _LearnCardState extends State<LearnCard> {
                           child: widget.cardTheme.image,
                         ),
                         Positioned(
-                          top: 20,
-                          bottom: 20,
+                          top: 40,
+                          //bottom: 40,
                           left: 5,
                           child: Center(
                             child: Container(
@@ -305,32 +230,65 @@ class _LearnCardState extends State<LearnCard> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: <Widget>[
-                                      getDot(5, color: Colors.black),
-                                      Text(
-                                        "The ${widget.word}",
-                                        style: GoogleFonts.breeSerif(
-                                          textStyle: TextStyle(
-                                            fontSize: 30,
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 25.0, right: 25),
+                                          child: TextField(
+                                            style: GoogleFonts.courgette(
+                                              textStyle: TextStyle(
+                                                fontSize: 26,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            decoration: InputDecoration(
+                                              hintText: 'Enter spelling',
+                                              hintStyle: TextStyle(
+                                                  inherit: true,
+                                                  color: Colors.white70),
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.white,
+                                                    width: 1),
+                                              ),
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.white,
+                                                    width: 1.5),
+                                              ),
+                                              labelStyle:
+                                                  TextStyle(fontSize: 20),
+                                            ),
+                                            cursorColor: Colors.white70,
+                                          ),
+                                          /*Text(
+                                            "The sentence with the word",
+                                            style: GoogleFonts.courgette(
+                                              textStyle: TextStyle(
+                                                fontSize: 26,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),*/
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            right: 25, top: 7),
+                                        child: GestureDetector(
+                                          onTap: () {},
+                                          child: Icon(
+                                            Icons.volume_up,
+                                            size: 35,
                                             color: Colors.white,
                                           ),
                                         ),
                                       ),
                                     ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 25.0),
-                                    child: Text(
-                                      "The sentence with the word",
-                                      style: GoogleFonts.courgette(
-                                        textStyle: TextStyle(
-                                          fontSize: 26,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
                                   ),
                                 ],
                               ),
@@ -352,19 +310,12 @@ class _LearnCardState extends State<LearnCard> {
                             width: 10,
                           ),
                           Tabs(
-                            onPressed: (String text) {
-                              setState(() {
-                                if (text == "Meaning")
-                                  mainView = getMeaning();
-                                else
-                                  mainView = getExample();
-                              });
-                            },
+                            onPressed: () {},
                             width: 100,
-                            items: ['Meaning', 'Examples'],
+                            items: ['Meaning'],
                             borderColor: Colors.black54,
                             borderWidth: 0,
-                            highlightColor: Colors.red,
+                            highlightColor: Color(0xFF192221),
                             textColor: Colors.black,
                           ),
                           Expanded(
@@ -444,21 +395,6 @@ class _LearnCardState extends State<LearnCard> {
                             )
                           ],
                         ),
-                        child: ClipOval(
-                          child: Material(
-                            child: InkWell(
-                              onTap: () {},
-                              splashColor: Colors.red,
-                              child: GestureDetector(
-                                child: Icon(
-                                  Icons.highlight_off,
-                                  size: 40,
-                                  color: Colors.red[900],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
                       ),
                     ),
                     Container(
@@ -477,21 +413,6 @@ class _LearnCardState extends State<LearnCard> {
                             ),
                           )
                         ],
-                      ),
-                      child: ClipOval(
-                        child: Material(
-                          child: InkWell(
-                            onTap: () {},
-                            splashColor: Colors.greenAccent,
-                            child: GestureDetector(
-                              child: Icon(
-                                Icons.check_circle_outline,
-                                size: 40,
-                                color: Colors.green[900],
-                              ),
-                            ),
-                          ),
-                        ),
                       ),
                     ),
                     Expanded(
@@ -516,9 +437,11 @@ class _LearnCardState extends State<LearnCard> {
                           ),
                           child: GradientButton(
                             width: 150,
-                            startColor: Color(0xFFE0154D),
+                            //startColor: Color(0xFFE0154D),
+                            //endColor: Color(0xFFFF34AB),
+                            startColor: Color(0xFF192221),
                             endColor: Color(0xFFFF34AB),
-                            text: "Open dictionary",
+                            text: "Check Answer",
                           ),
                         ),
                       ),
@@ -595,9 +518,31 @@ class _LearnCardState extends State<LearnCard> {
       ),
     );
   }
+}
 
-  Widget getExample() {
-    return getMeaning();
+class CircleButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final Color splashColor;
+  final Icon icon;
+
+  CircleButton(
+      {@required this.onTap,
+      this.splashColor = Colors.white,
+      @required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipOval(
+      child: Material(
+        child: InkWell(
+          onTap: onTap,
+          splashColor: splashColor,
+          child: GestureDetector(
+            child: icon,
+          ),
+        ),
+      ),
+    );
   }
 }
 

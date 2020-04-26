@@ -209,7 +209,7 @@ class Page extends StatelessWidget {
   }
 }*/
 
-import 'package:wm3k/wm3k/helper/memorization_card.dart';
+/*
 import 'package:flutter/material.dart';
 import 'package:flutter_stack_card/flutter_stack_card.dart';
 import 'package:getflutter/components/accordian/gf_accordian.dart';
@@ -282,6 +282,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+*/
+
 /*return Container(
       child: Stack(children: <Widget>[
         Container(

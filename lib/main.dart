@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'package:wm3k/wm3k/helper/memorization_card.dart';
-import 'package:wm3k/wm3k/helper/memorization_card_2.dart';
-import 'package:wm3k/wm3k/helper/memorization_card_3.dart';
+import 'package:wm3k/wm3k/screens/memorization_card_3.dart';
 import 'package:wm3k/wm3k/screens/my_word_list.dart';
+import 'package:wm3k/wm3k/screens/quiz_screen.dart';
+import 'package:wm3k/wm3k/screens/spelling_card.dart';
 import 'package:wm3k/wm3k/screens/temp.dart';
 import 'package:wm3k/wm3k/screens/toDelete/feedback_screen.dart';
 import 'package:wm3k/wm3k/screens/toDelete/help_screen.dart';
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         textTheme: AppTheme.textTheme,
       ),
       //home: NavigationHomeScreen(),
-      home: MemorizationCard2(),
+      home: QuizCardScreen(),
       //home: PageViewDemo(),
       //home: Page(),
       //home: Temp(),

@@ -1,3 +1,4 @@
+import 'package:flutter_tindercard/flutter_tindercard.dart';
 import 'package:wm3k/wm3k/screens/dictionary_page.dart';
 import 'package:wm3k/wm3k/themes/app_theme.dart';
 import 'package:wm3k/wm3k/themes/dictionary_text_theme.dart';
@@ -7,14 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'my_tinder_card.dart';
-
-class MemorizationCard extends StatefulWidget {
+class MemorizationCard2 extends StatefulWidget {
   @override
-  _MemorizationCardState createState() => _MemorizationCardState();
+  _MemorizationCard2State createState() => _MemorizationCard2State();
 }
 
-class _MemorizationCardState extends State<MemorizationCard> {
+class _MemorizationCard2State extends State<MemorizationCard2> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -110,43 +109,43 @@ class _MemorizationCardState extends State<MemorizationCard> {
                     viewportFraction: 0.5,
                   )*/
                   Container(
-                    width: width,
+                    width: width * 1,
                     height: height * 0.9,
-                    child: ClipRRect(
-                      clipper: CustomRect(),
-                      child: MyTinderSwapCard(
-                          orientation: AmassOrientation.LEFT,
-                          totalNum: 6,
-                          stackNum: 3,
-                          swipeEdge: 4.0,
-                          maxWidth: width,
-                          maxHeight: height * 0.9,
-                          minWidth: MediaQuery.of(context).size.width * 0.8,
-                          minHeight: height * 0.75,
-                          cardBuilder: (context, index) => Card(
-                                //child: Image.asset('assets/bgs/bg1.jpg'),
-                                child: LearnCard(
-                                  height: height * 0.75,
-                                  width: width * 0.85,
-                                  cardTheme: MyCardTheme(
-                                      imagePath: 'assets/bgs/cardbg.jpg'),
-                                ),
-                              ),
-                          cardController: CardController(),
-                          swipeUpdateCallback:
-                              (DragUpdateDetails details, Alignment align) {
-                            /// Get swiping card's alignment
-                            if (align.x < 0) {
-                              //Card is LEFT swiping
-                            } else if (align.x > 0) {
-                              //Card is RIGHT swiping
-                            }
-                          },
-                          swipeCompleteCallback:
-                              (CardSwipeOrientation orientation, int index) {
-                            /// Get orientation & index of swiped card!
-                          }),
+                    child: TinderSwapCard(
+                      orientation: AmassOrientation.LEFT,
+                      totalNum: 6,
+                      stackNum: 3,
+                      swipeEdge: 4.0,
+                      maxWidth: width - 10,
+                      maxHeight: height + 50,
+                      minWidth: width - 11,
+                      minHeight: height * 0.9,
+                      cardBuilder: (context, index) => Center(
+                        child: LearnCard(
+                          height: height * 0.75,
+                          width: width * 0.85,
+                          cardTheme:
+                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                        ),
+                      ),
+                      cardController: CardController(),
+                      swipeUpdateCallback:
+                          (DragUpdateDetails details, Alignment align) {
+                        /// Get swiping card's alignment
+                        if (align.x < 0) {
+                          //Card is LEFT swiping
+                        } else if (align.x > 0) {
+                          //Card is RIGHT swiping
+                        }
+                      },
+                      swipeCompleteCallback:
+                          (CardSwipeOrientation orientation, int index) {
+                        /// Get orientation & index of swiped card!
+                      },
                     ),
+                  ),
+                  Expanded(
+                    child: Container(),
                   ),
                 ],
               ),
@@ -641,20 +640,5 @@ class GradientButton extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class CustomRect extends CustomClipper<RRect> {
-  @override
-  RRect getClip(Size size) {
-    RRect rect = RRect.fromLTRBR(
-        23.0, 55.0, size.width - 30, size.height - 51.5, Radius.circular(20));
-    return rect;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<RRect> oldClipper) {
-    // TODO: implement shouldReclip
-    return true;
   }
 }

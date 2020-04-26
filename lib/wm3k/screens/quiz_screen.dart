@@ -1,20 +1,17 @@
+import 'package:flutter_tindercard/flutter_tindercard.dart';
 import 'package:wm3k/wm3k/screens/dictionary_page.dart';
 import 'package:wm3k/wm3k/themes/app_theme.dart';
 import 'package:wm3k/wm3k/themes/dictionary_text_theme.dart';
-import 'package:wm3k/wm3k/themes/wm3k_app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'my_tinder_card.dart';
-
-class MemorizationCard2 extends StatefulWidget {
+class QuizCardScreen extends StatefulWidget {
   @override
-  _MemorizationCard2State createState() => _MemorizationCard2State();
+  _QuizCardScreenState createState() => _QuizCardScreenState();
 }
 
-class _MemorizationCard2State extends State<MemorizationCard2> {
+class _QuizCardScreenState extends State<QuizCardScreen> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -30,6 +27,7 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
           ),
           SafeArea(
             child: Scaffold(
+              resizeToAvoidBottomInset: false,
               backgroundColor: Colors.transparent,
               body: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -38,81 +36,10 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
                     padding: const EdgeInsets.all(8.0),
                     child: getAppBar(context),
                   ),
-                  /*Container(
-                    height: height * 0.835,
-                    //height: height * 0.86,
-                    width: width * 0.906,
-                    child: PageView(
-                      children: <Widget>[
-                        Center(
-                          child: LearnCard(
-                            height: height * 0.75,
-                            width: width * 0.85,
-                            cardTheme:
-                                MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                          ),
-                        ),
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                        ),
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                        ),
-                      ],
-                    ),
-                  ),*/
-                  /*LearnCard(
-                    height: height * 0.75,
-                    width: width * 0.85,
-                    cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                  ),*/
-                  /*Container(
-                    height: height * 0.9,
-                    width: width,
-                    child: ListView(
-                      children: <Widget>[
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                        ),
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                        ),
-                      ],
-                    ),
-                  ),*/
-                  /*new Swiper(
-                    itemBuilder: (BuildContext context, int index) {
-                      return LearnCard(
-                        height: height * 0.75,
-                        width: width * 0.85,
-                        cardTheme:
-                            MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
-                        word: 'word - $index',
-                      );
-                    },
-                    itemCount: 3,
-                    itemWidth: width * 0.92,
-                    itemHeight: height * 0.75,
-                    layout: SwiperLayout.TINDER,
-                    containerHeight: height,
-                    viewportFraction: 0.5,
-                  )*/
                   Container(
                     width: width * 1,
                     height: height * 0.9,
-                    child: MyTinderSwapCard(
+                    child: TinderSwapCard(
                       orientation: AmassOrientation.LEFT,
                       totalNum: 6,
                       stackNum: 3,
@@ -122,11 +49,11 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
                       minWidth: width - 11,
                       minHeight: height * 0.9,
                       cardBuilder: (context, index) => Center(
-                        child: LearnCard(
+                        child: QuizLearnCard(
                           height: height * 0.75,
                           width: width * 0.85,
                           cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                              MyCardTheme(imagePath: 'assets/bgs/cardbg2.jpg'),
                         ),
                       ),
                       cardController: CardController(),
@@ -178,7 +105,7 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
         ),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           Text(
-            'Memorize words',
+            'Spelling Bee',
             style: TextStyle(
               fontSize: 23,
               fontWeight: FontWeight.bold,
@@ -205,13 +132,13 @@ class MyCardTheme {
   }
 }
 
-class LearnCard extends StatefulWidget {
+class QuizLearnCard extends StatefulWidget {
   final double height, width;
   final Color lightColor, darkColor;
   final MyCardTheme cardTheme;
   final String word;
 
-  LearnCard({
+  QuizLearnCard({
     this.height,
     this.width,
     this.lightColor,
@@ -221,10 +148,10 @@ class LearnCard extends StatefulWidget {
   });
 
   @override
-  _LearnCardState createState() => _LearnCardState();
+  _QuizLearnCardState createState() => _QuizLearnCardState();
 }
 
-class _LearnCardState extends State<LearnCard> {
+class _QuizLearnCardState extends State<QuizLearnCard> {
   Widget mainView;
 
   @override
@@ -270,7 +197,7 @@ class _LearnCardState extends State<LearnCard> {
                         GradientButton(
                           height: height * 0.05,
                           width: width * 0.4,
-                          startColor: Color(0xFFE0154D),
+                          startColor: Color(0xFF192221),
                           endColor: Color(0xFFFF34AB),
                           text: '1 / 2 Completed',
                         ),
@@ -306,7 +233,7 @@ class _LearnCardState extends State<LearnCard> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
-                                      getDot(5, color: Colors.black),
+                                      getDot(5, color: Colors.white),
                                       Text(
                                         "The ${widget.word}",
                                         style: GoogleFonts.breeSerif(
@@ -334,7 +261,7 @@ class _LearnCardState extends State<LearnCard> {
                               ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                     Container(
@@ -350,19 +277,12 @@ class _LearnCardState extends State<LearnCard> {
                             width: 10,
                           ),
                           Tabs(
-                            onPressed: (String text) {
-                              setState(() {
-                                if (text == "Meaning")
-                                  mainView = getMeaning();
-                                else
-                                  mainView = getExample();
-                              });
-                            },
+                            onPressed: () {},
                             width: 100,
-                            items: ['Meaning', 'Examples'],
+                            items: ['Meaning'],
                             borderColor: Colors.black54,
                             borderWidth: 0,
-                            highlightColor: Colors.red,
+                            highlightColor: Color(0xFF192221),
                             textColor: Colors.black,
                           ),
                           Expanded(
@@ -442,21 +362,6 @@ class _LearnCardState extends State<LearnCard> {
                             )
                           ],
                         ),
-                        child: ClipOval(
-                          child: Material(
-                            child: InkWell(
-                              onTap: () {},
-                              splashColor: Colors.red,
-                              child: GestureDetector(
-                                child: Icon(
-                                  Icons.highlight_off,
-                                  size: 40,
-                                  color: Colors.red[900],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
                       ),
                     ),
                     Container(
@@ -475,21 +380,6 @@ class _LearnCardState extends State<LearnCard> {
                             ),
                           )
                         ],
-                      ),
-                      child: ClipOval(
-                        child: Material(
-                          child: InkWell(
-                            onTap: () {},
-                            splashColor: Colors.greenAccent,
-                            child: GestureDetector(
-                              child: Icon(
-                                Icons.check_circle_outline,
-                                size: 40,
-                                color: Colors.green[900],
-                              ),
-                            ),
-                          ),
-                        ),
                       ),
                     ),
                     Expanded(
@@ -514,9 +404,11 @@ class _LearnCardState extends State<LearnCard> {
                           ),
                           child: GradientButton(
                             width: 150,
-                            startColor: Color(0xFFE0154D),
+                            //startColor: Color(0xFFE0154D),
+                            //endColor: Color(0xFFFF34AB),
+                            startColor: Color(0xFF192221),
                             endColor: Color(0xFFFF34AB),
-                            text: "Open dictionary",
+                            text: "Check Answer",
                           ),
                         ),
                       ),
@@ -593,9 +485,31 @@ class _LearnCardState extends State<LearnCard> {
       ),
     );
   }
+}
 
-  Widget getExample() {
-    return getMeaning();
+class CircleButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final Color splashColor;
+  final Icon icon;
+
+  CircleButton(
+      {@required this.onTap,
+      this.splashColor = Colors.white,
+      @required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipOval(
+      child: Material(
+        child: InkWell(
+          onTap: onTap,
+          splashColor: splashColor,
+          child: GestureDetector(
+            child: icon,
+          ),
+        ),
+      ),
+    );
   }
 }
 
