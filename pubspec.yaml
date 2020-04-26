@@ -42,6 +42,8 @@ dependencies:
   flutter_tindercard: ^0.1.8
   slimy_card: ^1.0.4
   flutter_swiper: ^1.1.6
+  sqflite: ^1.3.0
+  path: ^1.6.4
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +72,7 @@ flutter:
     - assets/hotel/
     - assets/icons/
     - assets/bgs/
+    - assets/Word_Master3000_Dictionary.db
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
