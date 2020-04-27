@@ -45,8 +45,8 @@ class DBManager {
     final Database db = await this.database;
 
     print("fetching word $item");
-    List<Map> maps =
-        await db.rawQuery("SELECT * FROM word WHERE word = '$item'");
+    List<Map> maps = await db
+        .rawQuery("SELECT * FROM word WHERE word = '$item' COLLATE NOCASE");
 
     return maps;
   }
