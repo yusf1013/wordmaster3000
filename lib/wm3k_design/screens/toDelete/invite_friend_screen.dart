@@ -1,4 +1,5 @@
-import 'package:wm3k/wm3k/themes/app_theme.dart';
+import 'package:wm3k/dbConnection/connector.dart';
+import 'package:wm3k/wm3k_design/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class InviteFriend extends StatefulWidget {
@@ -70,7 +71,10 @@ class _InviteFriendState extends State<InviteFriend> {
                       child: Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            /*Connector connector = Connector();
+                            connector.search('adfado');*/
+                          },
                           child: Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -84,7 +88,7 @@ class _InviteFriendState extends State<InviteFriend> {
                                 Padding(
                                   padding: const EdgeInsets.all(4.0),
                                   child: Text(
-                                    'Share',
+                                    'DB (Fix it)',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
                                       color: Colors.white,

@@ -1,3 +1,5 @@
+import 'package:wm3k/dbConnection/dbManager.dart';
+
 class DBController {
   static List<String> _allWordList = [
     "a",
@@ -104,5 +106,13 @@ class DBController {
 
   static List<String> getWordList() {
     return _allWordList;
+  }
+
+  static void setAllList(List<String> list) {
+    _allWordList = [];
+    for (String s in list) {
+      _allWordList.add(s.toLowerCase());
+    }
+    _allWordList.sort();
   }
 }

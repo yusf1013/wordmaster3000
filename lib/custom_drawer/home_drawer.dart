@@ -1,7 +1,7 @@
 //import 'dart:html';
 
-import 'package:wm3k/wm3k/themes/app_theme.dart';
-import 'package:wm3k/wm3k/controllers/loginController.dart';
+import 'package:wm3k/wm3k_design/themes/app_theme.dart';
+import 'package:wm3k/wm3k_design/controllers/loginController.dart';
 import 'package:flutter/material.dart';
 
 class HomeDrawer extends StatefulWidget {

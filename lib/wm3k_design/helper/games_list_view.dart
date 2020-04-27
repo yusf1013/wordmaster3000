@@ -1,7 +1,7 @@
 import 'package:awesome_button/awesome_button.dart';
-import 'package:wm3k/wm3k/controllers/loginController.dart';
-import 'package:wm3k/wm3k/themes/wm3k_app_theme.dart';
-import 'package:wm3k/wm3k/models/category.dart';
+import 'package:wm3k/wm3k_design/controllers/loginController.dart';
+import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';
+import 'package:wm3k/wm3k_design/models/category.dart';
 import 'package:wm3k/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

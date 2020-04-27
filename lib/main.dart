@@ -1,18 +1,18 @@
 import 'dart:io';
-import 'package:wm3k/wm3k/screens/memorization_card_3.dart';
-import 'package:wm3k/wm3k/screens/my_word_list.dart';
-import 'package:wm3k/wm3k/screens/quiz_screen.dart';
-import 'package:wm3k/wm3k/screens/spelling_card.dart';
-import 'package:wm3k/wm3k/screens/temp.dart';
-import 'package:wm3k/wm3k/screens/toDelete/feedback_screen.dart';
-import 'package:wm3k/wm3k/screens/toDelete/help_screen.dart';
-import 'package:wm3k/wm3k/screens/toDelete/invite_friend_screen.dart';
-import 'package:wm3k/wm3k/themes/app_theme.dart';
-import 'package:wm3k/wm3k/screens/login.dart';
+import 'package:wm3k/wm3k_design/screens/dictionary_page.dart';
+import 'package:wm3k/wm3k_design/screens/memorization_card_3.dart';
+import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
+import 'package:wm3k/wm3k_design/screens/navigation_home_screen.dart';
+import 'package:wm3k/wm3k_design/screens/quiz_screen.dart';
+import 'package:wm3k/wm3k_design/screens/spelling_card.dart';
+import 'package:wm3k/wm3k_design/screens/temp.dart';
+import 'package:wm3k/wm3k_design/screens/toDelete/feedback_screen.dart';
+import 'package:wm3k/wm3k_design/screens/toDelete/help_screen.dart';
+import 'package:wm3k/wm3k_design/screens/toDelete/invite_friend_screen.dart';
+import 'package:wm3k/wm3k_design/themes/app_theme.dart';
+import 'package:wm3k/wm3k_design/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'wm3k/screens/dictionary_page.dart';
-import 'wm3k/screens/navigation_home_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -43,12 +43,12 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         textTheme: AppTheme.textTheme,
       ),
-      //home: NavigationHomeScreen(),
+      home: NavigationHomeScreen(),
       //home: QuizCardScreen(),
       //home: PageViewDemo(),
       //home: Page(),
       //home: Temp(),
-      home: InviteFriend(),
+      //home: InviteFriend(),
       //home: LoginScreen(),
       //home: MyWordList(),
       //home: FeedbackScreen(),

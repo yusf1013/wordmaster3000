@@ -1,4 +1,4 @@
-import 'package:wm3k/wm3k/themes/app_theme.dart';
+import 'package:wm3k/wm3k_design/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class HelpScreen extends StatefulWidget {

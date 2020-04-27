@@ -1,4 +1,4 @@
-import 'package:wm3k/wm3k/themes/color/light_color.dart';
+import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getflutter/components/avatar/gf_avatar.dart';

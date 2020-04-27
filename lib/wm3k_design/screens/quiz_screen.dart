@@ -1,7 +1,8 @@
 import 'package:flutter_tindercard/flutter_tindercard.dart';
-import 'package:wm3k/wm3k/screens/dictionary_page.dart';
-import 'package:wm3k/wm3k/themes/app_theme.dart';
-import 'package:wm3k/wm3k/themes/dictionary_text_theme.dart';
+import 'package:wm3k/wm3k_design/helper/buttons.dart';
+import 'package:wm3k/wm3k_design/screens/dictionary_page.dart';
+import 'package:wm3k/wm3k_design/themes/app_theme.dart';
+import 'package:wm3k/wm3k_design/themes/dictionary_text_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -105,7 +106,7 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
         ),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           Text(
-            'Spelling Bee',
+            'Quiz',
             style: TextStyle(
               fontSize: 23,
               fontWeight: FontWeight.bold,
@@ -279,7 +280,7 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                           Tabs(
                             onPressed: () {},
                             width: 100,
-                            items: ['Meaning'],
+                            items: ['Options'],
                             borderColor: Colors.black54,
                             borderWidth: 0,
                             highlightColor: Color(0xFF192221),
@@ -408,7 +409,7 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                             //endColor: Color(0xFFFF34AB),
                             startColor: Color(0xFF192221),
                             endColor: Color(0xFFFF34AB),
-                            text: "Check Answer",
+                            text: "Check Answers",
                           ),
                         ),
                       ),
@@ -423,7 +424,8 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
     );
   }
 
-  Padding getDot(double radius, {Color color = Colors.black12}) {
+  Padding getDot(double radius,
+      {Color color = Colors.black12, double borderWidth = 0, Widget child}) {
     return Padding(
       padding: EdgeInsets.all(7),
       child: Container(
@@ -432,7 +434,9 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(radius),
           color: color,
+          border: borderWidth == 0 ? null : Border.all(width: borderWidth),
         ),
+        child: Center(child: child),
       ),
     );
   }
@@ -452,36 +456,38 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
 
   Widget getMeaningView() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10, top: 5),
+      padding: const EdgeInsets.only(bottom: 10, top: 2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              getDot(4, color: Colors.black),
-              Text(
-                "The elaborate first meaning",
-                style: dictionaryWords,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 3,
-          ),
-          getSentence(),
-          getSentence(),
-          getSentence(),
+          getOptions(),
+          getOptions(),
+          getOptions(),
+          getOptions(),
         ],
       ),
     );
   }
 
-  Padding getSentence() {
+  Padding getOptions() {
     return Padding(
-      padding: const EdgeInsets.only(left: 23.0, top: 5),
-      child: Text(
-        "Sentence number one",
-        style: dictionarySentences,
+      padding: const EdgeInsets.only(left: 23.0, bottom: 5, right: 23.0),
+      child: Row(
+        children: <Widget>[
+          getDot(
+            10,
+          ),
+          Expanded(
+            child: GradientOption(
+              width: 200,
+              startColor: Color(0xFFE9E8E6),
+              endColor: Colors.white,
+              //startColor: Color(0xFF192221),
+              //endColor: Color(0xFF0887C0),
+              text: "Check Answers",
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -513,12 +519,12 @@ class CircleButton extends StatelessWidget {
   }
 }
 
-class GradientButton extends StatelessWidget {
+class GradientOption extends StatelessWidget {
   final Color startColor, endColor;
   final double height, width;
   final String text;
 
-  GradientButton(
+  GradientOption(
       {this.startColor = const Color(0xff374ABE),
       this.endColor = const Color(0xff64B6FF),
       this.height = 40,
@@ -546,10 +552,14 @@ class GradientButton extends StatelessWidget {
           child: Container(
             constraints: BoxConstraints(maxWidth: 300.0, minHeight: height),
             alignment: Alignment.center,
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white),
+            child: Row(
+              children: <Widget>[
+                Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black),
+                ),
+              ],
             ),
           ),
         ),

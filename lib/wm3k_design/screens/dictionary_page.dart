@@ -1,5 +1,6 @@
-import 'package:wm3k/wm3k/helper/app_bars.dart';
-import 'package:wm3k/wm3k/themes/dictionary_text_theme.dart';
+import 'package:wm3k/dbConnection/connector.dart';
+import 'package:wm3k/wm3k_design/helper/app_bars.dart';
+import 'package:wm3k/wm3k_design/themes/dictionary_text_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getflutter/components/accordian/gf_accordian.dart';
@@ -14,12 +15,77 @@ class DictionaryHomePage extends StatefulWidget {
 class _DictionaryHomePageState extends State<DictionaryHomePage> {
   Widget meaningListView = MeaningListView("Noun");
 
+  printSearch(String word) async {
+    Connector con = new Connector();
+    //Word searched= Word();
+    await con.search(word);
+    String wordfound = con.word;
+    if (word == wordfound) {
+      print(" the properties for $wordfound");
+
+      for (PartsOfSpeech pos in con.property) {
+        for (Meaning meaning in pos.meaning) {
+          print('${pos.partsOfSpeech}:');
+          print(meaning.meaning);
+          for (String example in meaning.example) print(example);
+        }
+        for (String moreExamples in pos.moreExample) print(moreExamples);
+        for (String synonyms in pos.synonyms) print(synonyms);
+
+        print('\n\n');
+      }
+
+      /*for (var i = 0; i < con.property.length; i++) {
+        PartsOfSpeech localproperty = con.property[i];
+        String partsofspeech = con.property[i].parts_of_speech;
+        print("it $partsofspeech");
+        print("meaning\n\n");
+        for (var j = 0; j < localproperty.meaning.length; j++) {
+          Meaning localmeaning = localproperty.meaning[j];
+          int meaningid = localmeaning.meaning_id;
+          print("meaning id is $meaningid");
+
+          String meaning = localmeaning.meaning;
+          print(meaning);
+
+          for (var k = 0; k < localmeaning.example.length; k++) {
+            print(localmeaning.example[k]);
+          }
+        }
+
+        print("synonyms");
+        for (var i = 0; i < localproperty.synonyms.length; i++) {
+          print(localproperty.synonyms[i]);
+        }
+        print("more example");
+        for (var i = 0; i < localproperty.more_example.length; i++) {
+          //print("more example");
+          print(localproperty.more_example[i]);
+        }
+      }
+      for (var i = 0; i < con.idioms.length; i++) {
+        print(con.idioms[i]);
+      }
+      print("phrases");
+      for (var i = 0; i < con.phrases.length; i++) {
+        print(con.phrases[i]);
+      }*/
+    } else {
+      print("Found nothing for $word");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final String s = ModalRoute.of(context).settings.arguments;
     final String word = '${s[0].toUpperCase()}${s.substring(1)}';
     //Widget shit = SearchableText("Life is a shit");
-
+    printSearch(word);
     //categoryUI = getCategoryUI(currentList);
     return Container(
       color: DesignCourseAppTheme.nearlyWhite,

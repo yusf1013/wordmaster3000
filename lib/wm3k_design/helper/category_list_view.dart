@@ -1,8 +1,8 @@
-import 'package:wm3k/wm3k/screens/main_home_screen.dart';
-import 'package:wm3k/wm3k/screens/toDelete/more.dart';
-import 'package:wm3k/wm3k/themes/color/light_color.dart';
-import 'package:wm3k/wm3k/themes/wm3k_app_theme.dart';
-import 'package:wm3k/wm3k/models/category.dart';
+import 'package:wm3k/wm3k_design/screens/main_home_screen.dart';
+import 'package:wm3k/wm3k_design/screens/toDelete/more.dart';
+import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
+import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';
+import 'package:wm3k/wm3k_design/models/category.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:card_settings/widgets/card_settings_panel.dart';
 import 'package:card_settings/widgets/information_fields/card_settings_header.dart';

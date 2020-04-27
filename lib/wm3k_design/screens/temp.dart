@@ -112,8 +112,8 @@ class _TempState extends State<Temp> {
   }
 }*/
 
-/*import 'package:wm3k/wm3k/helper/app_bars.dart';
-import 'package:wm3k/wm3k/screens/my_word_list.dart';
+/*import 'package:wm3k/wm3k_design/helper/app_bars.dart';
+import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
 import 'package:expandable_bottom_bar/expandable_bottom_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -438,7 +438,7 @@ class Profile {
 */
 
 /*
-import 'package:wm3k/wm3k/helper/memorization_card.dart';
+import 'package:wm3k/wm3k_design/helper/memorization_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
 import 'package:getflutter/components/accordian/gf_accordian.dart';
@@ -523,9 +523,9 @@ class _ExampleHomePageState extends State<ExampleHomePage>
 }
 */
 /*
-import 'package:wm3k/wm3k/helper/app_bars.dart';
-import 'package:wm3k/wm3k/helper/memorization_card.dart';
-import 'package:wm3k/wm3k/screens/my_word_list.dart';
+import 'package:wm3k/wm3k_design/helper/app_bars.dart';
+import 'package:wm3k/wm3k_design/helper/memorization_card.dart';
+import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
 import 'package:expandable_bottom_bar/expandable_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stack_card/flutter_stack_card.dart';

@@ -1,6 +1,7 @@
-import 'package:wm3k/wm3k/controllers/dictionary_database_controller.dart';
-import 'package:wm3k/wm3k/themes/color/light_color.dart';
-import 'package:wm3k/wm3k/themes/wm3k_app_theme.dart';
+import 'package:wm3k/dbConnection/dbManager.dart';
+import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
+import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
+import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
