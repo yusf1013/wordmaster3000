@@ -266,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
             return LearnCard(
               height: height * 0.75,
               width: width * 0.85,
-              cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+              cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
             );
           },
         ),
@@ -497,7 +497,7 @@ class _ExampleHomePageState extends State<ExampleHomePage>
                 cardBuilder: (context, index) => LearnCard(
                   height: MediaQuery.of(context).size.height * 0.75,
                   width: MediaQuery.of(context).size.width * 0.85,
-                  cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                  cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                 ),
                 cardController: controller,
                 swipeUpdateCallback:
@@ -567,7 +567,7 @@ class _PageViewDemoState extends State<PageViewDemo> {
               return LearnCard(
                 height: height * 0.75,
                 width: width * 0.93,
-                cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
               );
             },
             itemCount: 100,
@@ -583,17 +583,17 @@ class _PageViewDemoState extends State<PageViewDemo> {
                 LearnCard(
                   height: height * 0.75,
                   width: width * 0.85,
-                  cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                  cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                 ),
                 LearnCard(
                   height: height * 0.75,
                   width: width * 0.85,
-                  cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                  cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                 ),
                 LearnCard(
                   height: height * 0.75,
                   width: width * 0.85,
-                  cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                  cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                 ),
               ],
             ),
@@ -614,7 +614,7 @@ class _PageViewDemoState extends State<PageViewDemo> {
                 return LearnCard(
                   height: height * 0.75,
                   width: width * 0.85,
-                  cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                  cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                 );
               })
         ],

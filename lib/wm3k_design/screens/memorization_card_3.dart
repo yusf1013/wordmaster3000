@@ -49,20 +49,20 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
                             height: height * 0.75,
                             width: width * 0.85,
                             cardTheme:
-                                MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                                MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                           ),
                         ),
                         LearnCard(
                           height: height * 0.75,
                           width: width * 0.85,
                           cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                              MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                         ),
                         LearnCard(
                           height: height * 0.75,
                           width: width * 0.85,
                           cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                              MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                         ),
                       ],
                     ),
@@ -70,7 +70,7 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
                   /*LearnCard(
                     height: height * 0.75,
                     width: width * 0.85,
-                    cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                    cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                   ),*/
                   /*Container(
                     height: height * 0.9,
@@ -81,13 +81,13 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
                           height: height * 0.75,
                           width: width * 0.85,
                           cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                              MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                         ),
                         LearnCard(
                           height: height * 0.75,
                           width: width * 0.85,
                           cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                              MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                         ),
                       ],
                     ),
@@ -98,7 +98,7 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
                         height: height * 0.75,
                         width: width * 0.85,
                         cardTheme:
-                            MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                            MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                         word: 'word - $index',
                       );
                     },
@@ -126,7 +126,7 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
                           height: height * 0.75,
                           width: width * 0.85,
                           cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg.jpg'),
+                              MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
                         ),
                       ),
                       cardController: CardController(),
@@ -277,8 +277,8 @@ class _LearnCardState extends State<LearnCard> {
                         SizedBox(
                           width: 7,
                         ),
-                        getDot(6),
-                        getDot(6),
+                        Dot(6),
+                        Dot(6),
                         SizedBox(
                           width: 7,
                         ),
@@ -306,7 +306,7 @@ class _LearnCardState extends State<LearnCard> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
-                                      getDot(5, color: Colors.black),
+                                      Dot(5, color: Colors.black),
                                       Text(
                                         "The ${widget.word}",
                                         style: GoogleFonts.breeSerif(
@@ -531,20 +531,6 @@ class _LearnCardState extends State<LearnCard> {
     );
   }
 
-  Padding getDot(double radius, {Color color = Colors.black12}) {
-    return Padding(
-      padding: EdgeInsets.all(7),
-      child: Container(
-        height: radius * 2,
-        width: radius * 2,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius),
-          color: color,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return getCard(widget.height, widget.width);
@@ -566,7 +552,7 @@ class _LearnCardState extends State<LearnCard> {
         children: <Widget>[
           Row(
             children: <Widget>[
-              getDot(4, color: Colors.black),
+              Dot(4, color: Colors.black),
               Text(
                 "The elaborate first meaning",
                 style: dictionaryWords,

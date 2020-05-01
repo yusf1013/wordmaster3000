@@ -45,3 +45,33 @@ class GradientButton extends StatelessWidget {
     );
   }
 }
+
+class Dot extends StatelessWidget {
+  final double radius, borderWidth;
+  final Color color;
+  final Widget child;
+
+  Dot(this.radius,
+      {this.borderWidth = 0, this.color = Colors.black12, this.child});
+
+  Padding getDot() {
+    return Padding(
+      padding: EdgeInsets.all(7),
+      child: Container(
+        height: radius * 2,
+        width: radius * 2,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(radius),
+          color: color,
+          border: borderWidth == 0 ? null : Border.all(width: borderWidth),
+        ),
+        child: Center(child: child),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return getDot();
+  }
+}

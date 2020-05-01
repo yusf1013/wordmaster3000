@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:wm3k/wm3k_design/screens/dictionary_page.dart';
+import 'package:wm3k/wm3k_design/screens/leaderboard_screen.dart';
 import 'package:wm3k/wm3k_design/screens/memorization_card_3.dart';
 import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
 import 'package:wm3k/wm3k_design/screens/navigation_home_screen.dart';
@@ -37,6 +38,8 @@ class MyApp extends StatelessWidget {
         'navigationHomePage': (context) => NavigationHomeScreen(),
         'authPage': (context) => LoginScreen(),
         'wordListPage': (context) => MyWordList(),
+        'memorizePage': (context) => MemorizationCard2(),
+        'quizPage': (context) => QuizCardScreen(),
       },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -45,11 +48,13 @@ class MyApp extends StatelessWidget {
       ),
       home: NavigationHomeScreen(),
       //home: QuizCardScreen(),
+      //home: LeaderBoardPage(),
       //home: PageViewDemo(),
       //home: Page(),
       //home: Temp(),
       //home: InviteFriend(),
       //home: LoginScreen(),
+      //home: DictionaryHomePage(),
       //home: MyWordList(),
       //home: FeedbackScreen(),
       //home: MyHomePage(),

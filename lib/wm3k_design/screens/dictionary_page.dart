@@ -82,7 +82,8 @@ class _DictionaryHomePageState extends State<DictionaryHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final String s = ModalRoute.of(context).settings.arguments;
+    Connector con = ModalRoute.of(context).settings.arguments;
+    final String s = con.word;
     final String word = '${s[0].toUpperCase()}${s.substring(1)}';
     //Widget shit = SearchableText("Life is a shit");
     printSearch(word);

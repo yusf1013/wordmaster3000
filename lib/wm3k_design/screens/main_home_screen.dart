@@ -1,9 +1,11 @@
+import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
 import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
 import 'package:flutter/material.dart';
 import 'package:wm3k/wm3k_design/helper/category_list_view.dart';
+import 'package:wm3k/wm3k_design/screens/spelling_card.dart';
 import 'package:wm3k/wm3k_design/screens/toDelete/course_info_screen.dart';
 import 'package:wm3k/wm3k_design/helper/games_list_view.dart';
 import '../themes/wm3k_app_theme.dart';
@@ -94,7 +96,16 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
                         builder: (buildContext, snapShot) {
                           if (snapShot.hasData) {
                             DBController.setAllList(snapShot.data);
-                            return SearchBarUI();
+                            return SearchBarUI(
+                              onSubmit: (wordString) async {
+                                print("dsfa");
+                                Connector con = new Connector();
+                                await con.search(wordString);
+                                print('The word is ${con.word}');
+                                Navigator.pushNamed(context, 'dictionaryPage',
+                                    arguments: con);
+                              },
+                            );
                           } else {
                             print('No data done done shit');
                             return SizedBox(
@@ -207,7 +218,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
-        builder: (BuildContext context) => CourseInfoScreen(),
+        builder: (BuildContext context) => SpellingCard(),
       ),
     );
   }

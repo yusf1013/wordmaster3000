@@ -1,6 +1,7 @@
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
+import 'package:wm3k/wm3k_design/screens/leaderboard_screen.dart';
 import 'package:wm3k/wm3k_design/themes/app_theme.dart';
 import 'package:wm3k/custom_drawer/drawer_user_controller.dart';
 import 'package:wm3k/custom_drawer/home_drawer.dart';
@@ -25,7 +26,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
   printSearch(String word) async {
     Connector con = new Connector();
-    //Word searched= Word();
     await con.search(word);
     String wordfound = con.word;
     if (word == wordfound) {
@@ -42,42 +42,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
         print('\n\n');
       }
-
-      /*for (var i = 0; i < con.property.length; i++) {
-        PartsOfSpeech localproperty = con.property[i];
-        String partsofspeech = con.property[i].parts_of_speech;
-        print("it $partsofspeech");
-        print("meaning\n\n");
-        for (var j = 0; j < localproperty.meaning.length; j++) {
-          Meaning localmeaning = localproperty.meaning[j];
-          int meaningid = localmeaning.meaning_id;
-          print("meaning id is $meaningid");
-
-          String meaning = localmeaning.meaning;
-          print(meaning);
-
-          for (var k = 0; k < localmeaning.example.length; k++) {
-            print(localmeaning.example[k]);
-          }
-        }
-
-        print("synonyms");
-        for (var i = 0; i < localproperty.synonyms.length; i++) {
-          print(localproperty.synonyms[i]);
-        }
-        print("more example");
-        for (var i = 0; i < localproperty.more_example.length; i++) {
-          //print("more example");
-          print(localproperty.more_example[i]);
-        }
-      }
-      for (var i = 0; i < con.idioms.length; i++) {
-        print(con.idioms[i]);
-      }
-      print("phrases");
-      for (var i = 0; i < con.phrases.length; i++) {
-        print(con.phrases[i]);
-      }*/
     } else {
       print("The word is $word.word");
     }
@@ -214,9 +178,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         setState(() {
           screenView = FeedbackScreen();
         });
-      } else if (drawerIndex == DrawerIndex.Invite) {
+      } else if (drawerIndex == DrawerIndex.LeaderBoard) {
         setState(() {
-          screenView = InviteFriend();
+          screenView = LeaderBoardPage();
         });
       } else if (drawerIndex == DrawerIndex.MarketPlace)
         setState(() {

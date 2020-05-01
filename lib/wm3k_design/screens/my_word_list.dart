@@ -23,12 +23,13 @@ class MyWordList extends StatelessWidget {
 
   BottomNavigationBarItem _bottomIcons(IconData icon, String title) {
     return BottomNavigationBarItem(
-        //  backgroundColor: Colors.blue,
-        icon: Icon(icon),
-        title: Text(
-          title,
-          style: TextStyle(color: Colors.black),
-        ));
+      //  backgroundColor: Colors.blue,
+      icon: Icon(icon),
+      title: Text(
+        title,
+        style: TextStyle(color: Colors.black),
+      ),
+    );
   }
 
   @override
@@ -47,8 +48,9 @@ class MyWordList extends StatelessWidget {
           _bottomIcons(Icons.help_outline, "Quiz"),
         ],
         onTap: (index) {
-          /*Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => HomePage()));*/
+          if (index == 1)
+            Navigator.pushNamed(context, 'memorizePage');
+          else if (index == 2) Navigator.pushNamed(context, 'quizPage');
         },
       ),
       backgroundColor:
