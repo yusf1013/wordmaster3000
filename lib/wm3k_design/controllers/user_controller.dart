@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wm3k/wm3k_design/models/assets_data_provider.dart';
+import 'package:wm3k/wm3k_design/models/category.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final Firestore _fireStore = Firestore.instance;
@@ -76,6 +78,7 @@ class AuthController {
 
 class UserDataController {
   FirebaseUser currentUser;
+  AssetNameProvider assetNameProvider = AssetNameProvider();
 
   UserDataController() {
     loadUser();
@@ -83,5 +86,49 @@ class UserDataController {
 
   Future loadUser() async {
     currentUser ??= await _auth.currentUser();
+  }
+
+  Stream<QuerySnapshot> getWordLists() {
+    return _fireStore
+        .collection('users')
+        .document('${currentUser.email}')
+        .collection('wordLists')
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getCourses() {
+    return _fireStore
+        .collection('users')
+        .document('${currentUser.email}')
+        .collection('courses')
+        .snapshots();
+  }
+
+  List<Category> getCategoryListForWordList(List<DocumentSnapshot> documents) {
+    List<Category> list = new List();
+    bool recent = true;
+    for (DocumentSnapshot document in documents) {
+      list.add(Category(
+          imagePath: assetNameProvider.getWordListImage(recent),
+          title: document.data['name'],
+          wordCount: document.data['words'].length,
+          time: document.data['words'].length * 2,
+          text: ''));
+      recent = false;
+    }
+    return list;
+  }
+
+  List<Category> getCategoryListForCourses(List<DocumentSnapshot> documents) {
+    List<Category> list = new List();
+    for (DocumentSnapshot document in documents) {
+      list.add(Category(
+          imagePath: assetNameProvider.getCourseImage(),
+          title: document.data['name'],
+          wordCount: document.data['words'].length,
+          time: document.data['words'].length * 2,
+          text: '/Day'));
+    }
+    return list;
   }
 }

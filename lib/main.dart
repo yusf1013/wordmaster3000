@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
+import 'package:wm3k/wm3k_design/screens/market_page.dart';
 import 'package:wm3k/wm3k_design/screens/memorization_card_3.dart';
 import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
 import 'package:wm3k/wm3k_design/screens/navigation_home_screen.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         'wordListPage': (context) => MyWordList(),
         'memorizePage': (context) => MemorizationCard2(),
         'quizPage': (context) => QuizCardScreen(),
+        'marketplacePage': (context) => MarketPage(),
       },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

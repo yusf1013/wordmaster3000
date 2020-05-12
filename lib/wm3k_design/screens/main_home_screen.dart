@@ -8,12 +8,12 @@ import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
 import 'package:flutter/material.dart';
 import 'package:wm3k/wm3k_design/helper/category_list_view.dart';
 import 'package:wm3k/wm3k_design/screens/spelling_card.dart';
-import 'package:wm3k/wm3k_design/screens/toDelete/course_info_screen.dart';
 import 'package:wm3k/wm3k_design/helper/games_list_view.dart';
 import '../themes/wm3k_app_theme.dart';
 import '../models/category.dart';
+import 'create_list_screen.dart';
 
-class MainHomePage extends StatefulWidget {
+/*class MainHomePage extends StatefulWidget {
   const MainHomePage({Key key}) : super(key: key);
 
   @override
@@ -48,17 +48,18 @@ class _MainHomePageState extends State<MainHomePage>
   Widget build(BuildContext context) {
     return DesignCourseHomeScreen();
   }
-}
+}*/
 
-class DesignCourseHomeScreen extends StatefulWidget {
+class MainHomePage extends StatefulWidget {
   @override
-  _DesignCourseHomeScreenState createState() => _DesignCourseHomeScreenState();
+  _MainHomePageState createState() => _MainHomePageState();
 }
 
-class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
+class _MainHomePageState extends State<MainHomePage> {
   CategoryType categoryType = CategoryType.train;
   List<Category> currentList = Category.wordList;
   Widget catListView;
+  UserDataController _userDataController = UserDataController();
 
   @override
   void initState() {
@@ -311,8 +312,16 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
         callBack: (title) {
           moveToWordPage(title);
         },
-        currentList: currentList,
-        type: categoryTypeData,
+        stream: _userDataController.getWordLists(),
+        getCurrentList: _userDataController.getCategoryListForWordList,
+        addButtonAction: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return CreateWordListView();
+            },
+          );
+        },
       );
     } else {
       currentList = Category.courseList;
@@ -320,8 +329,11 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
         callBack: () {
           moveTo();
         },
-        currentList: currentList,
-        type: categoryTypeData,
+        stream: _userDataController.getCourses(),
+        getCurrentList: _userDataController.getCategoryListForCourses,
+        addButtonAction: () {
+          Navigator.pushNamed(context, 'marketplacePage');
+        },
       );
     }
 
