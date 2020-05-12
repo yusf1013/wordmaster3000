@@ -14,25 +14,26 @@ import 'package:animated_dialog_box/animated_dialog_box.dart';
 
 import 'custom_widgets.dart';
 
-class CategoryListView extends StatefulWidget {
+class LearningTabListView extends StatefulWidget {
   /*CategoryListView({Key key, this.callBack, this.currentList})
       : super(key: key);*/
   final Function callBack;
   final List<Category> currentList;
   final CategoryType type;
 
-  CategoryListView({this.callBack, this.currentList, this.type});
+  LearningTabListView({this.callBack, this.currentList, this.type});
 
   @override
-  _CategoryListViewState createState() => _CategoryListViewState(currentList);
+  _LearningTabListViewState createState() =>
+      _LearningTabListViewState(currentList);
 }
 
-class _CategoryListViewState extends State<CategoryListView>
+class _LearningTabListViewState extends State<LearningTabListView>
     with TickerProviderStateMixin {
   AnimationController animationController;
   List<Category> currentList;
 
-  _CategoryListViewState(List<Category> cat) {
+  _LearningTabListViewState(List<Category> cat) {
     currentList = cat;
   }
 
@@ -49,10 +50,12 @@ class _CategoryListViewState extends State<CategoryListView>
     super.dispose();
   }
 
-  Future<bool> getData() async {
+  /*Future<bool> getData() async {
     await Future<dynamic>.delayed(const Duration(milliseconds: 50));
     return true;
-  }
+  }*/
+
+  Future<bool> getData() async {}
 
   @override
   Widget build(BuildContext context) {

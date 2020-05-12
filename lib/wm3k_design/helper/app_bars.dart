@@ -1,4 +1,3 @@
-import 'package:wm3k/dbConnection/dbManager.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
 import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
 import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';

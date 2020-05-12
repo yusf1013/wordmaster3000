@@ -1,7 +1,9 @@
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
+import 'package:wm3k/wm3k_design/screens/dictionary_page.dart';
 import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
 import 'package:flutter/material.dart';
 import 'package:wm3k/wm3k_design/helper/category_list_view.dart';
@@ -28,6 +30,7 @@ class _MainHomePageState extends State<MainHomePage>
     animationController = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
     super.initState();
+    AuthController().sharedShit();
   }
 
   Future<bool> getData() async {
@@ -67,7 +70,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
       },
       currentList,
     );*/
-    getView(categoryType);
+    getStartLearningView(categoryType);
   }
 
   @override
@@ -102,8 +105,12 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
                                 Connector con = new Connector();
                                 await con.search(wordString);
                                 print('The word is ${con.word}');
-                                Navigator.pushNamed(context, 'dictionaryPage',
-                                    arguments: con);
+                                //Navigator.pushNamed(context, 'dictionaryPage', arguments: con);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            DictionaryHomePage(con)));
                               },
                             );
                           } else {
@@ -115,10 +122,10 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
                           }
                         },
                       ),
-                      getCategoryUI(currentList),
+                      getStartLearningUI(currentList),
                       //categoryUI,
                       Flexible(
-                        child: getPopularCourseUI(),
+                        child: getGamesTabsUI(),
                       ),
                     ],
                   ),
@@ -131,7 +138,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
     );
   }
 
-  Widget getCategoryUI(List<Category> currentList) {
+  Widget getStartLearningUI(List<Category> currentList) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +192,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
     );
   }
 
-  Widget getPopularCourseUI() {
+  Widget getGamesTabsUI() {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, left: 18, right: 16),
       child: Column(
@@ -267,7 +274,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
               });
 
               Future.delayed(const Duration(milliseconds: 100), () {
-                getView(categoryTypeData);
+                getStartLearningView(categoryTypeData);
               });
             },
             child: Padding(
@@ -294,13 +301,13 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
     );
   }
 
-  void getView(CategoryType categoryTypeData) {
+  void getStartLearningView(CategoryType categoryTypeData) {
     Widget newWig;
     if (categoryTypeData == CategoryType.train) {
       newWig = ProgressCard();
     } else if (categoryTypeData == CategoryType.myWords) {
       currentList = Category.wordList;
-      newWig = CategoryListView(
+      newWig = LearningTabListView(
         callBack: (title) {
           moveToWordPage(title);
         },
@@ -309,7 +316,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen> {
       );
     } else {
       currentList = Category.courseList;
-      newWig = CategoryListView(
+      newWig = LearningTabListView(
         callBack: () {
           moveTo();
         },

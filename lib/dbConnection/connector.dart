@@ -114,16 +114,25 @@ class Connector {
 
   List<String> getPartsOfSpeechList() {
     List<String> list = new List();
-    for (PartsOfSpeech pos in property)
+    for (PartsOfSpeech pos in property) {
+      String temp =
+          (pos.partsOfSpeech[0].toUpperCase() + pos.partsOfSpeech.substring(1));
+      temp = temp.split("[")[0];
+      print("Dhur miah: $temp");
+      list.add(temp);
+    }
+    /*for (PartsOfSpeech pos in property)
       list.add((pos.partsOfSpeech[0].toUpperCase() +
-          pos.partsOfSpeech.substring(1)));
+          pos.partsOfSpeech.substring(1)));*/
     list.add("More");
     return list;
   }
 
   PartsOfSpeech getParticularPOS(String givenPos) {
     for (PartsOfSpeech pos in property)
-      if (givenPos.toLowerCase() == pos.partsOfSpeech.toLowerCase()) return pos;
+      if (givenPos.toLowerCase() == pos.partsOfSpeech.toLowerCase() ||
+          pos.partsOfSpeech.toLowerCase().contains(givenPos.toLowerCase()))
+        return pos;
     return null;
   }
 }

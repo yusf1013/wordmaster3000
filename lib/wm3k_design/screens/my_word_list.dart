@@ -4,7 +4,6 @@ import 'package:wm3k/wm3k_design/themes/app_theme.dart';
 import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:expandable_bottom_bar/expandable_bottom_bar.dart';
 
 class MyWordList extends StatelessWidget {
   final String title, promptText;

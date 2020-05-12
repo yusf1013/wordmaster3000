@@ -1,15 +1,12 @@
 import 'dart:io';
-import 'package:wm3k/wm3k_design/screens/dictionary_page.dart';
-import 'package:wm3k/wm3k_design/screens/leaderboard_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/screens/memorization_card_3.dart';
 import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
 import 'package:wm3k/wm3k_design/screens/navigation_home_screen.dart';
 import 'package:wm3k/wm3k_design/screens/quiz_screen.dart';
-import 'package:wm3k/wm3k_design/screens/spelling_card.dart';
-import 'package:wm3k/wm3k_design/screens/temp.dart';
-import 'package:wm3k/wm3k_design/screens/toDelete/feedback_screen.dart';
-import 'package:wm3k/wm3k_design/screens/toDelete/help_screen.dart';
-import 'package:wm3k/wm3k_design/screens/toDelete/invite_friend_screen.dart';
+import 'package:wm3k/wm3k_design/screens/welcome_screen.dart';
 import 'package:wm3k/wm3k_design/themes/app_theme.dart';
 import 'package:wm3k/wm3k_design/screens/login.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +19,9 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    print("Logged in? : ${AuthController().isLoggedIn()}");
+    bool loggedIn = AuthController().isLoggedIn();
+
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
@@ -34,7 +34,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Word master 3000',
       routes: {
-        'dictionaryPage': (context) => DictionaryHomePage(),
         'navigationHomePage': (context) => NavigationHomeScreen(),
         'authPage': (context) => LoginScreen(),
         'wordListPage': (context) => MyWordList(),
@@ -46,7 +45,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         textTheme: AppTheme.textTheme,
       ),
-      home: NavigationHomeScreen(),
+      //home: loggedIn ? NavigationHomeScreen() : LoginScreen(),
+      home: WelcomeScreen(),
+      //home: LoginScreen(),
       //home: QuizCardScreen(),
       //home: LeaderBoardPage(),
       //home: PageViewDemo(),

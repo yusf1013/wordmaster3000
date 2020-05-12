@@ -6,7 +6,6 @@ import 'package:wm3k/wm3k_design/themes/dictionary_text_theme.dart';
 import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MemorizationCard2 extends StatefulWidget {

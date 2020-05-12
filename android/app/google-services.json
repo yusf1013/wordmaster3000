@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "474162603838",
+    "firebase_url": "https://wm3k-f920b.firebaseio.com",
+    "project_id": "wm3k-f920b",
+    "storage_bucket": "wm3k-f920b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474162603838:android:41017ee2dc6ddb3671ee6f",
+        "android_client_info": {
+          "package_name": "com.yusufAndRadowan.wm3k"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "474162603838-0k37a5pj39eptumn4sa6462ipai3471c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCrczJlt8OIiwkuyVYoWaXf8nLHv9fgu4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "474162603838-0k37a5pj39eptumn4sa6462ipai3471c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

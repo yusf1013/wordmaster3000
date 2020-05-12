@@ -18,7 +18,7 @@ TextStyle dictionaryNumber = GoogleFonts.lato(
 );
 
 TextStyle dictionaryWords = GoogleFonts.lato(
-  textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+  textStyle: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
 );
 
 TextStyle dictionarySentences = GoogleFonts.lato(
