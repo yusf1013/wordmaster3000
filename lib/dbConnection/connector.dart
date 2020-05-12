@@ -1,24 +1,23 @@
 import 'dbManager.dart';
 
-class Meaning {
-  int meaningId;
-  String meaning;
+class SubMeaning {
+  String submeaning;
   List<String> example = List<String>();
 }
 
-class PartsOfSpeech {
-  int id;
+class Meaning {
   String partsOfSpeech;
-  List<Meaning> meaning = List<Meaning>();
+  String meaning;
+  List<SubMeaning> sub_meaning = List<SubMeaning>();
   List<String> synonyms = List<String>();
   List<String> moreExample = List<String>();
 }
 
-class Connector {
+class SearchedWord {
   String word;
   List<String> idioms = new List<String>();
   List<String> phrases = new List<String>();
-  List<PartsOfSpeech> property = List<PartsOfSpeech>();
+  List<Meaning> searchedWordMeaning = List<Meaning>();
 
   DBManager DbManager = new DBManager();
 
@@ -29,7 +28,7 @@ class Connector {
       for (int i = 0; i < maps.length; i++) {
         Map<dynamic, dynamic> map = maps[i];
         this.idioms.add(map["idioms"]);
-        print(map["idioms"]);
+        //print(map["idioms"]);
       }
     }
   }
@@ -53,25 +52,25 @@ class Connector {
     maps = await DbManager.getWords(searchItem);
 
     if (maps.length > 0) {
-      print(searchItem);
+      //print(searchItem);
       this.word = searchItem;
-      print(this.word);
+      //print(this.word);
       getIdioms(searchItem);
       getPhrases(searchItem);
+
       for (int i = 0; i < maps.length; i++) {
-        PartsOfSpeech partsofspeech = PartsOfSpeech();
+        Meaning meaningObject = Meaning();
         Map<dynamic, dynamic> map = maps[i];
         int id = map["id"];
-        var parts = map["parts_of_speech"];
-        partsofspeech.id = id;
-        partsofspeech.partsOfSpeech = parts;
+        meaningObject.partsOfSpeech = map["parts_of_speech"];
+        meaningObject.meaning=map["meaning"];
 
         //for synosyms
         List<Map> synonyms = await DbManager.getSynonyms(id);
         if (synonyms.length > 0) {
           for (int i = 0; i < synonyms.length; i++) {
             Map<dynamic, dynamic> synonym = synonyms[i];
-            partsofspeech.synonyms.add(synonym["synonyms"]);
+            meaningObject.synonyms.add(synonym["synonyms"]);
           }
         }
 
@@ -80,32 +79,33 @@ class Connector {
         if (moreexample.length > 0) {
           for (int i = 0; i < moreexample.length; i++) {
             Map<dynamic, dynamic> more = moreexample[i];
-            partsofspeech.moreExample.add(more["more_example"]);
+            meaningObject.moreExample.add(more["more_example"]);
           }
         }
 
-        //meaning
-        List<Map> meaning = await DbManager.getMeaning(id);
-        if (meaning.length > 0) {
-          for (int j = 0; j < meaning.length; j++) {
-            Map<dynamic, dynamic> mean = meaning[j];
-            Meaning m = Meaning();
-            m.meaningId = mean["meaning_id"];
-            m.meaning = mean["meaning"];
+        //Sub_meaning
+        List<Map> submeaningObjectMap = await DbManager.getSubMeaning(id);
+        if (submeaningObjectMap.length > 0) {
+          for (int j = 0; j < submeaningObjectMap.length; j++) {
+            Map<dynamic, dynamic> submean = submeaningObjectMap[j];
+            SubMeaning m = SubMeaning();
+            int SUBMEANINGId = submean["submeaning_id"];
+            m.submeaning = submean["submeaning"];
+
             //example
-            List<Map> meaningexample = await DbManager.getExample(m.meaningId);
-            if (meaningexample.length > 0) {
-              for (int k = 0; k < meaningexample.length; k++) {
-                Map<dynamic, dynamic> exampleofmeaning = meaningexample[k];
-                m.example.add(exampleofmeaning["example"]);
+            List<Map> submeaningexample = await DbManager.getExample(SUBMEANINGId);
+            if (submeaningexample.length > 0) {
+              for (int k = 0; k < submeaningexample.length; k++) {
+                Map<dynamic, dynamic> exampleofsubmeaning = submeaningexample[k];
+                m.example.add(exampleofsubmeaning["example"]);
                 //String example=exampleofmeaning["example"];
                 //print("the pushed example is $example");
               }
             }
-            partsofspeech.meaning.add(m);
+            meaningObject.sub_meaning.add(m);
           }
         }
-        this.property.add(partsofspeech);
+        this.searchedWordMeaning.add(meaningObject);
       }
       //return searched;
     } else

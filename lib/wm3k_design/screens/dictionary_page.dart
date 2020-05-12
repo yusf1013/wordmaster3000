@@ -16,21 +16,23 @@ class _DictionaryHomePageState extends State<DictionaryHomePage> {
   Widget meaningListView = MeaningListView("Noun");
 
   printSearch(String word) async {
-    Connector con = new Connector();
+    SearchedWord con = new SearchedWord();
     //Word searched= Word();
     await con.search(word);
     String wordfound = con.word;
     if (word == wordfound) {
       print(" the properties for $wordfound");
 
-      for (PartsOfSpeech pos in con.property) {
-        for (Meaning meaning in pos.meaning) {
+      for (Meaning pos in con.searchedWordMeaning) {
+        for (SubMeaning submeaningobject in pos.sub_meaning) {
           print('${pos.partsOfSpeech}:');
-          print(meaning.meaning);
-          for (String example in meaning.example) print(example);
+          print(submeaningobject.submeaning);
+          for (String example in submeaningobject.example) print(example);
         }
         for (String moreExamples in pos.moreExample) print(moreExamples);
         for (String synonyms in pos.synonyms) print(synonyms);
+        for (String idioms in con.idioms) print(idioms);
+        for (String phrases in con.phrases) print(phrases);
 
         print('\n\n');
       }

@@ -6,6 +6,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DBManager {
+
   static final DBManager _instance = new DBManager.internal();
   factory DBManager() => _instance;
   DBManager.internal();
@@ -21,7 +22,7 @@ class DBManager {
 
   Future<Database> openDB() async {
     var databasesPath = await getDatabasesPath();
-    var path = join(databasesPath, "Word_Master3000_Dictionary.db");
+    var path = join(databasesPath, "WMK3000.db");
     var exists = await databaseExists(path);
 
     if (!exists) {
@@ -30,9 +31,8 @@ class DBManager {
       } catch (_) {}
 
       ByteData data =
-          await rootBundle.load("assets/Word_Master3000_Dictionary.db");
-      List<int> bytes =
-          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+          await rootBundle.load("assets/WMK3000.db");
+      List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
       await File(path).writeAsBytes(bytes, flush: true);
     }
     var db = await openDatabase(path);
@@ -42,35 +42,33 @@ class DBManager {
   }
 
   Future<List<Map>> getWords(String item) async {
+
     final Database db = await this.database;
-
-    print("fetching word $item");
-    List<Map> maps = await db
-        .rawQuery("SELECT * FROM word WHERE word = '$item' COLLATE NOCASE");
-
+   // print("fetching word $item");
+    List<Map> maps = await db.rawQuery("SELECT * FROM Word WHERE word = '$item' COLLATE NOCASE");
     return maps;
+
   }
 
   Future<List<String>> getListOfAllWords() async {
     List<String> list = new List();
     final Database db = await this.database;
-    List<Map> maps = await db.rawQuery("SELECT * FROM word");
+    List<Map> maps = await db.rawQuery("SELECT * FROM Word");
 
     for (Map map in maps) list.add(map['word']);
 
     return list;
   }
 
-  Future<List<Map>> getMeaning(int id) async {
+  Future<List<Map>> getSubMeaning(int id) async {
     final Database db = await this.database;
-    List<Map> maps = await db.rawQuery("SELECT * FROM Meaning WHERE id = $id");
+    List<Map> maps = await db.rawQuery("SELECT * FROM SubMeaning WHERE id = $id");
     return maps;
   }
 
   Future<List<Map>> getExample(int meaningid) async {
     final Database db = await this.database;
-    List<Map> maps = await db
-        .rawQuery("SELECT * FROM Example WHERE meaning_id = $meaningid");
+    List<Map> maps = await db.rawQuery("SELECT * FROM Example WHERE submeaning_id = $meaningid");
     return maps;
   }
 
@@ -89,15 +87,13 @@ class DBManager {
 
   Future<List<Map>> getidioms(String item) async {
     final Database db = await this.database;
-    List<Map> maps =
-        await db.rawQuery("SELECT * FROM idioms WHERE word = '$item'");
+    List<Map> maps = await db.rawQuery("SELECT * FROM idioms WHERE word = '$item' COLLATE NOCASE");
     return maps;
   }
 
   Future<List<Map>> getphrases(String item) async {
     final Database db = await this.database;
-    List<Map> maps =
-        await db.rawQuery("SELECT * FROM phrases WHERE word = '$item'");
+    List<Map> maps = await db.rawQuery("SELECT * FROM phrases WHERE word = '$item' COLLATE NOCASE");
     return maps;
   }
 }

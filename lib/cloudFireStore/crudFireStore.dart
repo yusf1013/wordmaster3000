@@ -17,7 +17,7 @@ class FireBaseUserMethods {
   }
 
   Future<void> getAllPublicWordlist(){
-    
+
   }
 
 
