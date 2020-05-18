@@ -84,7 +84,7 @@ class _LearningTabListViewState extends State<LearningTabListView>
                       animation: animation,
                       animationController: animationController,
                       callback: () {
-                        widget.callBack(currentList[index].title);
+                        widget.callBack(currentList[index].id);
                       },
                     );
                   else
@@ -172,16 +172,24 @@ class CategoryView extends StatelessWidget {
                                           Padding(
                                             padding:
                                                 const EdgeInsets.only(top: 16),
-                                            child: Text(
-                                              category.title,
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 16,
-                                                letterSpacing: 0.27,
-                                                color: DesignCourseAppTheme
-                                                    .darkerText,
-                                              ),
+                                            child: Row(
+                                              children: <Widget>[
+                                                Expanded(
+                                                  child: Text(
+                                                    category.title,
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 16,
+                                                      letterSpacing: 0.27,
+                                                      color:
+                                                          DesignCourseAppTheme
+                                                              .darkerText,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                           const Expanded(

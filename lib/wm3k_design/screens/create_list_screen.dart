@@ -4,10 +4,13 @@ import 'package:card_settings/widgets/information_fields/card_settings_header.da
 import 'package:card_settings/widgets/text_fields/card_settings_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 
 class CreateWordListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    String name, description;
     return AlertDialog(
       contentPadding: EdgeInsets.all(0),
       titlePadding: EdgeInsets.all(0),
@@ -17,6 +20,9 @@ class CreateWordListView extends StatelessWidget {
         children: <Widget>[
           CardSettingsHeader(label: 'New word list'),
           CardSettingsText(
+            maxLength: 100,
+            autocorrect: true,
+            autovalidate: true,
             labelWidth: 100,
             hintText: 'Enter title of the list',
             autofocus: true,
@@ -26,7 +32,9 @@ class CreateWordListView extends StatelessWidget {
               if (value == null || value.isEmpty) return 'Title is required.';
               return '';
             },
-            onSaved: (value) {},
+            onChanged: (value) {
+              name = value;
+            },
           ),
           CardSettingsText(
             maxLengthEnforced: false,
@@ -36,10 +44,15 @@ class CreateWordListView extends StatelessWidget {
             label: 'Desciption',
             initialValue: "",
             validator: (value) {
-              if (value == null || value.isEmpty) return 'Title is required.';
+              if (value == null || value.isEmpty)
+                return 'Description is required.';
               return '';
             },
-            onSaved: (value) {},
+            autovalidate: true,
+            autocorrect: true,
+            onChanged: (value) {
+              description = value;
+            },
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -47,7 +60,20 @@ class CreateWordListView extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: CardSettingsButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if ((name != null && name.isNotEmpty) &&
+                          (description != null && description.isNotEmpty))
+                        try {
+                          //FocusScope.of(context).unfocus();
+                          print('$name, $description');
+                          UserDataController()
+                              .createWordList(name, description);
+                          Navigator.pop(context, true);
+                        } catch (e) {
+                          print('Error creating list $e');
+                        }
+                      //UserDataController().createWordList(name, description);
+                    },
                     label: 'Create',
                     backgroundColor: Colors.lightBlueAccent,
                   ),
@@ -58,7 +84,7 @@ class CreateWordListView extends StatelessWidget {
                 Expanded(
                   child: CardSettingsButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context, false);
                     },
                     backgroundColor: Colors.redAccent,
                     label: 'Cancel',

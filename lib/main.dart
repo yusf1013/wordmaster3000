@@ -46,8 +46,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         textTheme: AppTheme.textTheme,
+        //canvasColor: Colors.transparent,
       ),
-      //home: loggedIn ? NavigationHomeScreen() : LoginScreen(),
+      //home: loggedIn ? WelcomeScreen() : LoginScreen(),
       home: WelcomeScreen(),
       //home: LoginScreen(),
       //home: QuizCardScreen(),

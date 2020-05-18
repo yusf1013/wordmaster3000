@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wm3k/analysis_classes/wordList.dart';
 import 'package:wm3k/wm3k_design/models/assets_data_provider.dart';
 import 'package:wm3k/wm3k_design/models/category.dart';
 
@@ -77,7 +78,7 @@ class AuthController {
 }
 
 class UserDataController {
-  FirebaseUser currentUser;
+  static FirebaseUser currentUser;
   AssetNameProvider assetNameProvider = AssetNameProvider();
 
   UserDataController() {
@@ -93,6 +94,7 @@ class UserDataController {
         .collection('users')
         .document('${currentUser.email}')
         .collection('wordLists')
+        .orderBy('id')
         .snapshots();
   }
 
@@ -101,7 +103,20 @@ class UserDataController {
         .collection('users')
         .document('${currentUser.email}')
         .collection('courses')
+        .orderBy('id')
         .snapshots();
+  }
+
+  Future<WordList> getWordList(int id) async {
+    var document = await _fireStore
+        .collection('users')
+        .document('${currentUser.email}')
+        .collection('wordLists')
+        .document(id.toString())
+        .get();
+
+    return WordList(document.data['name'], document.data['description'],
+        document.data['words'], document.data['meanings']);
   }
 
   List<Category> getCategoryListForWordList(List<DocumentSnapshot> documents) {
@@ -113,7 +128,8 @@ class UserDataController {
           title: document.data['name'],
           wordCount: document.data['words'].length,
           time: document.data['words'].length * 2,
-          text: ''));
+          text: '',
+          id: document.data['id']));
       recent = false;
     }
     return list;
@@ -127,8 +143,35 @@ class UserDataController {
           title: document.data['name'],
           wordCount: document.data['words'].length,
           time: document.data['words'].length * 2,
-          text: '/Day'));
+          text: '/Day',
+          id: document.data['id']));
     }
     return list;
   }
+
+  void createWordList(String name, String description) async {
+    QuerySnapshot list = await _fireStore
+        .collection('users')
+        .document('${currentUser.email}')
+        .collection('wordLists')
+        .getDocuments();
+
+    int id = _getID(list);
+
+    _fireStore
+        .collection('users')
+        .document('${currentUser.email}')
+        .collection('wordLists')
+        .document(id.toString())
+        .setData({
+      'id': id,
+      'name': name,
+      'description': description,
+      'words': <String>[],
+      'meanings': <String>[]
+    });
+  }
+
+  int _getID(QuerySnapshot list) =>
+      list == null || list.documents == null ? 0 : list.documents.length;
 }
