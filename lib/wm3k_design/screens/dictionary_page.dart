@@ -1,5 +1,7 @@
+import 'package:google_fonts/google_fonts.dart';
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
+import 'package:wm3k/wm3k_design/helper/buttons.dart';
 import 'package:wm3k/wm3k_design/themes/dictionary_text_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,86 +10,31 @@ import '../themes/wm3k_app_theme.dart';
 import '../helper/custom_widgets.dart';
 
 class DictionaryHomePage extends StatefulWidget {
+  final SearchedWord connector;
+
+  DictionaryHomePage(this.connector);
+
   @override
   _DictionaryHomePageState createState() => _DictionaryHomePageState();
 }
 
 class _DictionaryHomePageState extends State<DictionaryHomePage> {
-  Widget meaningListView = MeaningListView("Noun");
-
-  printSearch(String word) async {
-    SearchedWord con = new SearchedWord();
-    //Word searched= Word();
-    await con.search(word);
-    String wordfound = con.word;
-    if (word == wordfound) {
-      print(" the properties for $wordfound");
-
-      for (Meaning pos in con.searchedWordMeaning) {
-        for (SubMeaning submeaningobject in pos.sub_meaning) {
-          print('${pos.partsOfSpeech}:');
-          print(submeaningobject.submeaning);
-          for (String example in submeaningobject.example) print(example);
-        }
-        for (String moreExamples in pos.moreExample) print(moreExamples);
-        for (String synonyms in pos.synonyms) print(synonyms);
-        for (String idioms in con.idioms) print(idioms);
-        for (String phrases in con.phrases) print(phrases);
-
-        print('\n\n');
-      }
-
-      /*for (var i = 0; i < con.property.length; i++) {
-        PartsOfSpeech localproperty = con.property[i];
-        String partsofspeech = con.property[i].parts_of_speech;
-        print("it $partsofspeech");
-        print("meaning\n\n");
-        for (var j = 0; j < localproperty.meaning.length; j++) {
-          Meaning localmeaning = localproperty.meaning[j];
-          int meaningid = localmeaning.meaning_id;
-          print("meaning id is $meaningid");
-
-          String meaning = localmeaning.meaning;
-          print(meaning);
-
-          for (var k = 0; k < localmeaning.example.length; k++) {
-            print(localmeaning.example[k]);
-          }
-        }
-
-        print("synonyms");
-        for (var i = 0; i < localproperty.synonyms.length; i++) {
-          print(localproperty.synonyms[i]);
-        }
-        print("more example");
-        for (var i = 0; i < localproperty.more_example.length; i++) {
-          //print("more example");
-          print(localproperty.more_example[i]);
-        }
-      }
-      for (var i = 0; i < con.idioms.length; i++) {
-        print(con.idioms[i]);
-      }
-      print("phrases");
-      for (var i = 0; i < con.phrases.length; i++) {
-        print(con.phrases[i]);
-      }*/
-    } else {
-      print("Found nothing for $word");
-    }
-  }
+  //Widget meaningListView = MeaningListView("Noun");
+  Widget meaningListView;
 
   @override
   void initState() {
+    meaningListView =
+        MeaningListView(
+            widget.connector.searchedWordMeaning[0], widget.connector.word);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final String s = ModalRoute.of(context).settings.arguments;
+    final String s = widget.connector.word;
     final String word = '${s[0].toUpperCase()}${s.substring(1)}';
     //Widget shit = SearchableText("Life is a shit");
-    printSearch(word);
     //categoryUI = getCategoryUI(currentList);
     return Container(
       color: DesignCourseAppTheme.nearlyWhite,
@@ -130,11 +77,14 @@ class _DictionaryHomePageState extends State<DictionaryHomePage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Tabs(
+                      items: widget.connector.getPartsOfSpeechList(),
                       onPressed: ((String pos) {
                         setState(() {
                           meaningListView = pos == "More"
-                              ? MoreListView()
-                              : MeaningListView(pos);
+                              ? MoreListView(widget.connector)
+                              : MeaningListView(
+                              widget.connector.getParticularPOS(pos),
+                              widget.connector.word);
                         });
                       }),
                     ),
@@ -154,8 +104,10 @@ class _DictionaryHomePageState extends State<DictionaryHomePage> {
               GFAccordion(
                 //title: 'GF Accordion',
                 contentbackgroundColor: DesignCourseAppTheme.nearlyWhite,
-                collapsedTitlebackgroundColor: DesignCourseAppTheme.nearlyWhite,
-                expandedTitlebackgroundColor: DesignCourseAppTheme.nearlyWhite,
+                collapsedTitlebackgroundColor: DesignCourseAppTheme
+                    .nearlyWhite,
+                expandedTitlebackgroundColor: DesignCourseAppTheme
+                    .nearlyWhite,
                 titleChild: Row(
                   children: <Widget>[
                     Padding(
@@ -347,31 +299,113 @@ class Tab extends StatelessWidget {
 }
 
 class MeaningListView extends StatelessWidget {
-  final String pos;
+  final Meaning meaning;
+  final String word;
 
-  MeaningListView(this.pos);
+  //MeaningListView(this.pos);
+  MeaningListView(this.meaning, this.word);
 
   List<Widget> getChildren() {
+
     List<Widget> list = new List();
-    list.add(singleMeaning(1));
-    list.add(singleMeaning(2));
+    //list.add(singleMeaning(1));
+    //list.add(singleMeaning(2));
+    for (int i = 0; i < meaning.sub_meaning.length; i++)
+      list.add(singleMeaning(i));
+
+    list.add(Divider(
+      thickness: 1.5,
+    ));
+
+    if (meaning.moreExample.length > 0)
+      addExtraExamples(list, meaning.moreExample,
+          heading: "Extra Examples");
+    if (meaning.synonyms.length > 0) addSynonyms(list);
     return list;
   }
 
-  List<Widget> getMeaningList(int n) {
+  List<Widget> getSubMeaningList(int n) {
+    SubMeaning thisSubMeaning = meaning.sub_meaning[n];
+    bool listTooLong = thisSubMeaning.example.length > 3;
     List<Widget> children = new List();
+    addHeader(children);
+    //
+    addMeaning(children, n, thisSubMeaning);
+    addExamples(children, listTooLong, thisSubMeaning);
+    if (listTooLong) addExtraExamples(children, thisSubMeaning.example.sublist(3));
+    //addExtraExamples(children, partsOfSpeech.moreExample);
+    //addSynonyms(children);
+    addSaveToListOptions(children);
+
+    return children;
+  }
+
+  void addHeader(List<Widget> children) {
+    children.add(Row(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(right: 5),
+          child: Dot(
+            5,
+            color: Colors.indigo[700],
+          ),
+        ),
+        Expanded(
+          child: Text(
+            "${word[0].toUpperCase() + word.substring(1)} : ${meaning.partsOfSpeech}",
+            style: GoogleFonts.courgette(
+                textStyle: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.indigo[700])),
+          ),
+        ),
+      ],
+    ));
+    children.add(Divider(
+      thickness: 1.5,
+    ));
+  }
+
+  void addExamples(
+      List<Widget> children, bool listTooLong, SubMeaning thisMeaning) {
+    children.add(Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 7),
+      child: UnorderedList(
+        /*list: [
+          "The first sentence",
+          "The second sentence",
+          "The third sentence",
+        ],*/
+        list: listTooLong
+            ? thisMeaning.example.sublist(0, 3)
+            : thisMeaning.example,
+        style: dictionarySentences,
+        lineSpacing: 5.0,
+      ),
+    ));
+  }
+
+  void addMeaning(List<Widget> children, int n, SubMeaning thisSubMeaning) {
     children.add(Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          n.toString() + ".   ",
+          (n + 1).toString() + ".   ",
           style: dictionaryNumber,
         ),
         Expanded(
-          child: SearchableText(
-            "New $pos meaning of word:",
+          /*child: SearchableText(
+            thisMeaning.meaning[0].toUpperCase() +
+                thisMeaning.meaning.substring(1),
             style: dictionaryWords,
-            wrapLength: 28,
+            wrapLength: 30,
+          ),*/
+          child: Text(
+            thisSubMeaning.submeaning[0].toUpperCase() +
+                thisSubMeaning.submeaning.substring(1),
+            style: dictionaryWords,
+            textAlign: TextAlign.justify,
           ),
         ),
       ],
@@ -379,48 +413,9 @@ class MeaningListView extends StatelessWidget {
     children.add(SizedBox(
       width: 5,
     ));
-    children.add(Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 7),
-      child: UnorderedList(
-        list: [
-          "The first sentence",
-          "The second sentence",
-          "The third sentence",
-        ],
-        style: dictionarySentences,
-        lineSpacing: 5.0,
-      ),
-    ));
-    children.add(GFAccordion(
-      titleChild: Text(
-        "More Examples",
-        style: dictionarySentences,
-      ),
-      contentChild: UnorderedList(
-        list: [
-          "The first extra sentence",
-          "The second extra sentence",
-          "The third extra sentence",
-        ],
-        style: dictionarySentences,
-        lineSpacing: 5.0,
-      ),
-    ));
-    children.add(GFAccordion(
-      titleChild: Text(
-        "Synonyms and related words",
-        style: dictionarySentences,
-      ),
-      contentChild: UnorderedList(
-        list: [
-          "The first synonym",
-          "The second synonym",
-          "The third synonym",
-        ],
-        style: dictionarySentences,
-        lineSpacing: 5.0,
-      ),
-    ));
+  }
+
+  void addSaveToListOptions(List<Widget> children) {
     children.add(GFAccordion(
       titleChild: Text(
         "Save meaning to a list",
@@ -438,16 +433,52 @@ class MeaningListView extends StatelessWidget {
       collapsedIcon: Icon(Icons.favorite_border),
       expandedIcon: Icon(Icons.cancel),
     ));
+  }
 
-    return children;
+  void addSynonyms(List<Widget> children) {
+    children.add(GFAccordion(
+      titleChild: Text(
+        "Synonyms and related words",
+        style: dictionarySentences,
+      ),
+      contentChild: UnorderedList(
+        list: meaning.synonyms,
+        style: dictionarySentences,
+        lineSpacing: 5.0,
+      ),
+    ));
+  }
+
+  void addExtraExamples(List<Widget> children, List<String> givenList,
+      {String heading = "More Examples"}) {
+    children.add(GFAccordion(
+      titleChild: Text(
+        heading,
+        style: dictionarySentences,
+      ),
+      contentChild: UnorderedList(
+        list: givenList,
+        style: dictionarySentences,
+        lineSpacing: 5.0,
+      ),
+    ));
   }
 
   Widget singleMeaning(int n) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: Column(
-        children: getMeaningList(n),
-      ),
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(
+            bottom: 12.0,
+          ),
+          child: Column(
+            children: getSubMeaningList(n),
+          ),
+        ),
+        Divider(
+          thickness: 1.5,
+        ),
+      ],
     );
   }
 
@@ -527,7 +558,6 @@ class _SaveToListButtonState extends State<SaveToListButton> {
                 _showToast(context, 'Added to $text');
               else {
                 Scaffold.of(context).removeCurrentSnackBar();
-                print("shit");
               }
             },
           )
@@ -538,6 +568,10 @@ class _SaveToListButtonState extends State<SaveToListButton> {
 }
 
 class MoreListView extends StatelessWidget {
+  final SearchedWord con;
+
+  MoreListView(this.con);
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -558,9 +592,17 @@ class MoreListView extends StatelessWidget {
     );
   }
 
-  Widget getListItems() {
+  Widget getListItems(List<String> givenList) {
     List<Widget> list = new List();
-    list.addAll([
+    for (String string in givenList)
+      list.add(GestureDetector(
+        onTap: () {},
+        child: Text(
+          string,
+          style: dictionaryIdiomsAndPhrases,
+        ),
+      ));
+    /*list.addAll([
       GestureDetector(
         onTap: () {},
         child: Text(
@@ -582,9 +624,11 @@ class MoreListView extends StatelessWidget {
           style: dictionaryIdiomsAndPhrases,
         ),
       ),
-    ]);
+    ]);*/
     return UnorderedList(
-      listOfWid: list,
+      //listOfWid: list,
+      list: givenList,
+      style: dictionaryIdiomsAndPhrases,
       lineSpacing: 7,
     );
   }
@@ -597,14 +641,14 @@ class MoreListView extends StatelessWidget {
           "Idioms",
           style: dictionaryWords,
         ),
-        contentChild: getListItems(),
+        contentChild: getListItems(con.idioms),
       ),
       GFAccordion(
         titleChild: Text(
           "Phrasal verbs",
           style: dictionaryWords,
         ),
-        contentChild: getListItems(),
+        contentChild: getListItems(con.phrases),
       ),
     ]);
     return list;

@@ -1,13 +1,16 @@
 import 'package:awesome_button/awesome_button.dart';
-import 'package:wm3k/wm3k_design/controllers/loginController.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';
 import 'package:wm3k/wm3k_design/models/category.dart';
-import 'package:wm3k/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 
 import 'custom_widgets.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
+FirebaseUser _currentUser;
+bool _userLoaded = false;
 
 class GamesListView extends StatefulWidget {
   const GamesListView({Key key, this.callBack}) : super(key: key);
@@ -273,14 +276,24 @@ class _ProgressCardState extends State<ProgressCard>
   double radius = 13, height = 14, width = 1;
   AnimationController controller;
   Animation<double> animation;
-  int progress = LoginController.isLoggedIn() ? 50 : 0;
 
   initState() {
+    _getUser();
     super.initState();
     controller = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
     animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
     controller.forward();
+  }
+
+  void _getUser() async {
+    if (!_userLoaded) {
+      _currentUser = await _auth.currentUser();
+      if (_currentUser != null)
+        setState(() {
+          _userLoaded = true;
+        });
+    }
   }
 
   @override
@@ -291,6 +304,7 @@ class _ProgressCardState extends State<ProgressCard>
 
   @override
   Widget build(BuildContext context) {
+    int progress = _currentUser != null ? 50 : 0;
     return FadeTransition(
       opacity: animation,
       child: Padding(
@@ -413,9 +427,7 @@ class _ProgressCardState extends State<ProgressCard>
                                           size: 25,
                                         ),
                                         Text(
-                                          LoginController.isLoggedIn()
-                                              ? "~20 Min"
-                                              : "",
+                                          _currentUser != null ? "~20 Min" : "",
                                           style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 17),

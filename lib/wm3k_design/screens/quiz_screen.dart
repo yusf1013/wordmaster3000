@@ -49,14 +49,16 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
                       maxHeight: height + 50,
                       minWidth: width - 11,
                       minHeight: height * 0.9,
-                      cardBuilder: (context, index) => Center(
-                        child: QuizLearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg2.jpg'),
-                        ),
-                      ),
+                      cardBuilder: (context, index) {
+                        return Center(
+                          child: QuizLearnCard(
+                            height: height * 0.81,
+                            width: width * 0.85,
+                            cardTheme: MyCardTheme(
+                                imagePath: 'assets/bgs/cardbg6.jpg'),
+                          ),
+                        );
+                      },
                       cardController: CardController(),
                       swipeUpdateCallback:
                           (DragUpdateDetails details, Alignment align) {
@@ -162,7 +164,6 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
   }
 
   Widget getCard(double height, double width) {
-    print(height);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 30),
       child: ConstrainedBox(
@@ -205,8 +206,8 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                         SizedBox(
                           width: 7,
                         ),
-                        getDot(6),
-                        getDot(6),
+                        Dot(6),
+                        Dot(6),
                         SizedBox(
                           width: 7,
                         ),
@@ -234,7 +235,7 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
-                                      getDot(5, color: Colors.white),
+                                      Dot(5, color: Colors.white),
                                       Text(
                                         "The ${widget.word}",
                                         style: GoogleFonts.breeSerif(
@@ -301,7 +302,7 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                           height: height * 0.4,
                           //color: Colors.deepOrange[50],
                           child: Padding(
-                            padding: EdgeInsets.all(8),
+                            padding: EdgeInsets.symmetric(horizontal: 8),
                             child: mainView,
                           ),
                           //height: height * 0.454,
@@ -424,23 +425,6 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
     );
   }
 
-  Padding getDot(double radius,
-      {Color color = Colors.black12, double borderWidth = 0, Widget child}) {
-    return Padding(
-      padding: EdgeInsets.all(7),
-      child: Container(
-        height: radius * 2,
-        width: radius * 2,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius),
-          color: color,
-          border: borderWidth == 0 ? null : Border.all(width: borderWidth),
-        ),
-        child: Center(child: child),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return getCard(widget.height, widget.width);
@@ -449,47 +433,77 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
   Widget getMeaning() {
     return Column(
       children: <Widget>[
-        getMeaningView(),
+        Expanded(child: MeaningView()),
       ],
     );
+  }
+}
+
+class MeaningView extends StatefulWidget {
+  @override
+  _MeaningViewState createState() => _MeaningViewState();
+}
+
+class _MeaningViewState extends State<MeaningView> {
+  int selected = -1;
+
+  initState() {
+    print('die');
+    super.initState();
+    selected = -1;
+    print("life is shit");
   }
 
   Widget getMeaningView() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10, top: 2),
+      padding: const EdgeInsets.only(bottom: 10, top: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          getOptions(),
-          getOptions(),
-          getOptions(),
-          getOptions(),
+          getOptions(0),
+          getOptions(1),
+          getOptions(2),
+          getOptions(3),
         ],
       ),
     );
   }
 
-  Padding getOptions() {
+  Widget getOptions(int id) {
     return Padding(
       padding: const EdgeInsets.only(left: 23.0, bottom: 5, right: 23.0),
       child: Row(
         children: <Widget>[
-          getDot(
-            10,
-          ),
           Expanded(
             child: GradientOption(
+              selected: selected == id,
               width: 200,
               startColor: Color(0xFFE9E8E6),
               endColor: Colors.white,
+              startSelectColor: Color(0xFF428EEC),
+              endSelectColor: Color(0xFF5BBFF4),
               //startColor: Color(0xFF192221),
               //endColor: Color(0xFF0887C0),
-              text: "Check Answers",
+              onTap: () {
+                setState(() {
+                  if (selected == id)
+                    selected = -1;
+                  else
+                    selected = id;
+                });
+              },
+              text: "Option (${id + 1})",
             ),
           ),
         ],
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return getMeaningView();
   }
 }
 
@@ -520,16 +534,22 @@ class CircleButton extends StatelessWidget {
 }
 
 class GradientOption extends StatelessWidget {
-  final Color startColor, endColor;
+  final Color startColor, endColor, startSelectColor, endSelectColor;
   final double height, width;
   final String text;
+  final bool selected;
+  final Function onTap;
 
   GradientOption(
       {this.startColor = const Color(0xff374ABE),
       this.endColor = const Color(0xff64B6FF),
       this.height = 40,
       this.text = 'Login',
-      this.width});
+      this.width,
+      this.startSelectColor,
+      this.endSelectColor,
+      this.selected,
+      this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -537,14 +557,16 @@ class GradientOption extends StatelessWidget {
       height: height,
       width: width,
       child: RaisedButton(
-        onPressed: () {},
+        onPressed: onTap,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(80.0)),
         padding: EdgeInsets.all(0.0),
         child: Ink(
           decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [startColor, endColor],
+                colors: selected
+                    ? [startSelectColor, endSelectColor]
+                    : [startColor, endColor],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
@@ -554,6 +576,11 @@ class GradientOption extends StatelessWidget {
             alignment: Alignment.center,
             child: Row(
               children: <Widget>[
+                Padding(
+                    padding: EdgeInsets.only(left: 20, right: 10),
+                    child: Icon(selected
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_unchecked)),
                 Text(
                   text,
                   textAlign: TextAlign.center,

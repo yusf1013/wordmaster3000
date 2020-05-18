@@ -1,45 +1,60 @@
-import 'package:wm3k/wm3k_design/screens/navigation_home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 
-import '../controllers/loginController.dart';
-
-//TODO remove this shit
-const users = const {
-  'dribbble@gmail.com': '12345',
-  'hunter@gmail.com': 'hunter',
-};
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class LoginScreen extends StatelessWidget {
   Duration get loginTime => Duration(milliseconds: 2250);
+  final AuthController userController = AuthController();
 
   //TODO this function checks login. Check the next functions too
-  Future<String> _authUser(LoginData data) {
-    print('Name: ${data.name}, Password: ${data.password}');
-    return Future.delayed(loginTime).then((_) {
-      if (!users.containsKey(data.name)) {
-        return 'Username not exists';
-      }
-      if (users[data.name] != data.password) {
-        return 'Password does not match';
-      }
+
+  Future<String> _logIn(LoginData data) async {
+    print(data.name);
+    print(data.password);
+    /*try {
+      AuthResult result = await _auth.signInWithEmailAndPassword(
+          email: data.name, password: data.password);
+      if (result != null) return null;
+    } catch (e) {
+      return e.toString();
+    }
+    return 'Sign in failed';*/
+    return (await userController.logIn(data.name, data.password)
+        ? null
+        : "Error loggin in!");
+  }
+
+  Future<String> _signUp(LoginData data) async {
+    print(data.name);
+    print(data.password);
+    /*try {
+      AuthResult result = await _auth.createUserWithEmailAndPassword(
+          email: data.name, password: data.password);
+
       return null;
-    });
+    } catch (e) {
+      print(e);
+      return "Error signing in";
+    }*/
+    return (await userController.singUp(data.name, data.password))
+        ? null
+        : "Error signing in";
   }
 
   Future<String> _recoverPassword(String name) {
     print('Name: $name');
     return Future.delayed(loginTime).then((_) {
-      if (!users.containsKey(name)) {
-        return 'Username not exists';
-      }
       return null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    print("Buildiing shit");
     return Stack(
       children: <Widget>[
         FlutterLogin(
@@ -51,12 +66,12 @@ class LoginScreen extends StatelessWidget {
           ),
           logo: 'assets/images/wmicon.png',
           logoTag: "logo",
-          onLogin: _authUser,
-          onSignup: _authUser,
+          onLogin: _logIn,
+          onSignup: _signUp,
           onSubmitAnimationCompleted: () {
             //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => NavigationHomeScreen(),),);
-            LoginController.logIn();
-            Navigator.popAndPushNamed(context, 'navigationHomePage');
+            //LoginController.logIn();
+            _guestLogIn(context);
           },
           onRecoverPassword: _recoverPassword,
         ),
@@ -65,7 +80,7 @@ class LoginScreen extends StatelessWidget {
           right: 0,
           child: GestureDetector(
             onTap: () {
-              Navigator.popAndPushNamed(context, 'navigationHomePage');
+              _guestLogIn(context);
             },
             child: Container(
               //height: 100,
@@ -112,5 +127,11 @@ class LoginScreen extends StatelessWidget {
         )
       ],
     );
+  }
+
+  void _guestLogIn(BuildContext context) {
+    //_auth.signInAnonymously();
+    Navigator.popAndPushNamed(context, 'navigationHomePage');
+    //UserController().sharedShit();
   }
 }

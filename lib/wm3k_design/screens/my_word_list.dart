@@ -4,7 +4,6 @@ import 'package:wm3k/wm3k_design/themes/app_theme.dart';
 import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:expandable_bottom_bar/expandable_bottom_bar.dart';
 
 class MyWordList extends StatelessWidget {
   final String title, promptText;
@@ -23,12 +22,13 @@ class MyWordList extends StatelessWidget {
 
   BottomNavigationBarItem _bottomIcons(IconData icon, String title) {
     return BottomNavigationBarItem(
-        //  backgroundColor: Colors.blue,
-        icon: Icon(icon),
-        title: Text(
-          title,
-          style: TextStyle(color: Colors.black),
-        ));
+      //  backgroundColor: Colors.blue,
+      icon: Icon(icon),
+      title: Text(
+        title,
+        style: TextStyle(color: Colors.black),
+      ),
+    );
   }
 
   @override
@@ -47,8 +47,9 @@ class MyWordList extends StatelessWidget {
           _bottomIcons(Icons.help_outline, "Quiz"),
         ],
         onTap: (index) {
-          /*Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => HomePage()));*/
+          if (index == 1)
+            Navigator.pushNamed(context, 'memorizePage');
+          else if (index == 2) Navigator.pushNamed(context, 'quizPage');
         },
       ),
       backgroundColor:

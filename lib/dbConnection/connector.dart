@@ -111,4 +111,26 @@ class SearchedWord {
     } else
       this.word = "sorry word not found";
   }
+
+  List<String> getPartsOfSpeechList() {
+    List<String> list = new List();
+    for (Meaning pos in searchedWordMeaning) {
+      String temp = (pos.partsOfSpeech.toUpperCase() + pos.partsOfSpeech.substring(1));
+      temp = temp.split("[")[0];
+      print("Dhur miah: $temp");
+      list.add(temp);
+    }
+    /*for (PartsOfSpeech pos in property)
+      list.add((pos.partsOfSpeech[0].toUpperCase() +
+          pos.partsOfSpeech.substring(1)));*/
+    list.add("More");
+    return list;
+  }
+
+  Meaning getParticularPOS(String givenPos) {
+    for (Meaning pos in searchedWordMeaning)
+      if (givenPos.toLowerCase() == pos.partsOfSpeech.toLowerCase() || pos.partsOfSpeech.toLowerCase().contains(givenPos.toLowerCase()))
+        return pos;
+    return null;
+  }
 }

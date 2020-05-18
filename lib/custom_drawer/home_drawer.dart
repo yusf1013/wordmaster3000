@@ -1,8 +1,11 @@
 //import 'dart:html';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wm3k/wm3k_design/themes/app_theme.dart';
-import 'package:wm3k/wm3k_design/controllers/loginController.dart';
 import 'package:flutter/material.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
+FirebaseUser _currentUser;
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer(
@@ -24,8 +27,13 @@ class _HomeDrawerState extends State<HomeDrawer> {
   List<DrawerList> drawerList;
   @override
   void initState() {
+    getUser();
     setdDrawerListArray();
     super.initState();
+  }
+
+  Future getUser() async {
+    _currentUser = await _auth.currentUser();
   }
 
   void setdDrawerListArray() {
@@ -156,7 +164,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             height: 1,
             color: AppTheme.grey.withOpacity(0.6),
           ),
-          LoginController.isLoggedIn() ? getSignoutButton() : getLogInButton(),
+          _currentUser != null ? getSignoutButton() : getLogInButton(),
         ],
       ),
     );
@@ -164,7 +172,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   Widget getSignoutButton() {
     return getBottomButton("Sign Out", () {
-      LoginController.logOut();
+      _auth.signOut();
       Navigator.popAndPushNamed(context, 'authPage');
     }, Colors.red);
   }

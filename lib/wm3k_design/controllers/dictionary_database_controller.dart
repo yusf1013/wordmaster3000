@@ -1,5 +1,3 @@
-import 'package:wm3k/dbConnection/dbManager.dart';
-
 class DBController {
   static List<String> _allWordList = [
     "a",

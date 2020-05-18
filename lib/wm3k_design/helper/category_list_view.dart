@@ -1,40 +1,31 @@
-import 'package:wm3k/wm3k_design/screens/main_home_screen.dart';
-import 'package:wm3k/wm3k_design/screens/toDelete/more.dart';
-import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';
 import 'package:wm3k/wm3k_design/models/category.dart';
-import 'package:card_settings/card_settings.dart';
-import 'package:card_settings/widgets/card_settings_panel.dart';
-import 'package:card_settings/widgets/information_fields/card_settings_header.dart';
-import 'package:card_settings/widgets/numeric_fields/card_settings_double.dart';
-import 'package:card_settings/widgets/text_fields/card_settings_paragraph.dart';
-import 'package:card_settings/widgets/text_fields/card_settings_text.dart';
 import 'package:flutter/material.dart';
-import 'package:animated_dialog_box/animated_dialog_box.dart';
 
 import 'custom_widgets.dart';
 
-class CategoryListView extends StatefulWidget {
-  /*CategoryListView({Key key, this.callBack, this.currentList})
-      : super(key: key);*/
+class LearningTabListView extends StatefulWidget {
   final Function callBack;
-  final List<Category> currentList;
-  final CategoryType type;
+  //final List<Category> currentList;
+  final UserDataController userDataController = UserDataController();
+  final Stream<QuerySnapshot> stream;
+  final Function getCurrentList, addButtonAction;
 
-  CategoryListView({this.callBack, this.currentList, this.type});
+  LearningTabListView(
+      {this.callBack,
+      @required this.stream,
+      @required this.getCurrentList,
+      @required this.addButtonAction});
 
   @override
-  _CategoryListViewState createState() => _CategoryListViewState(currentList);
+  _LearningTabListViewState createState() => _LearningTabListViewState();
 }
 
-class _CategoryListViewState extends State<CategoryListView>
+class _LearningTabListViewState extends State<LearningTabListView>
     with TickerProviderStateMixin {
   AnimationController animationController;
-  List<Category> currentList;
-
-  _CategoryListViewState(List<Category> cat) {
-    currentList = cat;
-  }
 
   @override
   void initState() {
@@ -49,10 +40,12 @@ class _CategoryListViewState extends State<CategoryListView>
     super.dispose();
   }
 
-  Future<bool> getData() async {
+  /*Future<bool> getData() async {
     await Future<dynamic>.delayed(const Duration(milliseconds: 50));
     return true;
-  }
+  }*/
+
+  Future<bool> getData() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -61,12 +54,14 @@ class _CategoryListViewState extends State<CategoryListView>
       child: Container(
         height: 134,
         width: double.infinity,
-        child: FutureBuilder<bool>(
-          future: getData(),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (!snapshot.hasData) {
+        child: StreamBuilder<QuerySnapshot>(
+          stream: widget.stream,
+          builder: (context, asyncSnapshot) {
+            if (!asyncSnapshot.hasData) {
               return const SizedBox();
             } else {
+              List<Category> currentList =
+                  widget.getCurrentList(asyncSnapshot.data.documents);
               return ListView.builder(
                 padding: const EdgeInsets.only(
                     top: 0, bottom: 0, right: 16, left: 16),
@@ -96,86 +91,7 @@ class _CategoryListViewState extends State<CategoryListView>
                     return Padding(
                       padding: EdgeInsets.only(left: 50),
                       child: RawMaterialButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                contentPadding: EdgeInsets.all(0),
-                                titlePadding: EdgeInsets.all(0),
-                                content: CardSettings(
-                                  padding: 0,
-                                  shrinkWrap: true,
-                                  children: <Widget>[
-                                    CardSettingsHeader(
-                                        label:
-                                            widget.type == CategoryType.myWords
-                                                ? 'New word list'
-                                                : 'New course'),
-                                    CardSettingsText(
-                                      labelWidth: 100,
-                                      hintText: 'Enter title of the list',
-                                      autofocus: true,
-                                      label: 'Title',
-                                      initialValue: "",
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty)
-                                          return 'Title is required.';
-                                        return '';
-                                      },
-                                      onSaved: (value) {},
-                                    ),
-                                    CardSettingsText(
-                                      maxLengthEnforced: false,
-                                      maxLength: 250,
-                                      labelWidth: 100,
-                                      hintText:
-                                          widget.type == CategoryType.myWords
-                                              ? 'For ex: SAT words'
-                                              : 'For ex: SAT course',
-                                      label: 'Desciption',
-                                      initialValue: "",
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty)
-                                          return 'Title is required.';
-                                        return '';
-                                      },
-                                      onSaved: (value) {},
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 10),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Expanded(
-                                            child: CardSettingsButton(
-                                              onPressed: () {},
-                                              label: 'Create',
-                                              backgroundColor:
-                                                  Colors.lightBlueAccent,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Expanded(
-                                            child: CardSettingsButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              backgroundColor: Colors.redAccent,
-                                              label: 'Cancel',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
+                        onPressed: widget.addButtonAction,
                         child: new Icon(
                           Icons.add,
                           color: Colors.blue,
