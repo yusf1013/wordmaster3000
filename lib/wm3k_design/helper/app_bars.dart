@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
 import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
 import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';
@@ -78,13 +79,19 @@ class HeaderAppBar extends StatelessWidget {
 
   Widget _circularContainer(double height, Color color,
       {Color borderColor = Colors.transparent, double borderWidth = 2}) {
-    return Container(
-      height: height,
-      width: height,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-        border: Border.all(color: borderColor, width: borderWidth),
+    return ClipRRect(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(30.0),
+        topRight: Radius.circular(30.0),
+      ),
+      child: Container(
+        height: height,
+        width: height,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+          border: Border.all(color: borderColor, width: borderWidth),
+        ),
       ),
     );
   }
@@ -95,7 +102,7 @@ class HeaderAppBar extends StatelessWidget {
       borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
       child: Container(
-          height: searchBar ? 180 : 130,
+          height: searchBar ? 180 : 120,
           width: width,
           decoration: BoxDecoration(
             color: LightColor.orange,
@@ -137,21 +144,30 @@ class HeaderAppBar extends StatelessWidget {
                                         Navigator.pop(context);
                                       },
                                       icon: Icon(
-                                        Icons.arrow_back,
+                                        Icons.arrow_back_ios,
                                         size: 30,
+                                        color: Colors.white,
                                       ),
                                     )
                                   : SizedBox(
                                       width: 40,
                                     ),
                               Expanded(
-                                child: Text(
-                                  title,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 35,
-                                      fontWeight: FontWeight.w500),
+                                child: Center(
+                                  child: AutoSizeText(
+                                    title,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    //maxLines: 2,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 35,
+                                        fontWeight: FontWeight.w500),
+                                  ),
                                 ),
+                              ),
+                              SizedBox(
+                                width: 30,
                               ),
                             ],
                           ),

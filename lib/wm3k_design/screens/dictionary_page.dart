@@ -288,7 +288,7 @@ class _TabsState extends State<Tabs> {
                       : widget.width),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: getWidgets(),
               ),
             ),

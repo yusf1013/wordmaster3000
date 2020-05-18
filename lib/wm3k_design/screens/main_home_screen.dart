@@ -1,3 +1,4 @@
+import 'package:wm3k/analysis_classes/wordList.dart';
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
@@ -65,12 +66,7 @@ class _MainHomePageState extends State<MainHomePage> {
   void initState() {
     super.initState();
     //categoryUI = getCategoryUI(currentList);
-    /*catListView = CategoryListView(
-      () {
-        moveTo();
-      },
-      currentList,
-    );*/
+
     getStartLearningView(categoryType);
   }
 
@@ -231,12 +227,13 @@ class _MainHomePageState extends State<MainHomePage> {
     );
   }
 
-  void moveToWordPage(String title) {
+  Future<void> moveToWordPage(int id) async {
+    WordList list = await _userDataController.getWordList(id);
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
         builder: (BuildContext context) => MyWordList(
-          title: title,
+          wordList: list,
           searchBar: false,
           backButton: true,
         ),
@@ -309,18 +306,26 @@ class _MainHomePageState extends State<MainHomePage> {
     } else if (categoryTypeData == CategoryType.myWords) {
       currentList = Category.wordList;
       newWig = LearningTabListView(
-        callBack: (title) {
-          moveToWordPage(title);
+        callBack: (id) {
+          moveToWordPage(id);
+          //print(id);
         },
         stream: _userDataController.getWordLists(),
         getCurrentList: _userDataController.getCategoryListForWordList,
-        addButtonAction: () {
-          showDialog(
+        addButtonAction: () async {
+          bool success = await showDialog(
             context: context,
             builder: (BuildContext context) {
               return CreateWordListView();
             },
           );
+          if (success)
+            Scaffold.of(context)
+              ..removeCurrentSnackBar()
+              ..showSnackBar(SnackBar(
+                content: Text("Success!"),
+                backgroundColor: Colors.green,
+              ));
         },
       );
     } else {

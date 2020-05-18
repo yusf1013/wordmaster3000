@@ -1,15 +1,17 @@
+import 'package:flutter/cupertino.dart';
+
 class Category {
-  Category({
-    this.title = '',
-    this.imagePath = '',
-    this.wordCount = 0,
-    this.time = 0,
-    this.text = "",
-  });
+  Category(
+      {this.title = '',
+      this.imagePath = '',
+      this.wordCount = 0,
+      this.time = 0,
+      this.text = "",
+      @required this.id});
 
   String title;
   int wordCount;
-  int time;
+  int time, id;
   String text;
   String imagePath;
   static int type = 0;

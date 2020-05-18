@@ -156,106 +156,43 @@ class SearchableText extends StatelessWidget {
   }
 }
 
-/*class ListItem extends StatelessWidget {
-  final String title, description, imagePath, number;
-  final Color backgroundColor;
-  final TextStyle numberStyle = GoogleFonts.satisfy(
-      textStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.w700));
-
-  ListItem(
-      {this.title = 'Title',
-      this.description = 'Lorem ipsum dolor sit amet, consectetur adipiscing',
-      this.imagePath,
-      this.number,
-      this.backgroundColor = LightColor.lightBlue});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: <Widget>[
-          GFListTile(
-            avatar: GFAvatar(
-              size: GFSize.MEDIUM,
-              backgroundImage: imagePath == null
-                  ? null
-                  : AssetImage('assets/design_course/clock'),
-              child: (number != null && imagePath == null)
-                  ? Text(
-                      number,
-                      style: numberStyle,
-                    )
-                  : null,
-              backgroundColor: backgroundColor,
-            ),
-            titleText: title,
-            subtitleText: description,
-            icon: Icon(Icons.favorite),
-            //padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 28),
-            child: Container(
-              height: 1,
-              width: MediaQuery.of(context).size.width * 0.68,
-              color: Colors.black12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}*/
-
 class MyListItem extends StatefulWidget {
   final String title, description, imagePath, number;
-  final Color backgroundColor;
+  final Color backgroundColor, separatorColor;
   final Function onTap;
   final bool checkType;
   final Icon icon;
 
-  MyListItem(
-      {this.title = 'Title',
-      this.description = 'Total words: 50',
-      this.imagePath,
-      this.number,
-      this.backgroundColor = LightColor.lightBlue,
-      this.onTap,
-      this.checkType = false,
-      this.icon});
+  MyListItem({
+    this.title = 'Title',
+    this.description = 'Total words: 50',
+    this.imagePath,
+    this.number,
+    this.backgroundColor = LightColor.lightBlue,
+    this.onTap,
+    this.checkType = false,
+    this.icon,
+    this.separatorColor = Colors.black12,
+  });
 
   @override
-  _MyListItemState createState() => _MyListItemState(
-      title,
-      description,
-      imagePath,
-      number,
-      backgroundColor,
-      onTap == null ? () {} : onTap,
-      checkType);
+  _MyListItemState createState() => _MyListItemState();
 }
 
 class _MyListItemState extends State<MyListItem> {
-  final String title, description, imagePath, number;
-  final Color backgroundColor;
   final TextStyle numberStyle = GoogleFonts.satisfy(
       textStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.w700));
-  final Function ontap;
-  final bool checkType;
-  bool selected = false;
 
-  _MyListItemState(this.title, this.description, this.imagePath, this.number,
-      this.backgroundColor, this.ontap, this.checkType);
+  bool selected = false;
 
   @override
   Widget build(BuildContext context) {
+    print(widget.title);
+    final Function ontap = widget.onTap == null ? () {} : widget.onTap;
     return GestureDetector(
       onTap: () {
-        ontap(number, title);
-        if (checkType) {
+        ontap(widget.number, widget.title);
+        if (widget.checkType) {
           setState(() {
             selected = !selected;
           });
@@ -268,23 +205,24 @@ class _MyListItemState extends State<MyListItem> {
           children: <Widget>[
             GFListTile(
               avatar: GFAvatar(
+                //foregroundColor: Colors.red,
                 size: GFSize.SMALL,
-                backgroundImage: imagePath == null
+                backgroundImage: widget.imagePath == null
                     ? null
                     : AssetImage('assets/design_course/clock'),
-                child: (number != null && imagePath == null)
+                child: (widget.number != null && widget.imagePath == null)
                     ? Text(
-                        number,
+                        widget.number,
                         style: numberStyle,
                       )
                     : null,
-                backgroundColor: backgroundColor,
+                backgroundColor: widget.backgroundColor,
               ),
-              titleText: title,
-              subtitleText: description,
+              titleText: widget.title,
+              subtitleText: widget.description,
               //padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
               margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              icon: checkType
+              icon: widget.checkType
                   ? Icon(
                       selected
                           ? Icons.check_circle_outline
@@ -298,7 +236,7 @@ class _MyListItemState extends State<MyListItem> {
               child: Container(
                 height: 1,
                 width: MediaQuery.of(context).size.width * 0.68,
-                color: Colors.black12,
+                color: widget.separatorColor,
               ),
             ),
           ],
