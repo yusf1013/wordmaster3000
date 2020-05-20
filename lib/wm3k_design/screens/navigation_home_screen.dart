@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
@@ -23,6 +24,16 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   Widget screenView;
   DrawerIndex drawerIndex;
   AnimationController sliderAnimationController;
+
+  static const platform = const MethodChannel('samples.flutter.dev/bubblehead');
+  Future<void> _openchathead() async {
+    print("chat head khular jonno call kora hoitese, bal da ki kore allah jne");
+    try {
+      await platform.invokeMethod('openchathead');
+    } on PlatformException catch (e) {
+      print("failed to open chathead");
+    }
+  }
 
   printSearch(String word) async {
     SearchedWord con = new SearchedWord();
@@ -54,6 +65,8 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     List<String> list = await DBManager().getListOfAllWords();
     for (String word in list) print(word);
   }
+
+
 
   /*printsearch(String word) async {
     Connector con = new Connector();
@@ -109,7 +122,8 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   void initState() {
     drawerIndex = DrawerIndex.HOME;
     screenView = MainHomePage();
-    printSearch("abalone");
+    //printSearch("abalone");
+    _openchathead();
     //printAllWords();
     /*screenView = Container(
       color: Colors.red,
