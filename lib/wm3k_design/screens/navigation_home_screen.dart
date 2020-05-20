@@ -123,6 +123,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     drawerIndex = DrawerIndex.HOME;
     screenView = MainHomePage();
     //printSearch("abalone");
+    print("we are calling bubble from here");
     _openchathead();
     //printAllWords();
     /*screenView = Container(
