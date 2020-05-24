@@ -24,32 +24,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   DrawerIndex drawerIndex;
   AnimationController sliderAnimationController;
 
-  /*printSearch(String word) async {
-    SearchedWord con = new SearchedWord();
-    //Word searched= Word();
-    await con.search(word);
-    String wordfound = con.word;
-    if (word == wordfound) {
-      print(" the properties for $wordfound");
-
-      for (Meaning pos in con.searchedWordMeaning) {
-        for (SubMeaning submeaningobject in pos.sub_meaning) {
-          print('${pos.partsOfSpeech}:');
-          print(submeaningobject.submeaning);
-          for (String example in submeaningobject.example) print(example);
-        }
-        for (String moreExamples in pos.moreExample) print(moreExamples);
-        for (String synonyms in pos.synonyms) print(synonyms);
-        for (String idioms in con.idioms) print(idioms);
-        for (String phrases in con.phrases) print(phrases);
-
-        print('\n\n');
-      }
-    } else {
-      print("The word is $word.word");
-    }
-  }*/
-
   Future<void> printAllWords() async {
     List<String> list = await DBManager().getListOfAllWords();
     for (String word in list) print(word);
