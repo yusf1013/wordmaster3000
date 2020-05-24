@@ -1,22 +1,24 @@
 import 'package:wm3k/analysis_classes/wordList.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
 import 'package:wm3k/wm3k_design/helper/custom_widgets.dart';
 import 'package:wm3k/wm3k_design/screens/memorization_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wm3k/wm3k_design/screens/quiz_screen.dart';
+import 'package:wm3k/wm3k_design/screens/spellingCard2.dart';
 import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
 
 import 'dictionary_page.dart';
 
-class MyWordList extends StatelessWidget {
+class SpellingBeeWelcomePage extends StatelessWidget {
   final promptText;
   final bool searchBar, backButton;
   final Widget header;
   final Color backgroundColor;
   final WordList wordList;
 
-  MyWordList(
+  SpellingBeeWelcomePage(
       {this.promptText = 'Search for a list',
       this.searchBar = true,
       this.backButton = false,
@@ -24,21 +26,9 @@ class MyWordList extends StatelessWidget {
       this.backgroundColor,
       this.wordList});
 
-  BottomNavigationBarItem _bottomIcons(IconData icon, String title) {
-    return BottomNavigationBarItem(
-      //  backgroundColor: Colors.blue,
-      icon: Icon(icon),
-      title: Text(
-        title,
-        style: TextStyle(color: Colors.black),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    WordList thisList =
-        wordList == null ? WordList("Title", "Description", [], -1) : wordList;
+    List<WordList> thisList = UserDataController().getAllWordLists();
     return Stack(
       children: <Widget>[
         Container(
@@ -53,71 +43,10 @@ class MyWordList extends StatelessWidget {
           ),
         ),
         Scaffold(
-          bottomNavigationBar: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(25),
-                      topLeft: Radius.circular(25)),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black38, spreadRadius: 0, blurRadius: 10),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(25.0),
-                    topRight: Radius.circular(25.0),
-                  ),
-                  child: BottomNavigationBar(
-                    showSelectedLabels: true,
-                    showUnselectedLabels: true,
-                    selectedItemColor: LightColor.darkOrange,
-                    //unselectedItemColor: Colors.grey.shade300,
-                    //backgroundColor: Colors.lightBlue[100],
-                    type: BottomNavigationBarType.fixed,
-                    currentIndex: 0,
-                    items: [
-                      _bottomIcons(Icons.done_all, "View"),
-                      _bottomIcons(Icons.info_outline, "Memorize"),
-                      _bottomIcons(Icons.help_outline, "Quiz"),
-                    ],
-                    onTap: (index) {
-                      if (index == 1)
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    MemorizationCard(wordList)));
-                      else if (index == 2)
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    QuizCardScreen(wordList)));
-                    },
-                  ),
-                ),
-              ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      height: 20,
-                      //width: 200,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
           backgroundColor:
               backgroundColor == null ? Colors.transparent : backgroundColor,
           body: WordListWidget(
-            wordList: thisList,
+            wordLists: thisList,
             promptText: promptText,
             searchBar: searchBar,
             backButton: backButton,
@@ -135,15 +64,16 @@ class WordListWidget extends StatelessWidget {
   final bool searchBar, backButton;
   final Widget header;
   final Color backgroundColor;
-  final WordList wordList;
+  //final WordList wordList;
+  final List<WordList> wordLists;
 
   WordListWidget({
-    this.promptText = 'Search for a list',
-    this.searchBar = true,
-    this.backButton = false,
+    this.promptText = 'Select a List',
+    this.searchBar = false,
+    this.backButton = true,
     this.header,
     this.backgroundColor,
-    this.wordList,
+    this.wordLists,
   });
 
   @override
@@ -181,7 +111,7 @@ class WordListWidget extends StatelessWidget {
                   ],
                 ),
                 child: HeaderAppBar(
-                  title: wordList.name,
+                  title: "Select \n Word List",
                   promptText: promptText,
                   searchBar: searchBar,
                   backButton: backButton,
@@ -198,10 +128,10 @@ class WordListWidget extends StatelessWidget {
       SizedBox(height: 20),
     ];
 
-    for (int i = 0; i < wordList.subMeanings.length; i++) {
+    for (int i = 0; i < wordLists.length; i++) {
       list.add(MyListItem(
         separatorColor: Colors.red[200],
-        title: wordList.subMeanings[i].word,
+        title: wordLists[i].name,
         backgroundColor: Colors.red[700],
         number: (i + 1).toString(),
         checkType: false,
@@ -209,9 +139,9 @@ class WordListWidget extends StatelessWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => DictionaryHomepage(title)));
+                  builder: (context) => SpellingCard2(wordLists[i])));
         },
-        description: wordList.subMeanings[i].subMeaning,
+        description: "${wordLists[i].subMeanings.length} Words.",
         icon: Icon(
           Icons.play_circle_outline,
           size: 30,

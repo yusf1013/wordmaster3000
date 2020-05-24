@@ -1,3 +1,4 @@
+import 'package:wm3k/wm3k_design/screens/dictionary_page.dart';
 import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -144,9 +145,15 @@ class SearchableText extends StatelessWidget {
   void addToBody(List<Widget> body, BuildContext context, String word) {
     body.add(GestureDetector(
       onLongPress: () {
-        Navigator.popAndPushNamed(context, 'dictionaryPage',
+        /*Navigator.popAndPushNamed(context, 'dictionaryPage',
             arguments:
-                word.endsWith(":") ? word.substring(0, word.length - 1) : word);
+                word.endsWith(":") ? word.substring(0, word.length - 1) : word);*/
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DictionaryHomepage(word.endsWith(":")
+                    ? word.substring(0, word.length - 1)
+                    : word)));
       },
       child: Text(
         word + " ",

@@ -36,7 +36,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         multiDexEnabled true
         applicationId "com.yusufAndRadowan.wm3k"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

@@ -24,7 +24,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   DrawerIndex drawerIndex;
   AnimationController sliderAnimationController;
 
-  printSearch(String word) async {
+  /*printSearch(String word) async {
     SearchedWord con = new SearchedWord();
     //Word searched= Word();
     await con.search(word);
@@ -48,68 +48,18 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     } else {
       print("The word is $word.word");
     }
-  }
+  }*/
 
   Future<void> printAllWords() async {
     List<String> list = await DBManager().getListOfAllWords();
     for (String word in list) print(word);
   }
 
-  /*printsearch(String word) async {
-    Connector con = new Connector();
-    //Word searched= Word();
-    await con.search(word);
-    String wordfound = con.word;
-    if (word == wordfound) {
-      print(" the properties for $wordfound");
-      for (var i = 0; i < con.property.length; i++) {
-        PartsOfSpeech localproperty = con.property[i];
-        int id = con.property[i].id;
-        print("id is $id");
-        String partsofspeech = con.property[i].parts_of_speech;
-        print("it $partsofspeech");
-        print("meaning");
-        for (var j = 0; j < localproperty.meaning.length; j++) {
-          Meaning localmeaning = localproperty.meaning[j];
-          int meaningid = localmeaning.meaning_id;
-          print("meaning id is $meaningid");
-
-          String meaning = localmeaning.meaning;
-          print(meaning);
-
-          for (var k = 0; k < localmeaning.example.length; k++) {
-            print(localmeaning.example[k]);
-          }
-        }
-
-        print("synonyms");
-        for (var i = 0; i < localproperty.synonyms.length; i++) {
-          print(localproperty.synonyms[i]);
-        }
-        print("more example");
-        for (var i = 0; i < localproperty.more_example.length; i++) {
-          //print("more example");
-          print(localproperty.more_example[i]);
-        }
-      }
-      for (var i = 0; i < con.idioms.length; i++) {
-        print(con.idioms[i]);
-      }
-      print("phrases");
-      for (var i = 0; i < con.phrases.length; i++) {
-        print(con.phrases[i]);
-      }
-    }
-    // else{
-    //print("The word is $searched.word");
-    // }
-  }*/
-
   @override
   void initState() {
     drawerIndex = DrawerIndex.HOME;
     screenView = MainHomePage();
-    printSearch("abalone");
+    //printSearch("abalone");
     //printAllWords();
     /*screenView = Container(
       color: Colors.red,

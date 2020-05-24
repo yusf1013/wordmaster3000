@@ -5,13 +5,15 @@ class GradientButton extends StatelessWidget {
   final Color startColor, endColor;
   final double height, width;
   final String text;
+  final Function onPressed;
 
   GradientButton(
       {this.startColor = const Color(0xff374ABE),
       this.endColor = const Color(0xff64B6FF),
       this.height = 40,
       this.text = 'Login',
-      this.width});
+      this.width,
+      this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class GradientButton extends StatelessWidget {
       height: height,
       width: width,
       child: RaisedButton(
-        onPressed: () {},
+        onPressed: onPressed == null ? () {} : onPressed,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(80.0)),
         padding: EdgeInsets.all(0.0),

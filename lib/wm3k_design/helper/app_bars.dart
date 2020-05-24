@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
+import 'package:wm3k/wm3k_design/screens/dictionary_page.dart';
 import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
 import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
@@ -270,8 +271,11 @@ class SearchBarUI extends StatelessWidget {
                           ),
                           textSubmitted: (str) {
                             onSubmit == null
-                                ? Navigator.pushNamed(context, 'dictionaryPage',
-                                    arguments: str)
+                                ? Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            DictionaryHomepage(str)))
                                 : onSubmit(str);
                           },
                         ),

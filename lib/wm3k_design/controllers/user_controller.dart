@@ -1,7 +1,11 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wm3k/analysis_classes/wordList.dart';
+import 'package:wm3k/dbConnection/connector.dart';
+import 'package:wm3k/wm3k_design/controllers/quiz_controller.dart';
 import 'package:wm3k/wm3k_design/models/assets_data_provider.dart';
 import 'package:wm3k/wm3k_design/models/category.dart';
 
@@ -21,7 +25,7 @@ class AuthController {
     _user ??= await _auth.currentUser();
     _sharedPreferences ??= await SharedPreferences.getInstance();
     _loaded = true;
-    UserDataController();
+    _User();
   }
 
   void _awaitLoad() async {
@@ -30,27 +34,24 @@ class AuthController {
     }
   }
 
-  bool isLoggedIn() {
-    return _user != null;
-  }
-
-  void sharedShit() async {
-    DocumentSnapshot doc =
-        await _fireStore.collection('users').document('hunter@gmail.com').get();
-    print("This is shared shit: ${doc.data['name']}");
-  }
-
   void _writeCredentials(String email, String pass) async {
     await _awaitLoad();
     _sharedPreferences.setString('email', email);
     _sharedPreferences.setString('pass', pass);
   }
 
-  Future<bool> singUp(String email, String password) async {
+  bool isLoggedIn() {
+    return _user != null;
+  }
+
+  Future<bool> signUp(String email, String password) async {
     try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       _writeCredentials(email, password);
+
+      _loadEssentials();
+      UserDataController().initializeUser();
       return true;
     } catch (e) {
       print(e);
@@ -70,29 +71,87 @@ class AuthController {
     if (email != null && pass != null) {
       try {
         await _auth.signInWithEmailAndPassword(email: email, password: pass);
+        _writeCredentials(email, pass);
+        _loadEssentials();
+        UserDataController().initializeUser();
         return true;
       } catch (e) {}
     }
     return false;
   }
+
+  void signOut() {
+    _writeCredentials("X", "X");
+    _auth.signOut();
+    _user = null;
+    _loaded = false;
+
+    //UserDataController._userData = null;
+  }
+
+  static FirebaseUser getCurrentUser() => _user;
 }
 
+/*class _UserData {
+  List<WordList> allWordLists;
+}*/
+
 class UserDataController {
-  static FirebaseUser currentUser;
+  FirebaseUser _currentUser;
+  _User user;
+  static final UserDataController _singleton = UserDataController._internal();
+
+  factory UserDataController() {
+    return _singleton;
+  }
+
+  UserDataController._internal() {
+    initializeUser();
+  }
+
+  void initializeUser() {
+    _currentUser = AuthController.getCurrentUser();
+    user = _User();
+    user.initWordListStream(getStreamOfWordLists());
+    user.initWrongOptions();
+  }
+
+  //static _UserData _userData = _UserData();
   AssetNameProvider assetNameProvider = AssetNameProvider();
 
-  UserDataController() {
-    loadUser();
+  /*UserDataController() {
+    //loadUser();
+
+    _currentUser = AuthController.getCurrentUser();
+    testStream();
+    print("In Load User ${_currentUser..email}");
+  }*/
+
+  /*void testStream() {
+    Stream<QuerySnapshot> stream = getStreamOfWordLists();
+    print("Created the stream");
+
+    stream.listen((data) {
+      print("Stream DataReceived: " + data.documents.length.toString());
+    }, onDone: () {
+      print(" Stream Task Done");
+    }, onError: (error) {
+      print("Stream Some Error");
+    });
+  }*/
+
+  /*Future loadUser() async {
+    print("In Load User ${_currentUser == null}");
+    _currentUser ??= await _auth.currentUser();
+  }*/
+  Map getOptions(String ans) {
+    return QuizController(user.wrongOptions).getOptions(ans);
   }
 
-  Future loadUser() async {
-    currentUser ??= await _auth.currentUser();
-  }
-
-  Stream<QuerySnapshot> getWordLists() {
+  Stream<QuerySnapshot> getStreamOfWordLists() {
     return _fireStore
         .collection('users')
-        .document('${currentUser.email}')
+        .document('${_currentUser.email}')
         .collection('wordLists')
         .orderBy('id')
         .snapshots();
@@ -101,22 +160,56 @@ class UserDataController {
   Stream<QuerySnapshot> getCourses() {
     return _fireStore
         .collection('users')
-        .document('${currentUser.email}')
+        .document('${_currentUser.email}')
         .collection('courses')
         .orderBy('id')
         .snapshots();
   }
 
-  Future<WordList> getWordList(int id) async {
-    var document = await _fireStore
+  WordList getWordList(int id) {
+    /*var document = await _fireStore
         .collection('users')
-        .document('${currentUser.email}')
+        .document('${_currentUser.email}')
         .collection('wordLists')
         .document(id.toString())
         .get();
 
-    return WordList(document.data['name'], document.data['description'],
-        document.data['words'], document.data['meanings']);
+    return await getWordListFromDoc(document);*/
+    return user.getWordList(id);
+  }
+
+  /*Future<WordList> getWordListFromDoc(DocumentSnapshot document) async {
+    QuerySnapshot words =
+        await document.reference.collection('words').getDocuments();
+
+    List<FireBaseSubMeaning> list = List();
+    for (DocumentSnapshot word in words.documents)
+      list.add(FireBaseSubMeaning(word['meaningID'], word['subMeaning'],
+          word['word'], word['examples'], word['subMeaningIndex']));
+
+    return WordList(document.data['name'], document.data['description'], list,
+        document.data['id']);
+  }*/
+
+  List<WordList> getAllWordLists() {
+    //if(_userData.allWordLists == null)
+
+    /*var documents = await _fireStore
+        .collection('users')
+        .document('${_currentUser.email}')
+        .collection('wordLists')
+        .getDocuments();
+
+    List<WordList> list = new List();
+
+    for (DocumentSnapshot document in documents.documents) {
+      list.add(await getWordListFromDoc(document));
+    }
+    //_userData.allWordLists = list;
+
+    //return _userData.allWordLists;
+    return list;*/
+    return user.wordLists;
   }
 
   List<Category> getCategoryListForWordList(List<DocumentSnapshot> documents) {
@@ -126,8 +219,8 @@ class UserDataController {
       list.add(Category(
           imagePath: assetNameProvider.getWordListImage(recent),
           title: document.data['name'],
-          wordCount: document.data['words'].length,
-          time: document.data['words'].length * 2,
+          wordCount: document.data['length'],
+          time: document.data['length'] * 2,
           text: '',
           id: document.data['id']));
       recent = false;
@@ -149,10 +242,53 @@ class UserDataController {
     return list;
   }
 
+  void addWordToList(
+      int id, String word, Meaning meaning, bool selected, int index) async {
+    DocumentReference ref = await _fireStore
+        .collection('users')
+        .document('${_currentUser.email}')
+        .collection('wordLists')
+        .document(id.toString());
+    DocumentSnapshot document = await ref.get();
+
+    if (selected) {
+      print("Yes selected: ${meaning.id.toString()}");
+      ref
+          .collection('words')
+          .document(meaning.id.toString() + "," + index.toString())
+          .setData({
+        'meaningID': meaning.id.toString(),
+        'subMeaning': meaning.subMeaning[index].subMeaning,
+        'subMeaningIndex': index,
+        'word': word,
+        'examples': meaning.subMeaning[index].examples
+      });
+      int length = document.data['length'] + 1;
+      ref.updateData({'length': length});
+    } else {
+      ref
+          .collection('words')
+          .document(meaning.id.toString() + "," + index.toString())
+          .delete();
+      int length = document.data['length'] - 1;
+      ref.updateData({'length': length});
+    }
+
+    /*List words = document.data['words'];
+    List meanings = document.data['meanings'];
+    print(
+        "Before adding: $word - ${meaning.meaning}, id: $id, selected: $selected");
+    selected ? words.add(word) : words.removeLast();
+    selected ? meanings.add(meaning.meaning) : meanings.removeLast();
+
+    ref.updateData({'words': words, 'meanings': meanings});*/
+    print("Done");
+  }
+
   void createWordList(String name, String description) async {
     QuerySnapshot list = await _fireStore
         .collection('users')
-        .document('${currentUser.email}')
+        .document('${_currentUser.email}')
         .collection('wordLists')
         .getDocuments();
 
@@ -160,18 +296,93 @@ class UserDataController {
 
     _fireStore
         .collection('users')
-        .document('${currentUser.email}')
+        .document('${_currentUser.email}')
         .collection('wordLists')
         .document(id.toString())
         .setData({
       'id': id,
       'name': name,
       'description': description,
-      'words': <String>[],
-      'meanings': <String>[]
+      'length': 0,
+      //'words': <String>[],
+      //'meanings': <String>[]
     });
+    DocumentReference d = await _fireStore
+        .collection('users')
+        .document('${_currentUser.email}')
+        .collection('wordLists')
+        .document(id.toString());
+    //d.collection('words').add({'ad': 1});
   }
 
   int _getID(QuerySnapshot list) =>
       list == null || list.documents == null ? 0 : list.documents.length;
+}
+
+class _User {
+  static final _User _singleton = _User._internal();
+  //QuerySnapshot wordLists;
+  List<WordList> wordLists;
+  List<String> wrongOptions = List();
+
+  factory _User() {
+    return _singleton;
+  }
+
+  _User._internal() {
+    print("Creating user");
+  }
+
+  void initWrongOptions() async {
+    var v = await _fireStore
+        .collection("tempCollection")
+        .document("grabageOptions")
+        .get();
+    List l = v.data['words'];
+    for (String item in l) {
+      wrongOptions.add(item);
+    }
+    //print("After init: $wrongOptions");
+  }
+
+  void initWordListStream(Stream<QuerySnapshot> stream) {
+    stream.listen((data) async {
+      print("Stream DataReceived: " + data.documents.length.toString());
+      wordLists = await getAllWordLists(data);
+    }, onDone: () {
+      print(" Stream Task Done");
+    }, onError: (error) {
+      print("Stream Some Error");
+    });
+  }
+
+  Future<List<WordList>> getAllWordLists(QuerySnapshot documents) async {
+    List<WordList> list = new List();
+
+    for (DocumentSnapshot document in documents.documents) {
+      list.add(await getWordListFromDoc(document));
+    }
+    //_userData.allWordLists = list;
+
+    //return _userData.allWordLists;
+    return list;
+  }
+
+  WordList getWordList(int id) {
+    for (WordList wordList in wordLists) if (wordList.id == id) return wordList;
+    return null;
+  }
+
+  Future<WordList> getWordListFromDoc(DocumentSnapshot document) async {
+    QuerySnapshot words =
+        await document.reference.collection('words').getDocuments();
+
+    List<FireBaseSubMeaning> list = List();
+    for (DocumentSnapshot word in words.documents)
+      list.add(FireBaseSubMeaning(word['meaningID'], word['subMeaning'],
+          word['word'], word['examples'], word['subMeaningIndex']));
+
+    return WordList(document.data['name'], document.data['description'], list,
+        document.data['id']);
+  }
 }

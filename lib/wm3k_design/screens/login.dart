@@ -40,7 +40,7 @@ class LoginScreen extends StatelessWidget {
       print(e);
       return "Error signing in";
     }*/
-    return (await userController.singUp(data.name, data.password))
+    return (await userController.signUp(data.name, data.password))
         ? null
         : "Error signing in";
   }
@@ -54,7 +54,6 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Buildiing shit");
     return Stack(
       children: <Widget>[
         FlutterLogin(
