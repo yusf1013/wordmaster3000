@@ -1,19 +1,39 @@
 import 'package:flutter_tindercard/flutter_tindercard.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:wm3k/analysis_classes/wordList.dart';
+import 'package:wm3k/wm3k_design/helper/alert_box.dart';
 import 'package:wm3k/wm3k_design/helper/buttons.dart';
 import 'package:wm3k/wm3k_design/screens/dictionary_page.dart';
 import 'package:wm3k/wm3k_design/themes/app_theme.dart';
 import 'package:wm3k/wm3k_design/themes/dictionary_text_theme.dart';
-import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class MemorizationCard2 extends StatefulWidget {
+import 'notification_card.dart';
+
+CardController _controller = CardController();
+int _correct = 0;
+var _textController = TextEditingController();
+
+class SpellingCard2 extends StatefulWidget {
+  final WordList wordList;
+
+  SpellingCard2(this.wordList);
+
   @override
-  _MemorizationCard2State createState() => _MemorizationCard2State();
+  _SpellingCard2State createState() => _SpellingCard2State();
 }
 
-class _MemorizationCard2State extends State<MemorizationCard2> {
+class _SpellingCard2State extends State<SpellingCard2> {
+  @override
+  void initState() {
+    _controller = CardController();
+    _correct = 0;
+    _textController = TextEditingController();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -29,6 +49,7 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
           ),
           SafeArea(
             child: Scaffold(
+              resizeToAvoidBottomInset: false,
               backgroundColor: Colors.transparent,
               body: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -37,98 +58,30 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
                     padding: const EdgeInsets.all(8.0),
                     child: getAppBar(context),
                   ),
-                  /*Container(
-                    height: height * 0.835,
-                    //height: height * 0.86,
-                    width: width * 0.906,
-                    child: PageView(
-                      children: <Widget>[
-                        Center(
-                          child: LearnCard(
-                            height: height * 0.75,
-                            width: width * 0.85,
-                            cardTheme:
-                                MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
-                          ),
-                        ),
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
-                        ),
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
-                        ),
-                      ],
-                    ),
-                  ),*/
-                  /*LearnCard(
-                    height: height * 0.75,
-                    width: width * 0.85,
-                    cardTheme: MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
-                  ),*/
-                  /*Container(
-                    height: height * 0.9,
-                    width: width,
-                    child: ListView(
-                      children: <Widget>[
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
-                        ),
-                        LearnCard(
-                          height: height * 0.75,
-                          width: width * 0.85,
-                          cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
-                        ),
-                      ],
-                    ),
-                  ),*/
-                  /*new Swiper(
-                    itemBuilder: (BuildContext context, int index) {
-                      return LearnCard(
-                        height: height * 0.75,
-                        width: width * 0.85,
-                        cardTheme:
-                            MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
-                        word: 'word - $index',
-                      );
-                    },
-                    itemCount: 3,
-                    itemWidth: width * 0.92,
-                    itemHeight: height * 0.75,
-                    layout: SwiperLayout.TINDER,
-                    containerHeight: height,
-                    viewportFraction: 0.5,
-                  )*/
                   Container(
                     width: width * 1,
                     height: height * 0.9,
                     child: TinderSwapCard(
                       orientation: AmassOrientation.LEFT,
-                      totalNum: 6,
+                      totalNum: widget.wordList.subMeanings.length,
                       stackNum: 3,
-                      swipeEdge: 4.0,
+                      swipeEdge: 100.0,
                       maxWidth: width - 10,
                       maxHeight: height + 50,
                       minWidth: width - 11,
                       minHeight: height * 0.9,
                       cardBuilder: (context, index) => Center(
-                        child: LearnCard(
+                        child: SpellingLearnCard(
+                          subMeaning: widget.wordList.subMeanings[index],
+                          currentNumber: index + 1,
+                          totalWords: widget.wordList.subMeanings.length,
                           height: height * 0.75,
                           width: width * 0.85,
                           cardTheme:
-                              MyCardTheme(imagePath: 'assets/bgs/cardbg1.jpg'),
+                              MyCardTheme(imagePath: 'assets/bgs/cardbg2.jpg'),
                         ),
                       ),
-                      cardController: CardController(),
+                      cardController: _controller,
                       swipeUpdateCallback:
                           (DragUpdateDetails details, Alignment align) {
                         /// Get swiping card's alignment
@@ -139,8 +92,13 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
                         }
                       },
                       swipeCompleteCallback:
-                          (CardSwipeOrientation orientation, int index) {
+                          (CardSwipeOrientation orientation, int index) async {
                         /// Get orientation & index of swiped card!
+                        if (index == widget.wordList.subMeanings.length - 1) {
+                          await showDialog(
+                              context: context, child: getEndCard());
+                          Navigator.pop(context);
+                        }
                       },
                     ),
                   ),
@@ -152,6 +110,23 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Center getEndCard() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.only(top: 20),
+        child: NotificationCard(
+          headerText: "Spelling Bee",
+          h2Text:
+              "Your Score: $_correct/${widget.wordList.subMeanings.length}\n",
+          buttonText: "Go Back",
+          onTap: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
     );
   }
@@ -177,7 +152,7 @@ class _MemorizationCard2State extends State<MemorizationCard2> {
         ),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           Text(
-            'Memorize words',
+            'Spelling Bee',
             style: TextStyle(
               fontSize: 23,
               fontWeight: FontWeight.bold,
@@ -204,31 +179,48 @@ class MyCardTheme {
   }
 }
 
-class LearnCard extends StatefulWidget {
+class SpellingLearnCard extends StatefulWidget {
   final double height, width;
   final Color lightColor, darkColor;
   final MyCardTheme cardTheme;
-  final String word;
+  final int currentNumber, totalWords;
+  final FireBaseSubMeaning subMeaning;
 
-  LearnCard({
-    this.height,
-    this.width,
-    this.lightColor,
-    this.cardTheme,
-    this.darkColor,
-    this.word = 'word',
-  });
+  SpellingLearnCard(
+      {this.subMeaning,
+      this.height,
+      this.width,
+      this.lightColor,
+      this.cardTheme,
+      this.darkColor,
+      this.currentNumber = 1,
+      this.totalWords = 5});
 
   @override
-  _LearnCardState createState() => _LearnCardState();
+  _SpellingLearnCardState createState() => _SpellingLearnCardState();
 }
 
-class _LearnCardState extends State<LearnCard> {
+class _SpellingLearnCardState extends State<SpellingLearnCard> {
   Widget mainView;
+  bool wantSetState = false;
+  FlutterTts flutterTts = FlutterTts();
+  String answer = "";
+
+  void initialize() {
+    mainView = getMeaning();
+  }
+
+  void initTTS() {
+    flutterTts.setVolume(1);
+    flutterTts.setSpeechRate(0.5);
+    flutterTts.setPitch(1);
+  }
 
   @override
   initState() {
-    mainView = getMeaning();
+    answer = "";
+    initialize();
+    initTTS();
     super.initState();
   }
 
@@ -269,15 +261,16 @@ class _LearnCardState extends State<LearnCard> {
                         GradientButton(
                           height: height * 0.05,
                           width: width * 0.4,
-                          startColor: Color(0xFFE0154D),
+                          startColor: Color(0xFF192221),
                           endColor: Color(0xFFFF34AB),
-                          text: '1 / 2 Completed',
+                          text:
+                              '${widget.currentNumber} / ${widget.totalWords} Completed',
                         ),
                         SizedBox(
                           width: 7,
                         ),
-                        Dot(6),
-                        Dot(6),
+                        getDot(6),
+                        getDot(6),
                         SizedBox(
                           width: 7,
                         ),
@@ -291,8 +284,8 @@ class _LearnCardState extends State<LearnCard> {
                           child: widget.cardTheme.image,
                         ),
                         Positioned(
-                          top: 20,
-                          bottom: 20,
+                          top: 40,
+                          //bottom: 40,
                           left: 5,
                           child: Center(
                             child: Container(
@@ -302,32 +295,73 @@ class _LearnCardState extends State<LearnCard> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: <Widget>[
-                                      Dot(5, color: Colors.black),
-                                      Text(
-                                        "The ${widget.word}",
-                                        style: GoogleFonts.breeSerif(
-                                          textStyle: TextStyle(
-                                            fontSize: 30,
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 25.0, right: 25),
+                                          child: TextField(
+                                            controller: _textController,
+                                            autofocus: false,
+                                            style: GoogleFonts.courgette(
+                                              textStyle: TextStyle(
+                                                fontSize: 26,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            onChanged: (value) {
+                                              answer = value;
+                                            },
+                                            decoration: InputDecoration(
+                                              hintText: 'Enter spelling',
+                                              hintStyle: TextStyle(
+                                                  inherit: true,
+                                                  color: Colors.white70),
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.white,
+                                                    width: 1),
+                                              ),
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.white,
+                                                    width: 1.5),
+                                              ),
+                                              labelStyle:
+                                                  TextStyle(fontSize: 20),
+                                            ),
+                                            cursorColor: Colors.white70,
+                                          ),
+                                          /*Text(
+                                            "The sentence with the word",
+                                            style: GoogleFonts.courgette(
+                                              textStyle: TextStyle(
+                                                fontSize: 26,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),*/
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            right: 25, top: 7),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            flutterTts
+                                                .speak(widget.subMeaning.word);
+                                          },
+                                          child: Icon(
+                                            Icons.volume_up,
+                                            size: 35,
                                             color: Colors.white,
                                           ),
                                         ),
                                       ),
                                     ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 25.0),
-                                    child: Text(
-                                      "The sentence with the word",
-                                      style: GoogleFonts.courgette(
-                                        textStyle: TextStyle(
-                                          fontSize: 26,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
                                   ),
                                 ],
                               ),
@@ -349,19 +383,12 @@ class _LearnCardState extends State<LearnCard> {
                             width: 10,
                           ),
                           Tabs(
-                            onPressed: (String text) {
-                              setState(() {
-                                if (text == "Meaning")
-                                  mainView = getMeaning();
-                                else
-                                  mainView = getExample();
-                              });
-                            },
+                            onPressed: () {},
                             width: 100,
-                            items: ['Meaning', 'Examples'],
+                            items: ['Meaning'],
                             borderColor: Colors.black54,
                             borderWidth: 0,
-                            highlightColor: Colors.red,
+                            highlightColor: Color(0xFF192221),
                             textColor: Colors.black,
                           ),
                           Expanded(
@@ -441,21 +468,6 @@ class _LearnCardState extends State<LearnCard> {
                             )
                           ],
                         ),
-                        child: ClipOval(
-                          child: Material(
-                            child: InkWell(
-                              onTap: () {},
-                              splashColor: Colors.red,
-                              child: GestureDetector(
-                                child: Icon(
-                                  Icons.highlight_off,
-                                  size: 40,
-                                  color: Colors.red[900],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
                       ),
                     ),
                     Container(
@@ -474,21 +486,6 @@ class _LearnCardState extends State<LearnCard> {
                             ),
                           )
                         ],
-                      ),
-                      child: ClipOval(
-                        child: Material(
-                          child: InkWell(
-                            onTap: () {},
-                            splashColor: Colors.greenAccent,
-                            child: GestureDetector(
-                              child: Icon(
-                                Icons.check_circle_outline,
-                                size: 40,
-                                color: Colors.green[900],
-                              ),
-                            ),
-                          ),
-                        ),
                       ),
                     ),
                     Expanded(
@@ -512,10 +509,26 @@ class _LearnCardState extends State<LearnCard> {
                             ],
                           ),
                           child: GradientButton(
+                            onPressed: () async {
+                              FocusScope.of(context).unfocus();
+                              _textController.clear();
+                              if (widget.subMeaning.word.toLowerCase() ==
+                                  answer.toLowerCase()) {
+                                await showSuccessDialog();
+                                _correct++;
+                                _controller.triggerRight();
+                              } else {
+                                await showFailedDialog();
+                                _controller.triggerLeft();
+                              }
+                              answer = "";
+                            },
                             width: 150,
-                            startColor: Color(0xFFE0154D),
+                            //startColor: Color(0xFFE0154D),
+                            //endColor: Color(0xFFFF34AB),
+                            startColor: Color(0xFF192221),
                             endColor: Color(0xFFFF34AB),
-                            text: "Open dictionary",
+                            text: "Check Answer",
                           ),
                         ),
                       ),
@@ -530,56 +543,129 @@ class _LearnCardState extends State<LearnCard> {
     );
   }
 
+  Future showSuccessDialog() async {
+    await SuccessBgAlertBox(
+            context: context,
+            title: "Correct!!",
+            infoMessage: "Your answer: ${widget.subMeaning.word}",
+            buttonText: "Great!",
+            icon: Icons.check_circle)
+        .displayDialog();
+  }
+
+  Future showFailedDialog() async {
+    await SuccessBgAlertBox(
+            context: context,
+            title: "Try again!",
+            infoMessage:
+                "Your answer: $answer\nCorrect answer: ${widget.subMeaning.word.toLowerCase()} ",
+            buttonText: "Okay",
+            icon: Icons.cancel,
+            bgColor: Colors.red)
+        .displayDialog();
+  }
+
+  Padding getDot(double radius, {Color color = Colors.black12}) {
+    return Padding(
+      padding: EdgeInsets.all(7),
+      child: Container(
+        height: radius * 2,
+        width: radius * 2,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(radius),
+          color: color,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!wantSetState) initialize();
+    wantSetState = false;
     return getCard(widget.height, widget.width);
   }
 
   Widget getMeaning() {
-    return Column(
-      children: <Widget>[
-        getMeaningView(),
-      ],
-    );
-  }
+    Column column = getMeaningView(
+        widget.subMeaning.getSubMeaning(), widget.subMeaning.word);
+    for (int i = 0; i < widget.subMeaning.examples.length && i < 2; i++) {
+      column.children.add(
+          getSentence(widget.subMeaning.examples[i], widget.subMeaning.word));
+    }
 
-  Widget getMeaningView() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10, top: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Dot(4, color: Colors.black),
-              Text(
-                "The elaborate first meaning",
-                style: dictionaryWords,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 3,
-          ),
-          getSentence(),
-          getSentence(),
-          getSentence(),
-        ],
-      ),
+      child: column,
     );
   }
 
-  Padding getSentence() {
+  Widget getMeaningView(String headerText, String word) {
+    headerText = headerText.replaceAll(word, "_____");
+    Column column = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Dot(4, color: Colors.black),
+            Expanded(
+              child: Text(
+                headerText,
+                style: dictionaryWords,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 3,
+        ),
+      ],
+    );
+    /*for (int i = 1; i < widget.subMeaning.examples.length; i++)
+      column.children.add(getSentence(widget.subMeaning.examples[i]));
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10, top: 5),
+      child: column,
+    );*/
+    return column;
+  }
+
+  Padding getSentence(String example, String word) {
+    example = example.replaceAll(word, "_____");
     return Padding(
       padding: const EdgeInsets.only(left: 23.0, top: 5),
       child: Text(
-        "Sentence number one",
+        "➣ " + example,
         style: dictionarySentences,
       ),
     );
   }
+}
 
-  Widget getExample() {
-    return getMeaning();
+class CircleButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final Color splashColor;
+  final Icon icon;
+
+  CircleButton(
+      {@required this.onTap,
+      this.splashColor = Colors.white,
+      @required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipOval(
+      child: Material(
+        child: InkWell(
+          onTap: onTap,
+          splashColor: splashColor,
+          child: GestureDetector(
+            child: icon,
+          ),
+        ),
+      ),
+    );
   }
 }

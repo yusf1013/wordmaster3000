@@ -1,5 +1,13 @@
+import 'dart:math';
+
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:wm3k/analysis_classes/wordList.dart';
 import 'package:wm3k/dbConnection/connector.dart';
+import 'package:wm3k/dbConnection/dbManager.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
 import 'package:wm3k/wm3k_design/helper/buttons.dart';
 import 'package:wm3k/wm3k_design/themes/dictionary_text_theme.dart';
@@ -8,25 +16,243 @@ import 'package:flutter/material.dart';
 import 'package:getflutter/components/accordian/gf_accordian.dart';
 import '../themes/wm3k_app_theme.dart';
 import '../helper/custom_widgets.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
-class DictionaryHomePage extends StatefulWidget {
-  final SearchedWord connector;
+List<WordList> _wordLists;
+UserDataController _userDataController = UserDataController();
+SearchedWord _word;
 
-  DictionaryHomePage(this.connector);
+class DictionaryHomepage extends StatefulWidget {
+  final String word;
+
+  DictionaryHomepage(this.word);
 
   @override
-  _DictionaryHomePageState createState() => _DictionaryHomePageState();
+  _DictionaryHomepageState createState() => _DictionaryHomepageState();
 }
 
-class _DictionaryHomePageState extends State<DictionaryHomePage> {
+class _DictionaryHomepageState extends State<DictionaryHomepage> {
+  bool isSpinning = true;
+  Widget theWidget;
+  initState() {
+    theWidget = Container(
+      color: Colors.white,
+    );
+    loadWord();
+    super.initState();
+  }
+
+  void loadWordLists() {
+    print("start");
+    _wordLists = _userDataController.getAllWordLists();
+    print("end");
+    //Start removing shit from here
+  }
+
+  void loadWord() async {
+    print("Awaiting load word");
+    loadWordLists();
+    print("Done load word");
+
+    _word = SearchedWord();
+    print("Awaiting search word");
+
+    await _word.search(widget.word);
+    print("done search word");
+
+    /*DBManager d = DBManager();
+    List<String> tempList = List();
+    for (int x = 0; x < 10; x++) {
+      var r = Random();
+      int start = r.nextInt(100000);
+      for (int i = 0; i < 10; i++)
+        tempList.add(await d.getOnlyFirstSubMeaning(start + i * 10));
+    }
+    print("DONE DONE mor");
+    print(tempList);
+    Firestore.instance
+        .collection("tempCollection")
+        .document("grabageOptions")
+        .updateData({'words': tempList});*/
+
+    if (mounted)
+      setState(() {
+        isSpinning = false;
+        theWidget = DictionaryHomePageWidget(
+            _word, MeaningListView(_word, _word.posList[0]));
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ModalProgressHUD(
+      inAsyncCall: isSpinning,
+      child: theWidget,
+    );
+  }
+}
+
+class DictionaryHomePageWidget extends StatelessWidget {
+  //Widget meaningListView = MeaningListView("Noun");
+  final Widget meaningListView;
+  final int selected;
+  final SearchedWord connector;
+  DictionaryHomePageWidget(this.connector, this.meaningListView,
+      {this.selected = 0});
+
+  @override
+  Widget build(BuildContext context) {
+    final String s = connector.word;
+    final String word = '${s[0].toUpperCase()}${s.substring(1)}';
+    //Widget shit = SearchableText("Life is a shit");
+    //categoryUI = getCategoryUI(currentList);
+    return Container(
+      color: DesignCourseAppTheme.nearlyWhite,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Stack(
+            //crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  GFAccordion(
+                    //title: 'GF Accordion',
+                    contentbackgroundColor: DesignCourseAppTheme.nearlyWhite,
+                    collapsedTitlebackgroundColor:
+                        DesignCourseAppTheme.nearlyWhite,
+                    expandedTitlebackgroundColor:
+                        DesignCourseAppTheme.nearlyWhite,
+                    titleChild: Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(left: 6),
+                          child: GestureDetector(
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.black,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(),
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text('Definition'),
+                            ]),
+                        Expanded(
+                          child: Container(),
+                        ),
+                      ],
+                    ),
+                    //content: "Shit",
+                    contentChild: SearchBarUI(
+                      padding: EdgeInsets.all(0),
+                      widthRatio: 0.88,
+                      onSubmit: (str) {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DictionaryHomepage(str)));
+                      },
+                    ),
+                    collapsedIcon: Icon(Icons.search),
+                    expandedIcon: Icon(Icons.cancel),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
+                    child: Column(
+                      children: <Widget>[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Expanded(
+                              child: AutoSizeText(
+                                word,
+                                style: headWord,
+                                maxLines: 1,
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.volume_up,
+                                size: 35,
+                              ),
+                              onPressed: () {},
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Tabs(
+                      selected: selected,
+                      borderWidth: 0.5,
+                      items: connector.getPartsOfSpeechList(),
+                      onPressed: ((String pos, int id) {
+                        print("TABS: $id");
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DictionaryHomePageWidget(
+                                      connector,
+                                      pos != "More"
+                                          ? MeaningListView(connector, pos)
+                                          : MoreListView(connector),
+                                      selected: id,
+                                    )));
+                      }),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      //width: MediaQuery.of(context).size.width * 85,
+                      height: 3,
+                      color: Colors.blue[900],
+                    ),
+                  ),
+                  meaningListView,
+                  //SearchableText("Life is a shit"),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/*class DictionaryHomePageWidget extends StatefulWidget {
+  final SearchedWord connector;
+  DictionaryHomePageWidget(this.connector);
+
+  @override
+  _DictionaryHomePageStateWidget createState() =>
+      _DictionaryHomePageStateWidget();
+}
+
+class _DictionaryHomePageStateWidget extends State<DictionaryHomePageWidget> {
   //Widget meaningListView = MeaningListView("Noun");
   Widget meaningListView;
 
   @override
   void initState() {
     meaningListView =
-        MeaningListView(
-            widget.connector.searchedWordMeaning[0], widget.connector.word);
+        MeaningListView(widget.connector, widget.connector.posList[0]);
     super.initState();
   }
 
@@ -47,17 +273,68 @@ class _DictionaryHomePageState extends State<DictionaryHomePage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  GFAccordion(
+                    //title: 'GF Accordion',
+                    contentbackgroundColor: DesignCourseAppTheme.nearlyWhite,
+                    collapsedTitlebackgroundColor:
+                        DesignCourseAppTheme.nearlyWhite,
+                    expandedTitlebackgroundColor:
+                        DesignCourseAppTheme.nearlyWhite,
+                    titleChild: Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(left: 6),
+                          child: GestureDetector(
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.black,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(),
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text('Definition'),
+                            ]),
+                        Expanded(
+                          child: Container(),
+                        ),
+                      ],
+                    ),
+                    //content: "Shit",
+                    contentChild: SearchBarUI(
+                      padding: EdgeInsets.all(0),
+                      widthRatio: 0.88,
+                      onSubmit: (str) {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DictionaryHomepage(str)));
+                      },
+                    ),
+                    collapsedIcon: Icon(Icons.search),
+                    expandedIcon: Icon(Icons.cancel),
+                  ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(25, 80, 25, 0),
+                    padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
                     child: Column(
                       children: <Widget>[
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Text(
-                              word,
-                              style: headWord,
+                            Expanded(
+                              child: AutoSizeText(
+                                word,
+                                style: headWord,
+                                maxLines: 1,
+                              ),
                             ),
                             IconButton(
                               icon: Icon(
@@ -77,14 +354,13 @@ class _DictionaryHomePageState extends State<DictionaryHomePage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Tabs(
+                      borderWidth: 0.5,
                       items: widget.connector.getPartsOfSpeechList(),
                       onPressed: ((String pos) {
                         setState(() {
                           meaningListView = pos == "More"
                               ? MoreListView(widget.connector)
-                              : MeaningListView(
-                              widget.connector.getParticularPOS(pos),
-                              widget.connector.word);
+                              : MeaningListView(widget.connector, pos);
                         });
                       }),
                     ),
@@ -101,65 +377,20 @@ class _DictionaryHomePageState extends State<DictionaryHomePage> {
                   //SearchableText("Life is a shit"),
                 ],
               ),
-              GFAccordion(
-                //title: 'GF Accordion',
-                contentbackgroundColor: DesignCourseAppTheme.nearlyWhite,
-                collapsedTitlebackgroundColor: DesignCourseAppTheme
-                    .nearlyWhite,
-                expandedTitlebackgroundColor: DesignCourseAppTheme
-                    .nearlyWhite,
-                titleChild: Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(left: 6),
-                      child: GestureDetector(
-                        child: Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.black,
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text('Definition'),
-                        ]),
-                    Expanded(
-                      child: Container(),
-                    ),
-                  ],
-                ),
-                //content: "Shit",
-                contentChild: SearchBarUI(
-                  padding: EdgeInsets.all(0),
-                  widthRatio: 0.88,
-                  onSubmit: (str) {
-                    Navigator.popAndPushNamed(context, 'dictionaryPage',
-                        arguments: str);
-                  },
-                ),
-                collapsedIcon: Icon(Icons.search),
-                expandedIcon: Icon(Icons.cancel),
-              ),
             ],
           ),
         ),
       ),
     );
   }
-}
+}*/
 
 class Tabs extends StatefulWidget {
   final Function onPressed;
   final double width, borderWidth;
   final List<String> items;
   final Color highlightColor, borderColor, textColor;
+  final int selected;
 
   Tabs({
     this.onPressed,
@@ -169,24 +400,25 @@ class Tabs extends StatefulWidget {
     this.highlightColor,
     this.borderColor,
     this.textColor,
+    this.selected = 0,
   });
 
   @override
-  _TabsState createState() => _TabsState(onPressed);
+  _TabsState createState() => _TabsState(onPressed, selected: selected);
 }
 
 class _TabsState extends State<Tabs> {
-  int selected = 0;
+  int selected;
   Function onPressed;
 
-  _TabsState(this.onPressed);
+  _TabsState(this.onPressed, {this.selected = 0});
 
   Widget getTile(int id, String text) {
     return GestureDetector(
       onTap: () {
         setState(() {
           selected = id;
-          onPressed(text);
+          onPressed(text, id);
         });
         //print(MediaQuery.of(context).size);
       },
@@ -195,13 +427,7 @@ class _TabsState extends State<Tabs> {
   }
 
   List<Widget> getWidgets() {
-    List<Widget> list = [
-      /*getTile(0, "Noun"),
-      getTile(1, "Verb"),
-      getTile(2, "Adjective"),
-      getTile(3, "More"),*/
-      //getTile(4, "Pronoun"),
-    ];
+    List<Widget> list = [];
     for (int i = 0; i < widget.items.length; i++)
       list.add(getTile(i, widget.items[i]));
 
@@ -273,7 +499,7 @@ class Tab extends StatelessWidget {
                   text,
                   style: isSelected
                       ? TextStyle(
-                          fontSize: 22,
+                          fontSize: 20,
                           color: textColor,
                           fontWeight: FontWeight.bold)
                       : tabWord,
@@ -283,14 +509,6 @@ class Tab extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            /*FittedBox(
-              fit: BoxFit.contain,
-              child: Container(
-                height: isSelected ? 2.5 : 0.1,
-                width: isSelected ? text.length * 15.0 : 1.0,
-                decoration: BoxDecoration(color: Colors.blue[900]),
-              ),
-            ),*/
           ],
         ),
       ),
@@ -299,72 +517,108 @@ class Tab extends StatelessWidget {
 }
 
 class MeaningListView extends StatelessWidget {
-  final Meaning meaning;
-  final String word;
+  /*final Meaning meaning;
+  final String word;*/
 
-  //MeaningListView(this.pos);
-  MeaningListView(this.meaning, this.word);
+  final SearchedWord connector;
+  final String pos;
+
+  MeaningListView(this.connector, this.pos);
+  //MeaningListView(this.meaning, this.word);
 
   List<Widget> getChildren() {
+    List<Widget> list = new List();
 
+    for (Meaning meaning in connector.getParticularPOS(pos)) {
+      list.add(addEntireOneMeaning(connector.word, meaning));
+    }
+
+    return list;
+  }
+
+  Widget addEntireOneMeaning(String word, Meaning meaning) {
     List<Widget> list = new List();
     //list.add(singleMeaning(1));
     //list.add(singleMeaning(2));
-    for (int i = 0; i < meaning.sub_meaning.length; i++)
-      list.add(singleMeaning(i));
+    for (int i = 0; i < meaning.subMeaning.length; i++)
+      list.add(singleMeaning(i, meaning));
 
     list.add(Divider(
       thickness: 1.5,
     ));
 
     if (meaning.moreExample.length > 0)
-      addExtraExamples(list, meaning.moreExample,
-          heading: "Extra Examples");
-    if (meaning.synonyms.length > 0) addSynonyms(list);
-    return list;
+      addExtraExamples(list, meaning.moreExample, heading: "Extra Examples");
+    if (meaning.synonyms.length > 0) addSynonyms(list, meaning);
+    //addSaveToListOptions(list, meaning); //MES: It was here first
+    return StickyHeader(
+      header: getHeader(word, meaning),
+      content: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+        child: Column(
+          children: list,
+        ),
+      ),
+    );
   }
 
-  List<Widget> getSubMeaningList(int n) {
-    SubMeaning thisSubMeaning = meaning.sub_meaning[n];
-    bool listTooLong = thisSubMeaning.example.length > 3;
+  List<Widget> getSubMeaningList(int n, Meaning meaning) {
+    SubMeaning thisSubMeaning = meaning.subMeaning[n];
+    bool listTooLong = thisSubMeaning.examples.length > 3;
     List<Widget> children = new List();
-    addHeader(children);
+    //addHeader(children);
     //
     addMeaning(children, n, thisSubMeaning);
     addExamples(children, listTooLong, thisSubMeaning);
-    if (listTooLong) addExtraExamples(children, thisSubMeaning.example.sublist(3));
+    if (listTooLong)
+      addExtraExamples(children, thisSubMeaning.examples.sublist(3));
+    addSaveToListOptions(children, meaning, n, meaning.id);
     //addExtraExamples(children, partsOfSpeech.moreExample);
     //addSynonyms(children);
-    addSaveToListOptions(children);
 
     return children;
   }
 
-  void addHeader(List<Widget> children) {
-    children.add(Row(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(right: 5),
-          child: Dot(
-            5,
-            color: Colors.indigo[700],
+  Widget getHeader(String word, Meaning meaning) {
+    return Material(
+      color: Colors.blue[100],
+      elevation: 5,
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 6),
+            child: Row(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(right: 5),
+                  child: Dot(
+                    5,
+                    color: Colors.indigo[700],
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    "${word[0].toUpperCase() + word.substring(1)} : ${meaning.partsOfSpeech} ${meaning.meaning}",
+                    style: GoogleFonts.courgette(
+                        textStyle: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.indigo[700])),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: Text(
-            "${word[0].toUpperCase() + word.substring(1)} : ${meaning.partsOfSpeech}",
-            style: GoogleFonts.courgette(
-                textStyle: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.indigo[700])),
+          /*Divider(
+            thickness: 1.5,
+          ),*/
+          Container(
+            height: 3,
+            color: Colors.black26,
           ),
-        ),
-      ],
-    ));
-    children.add(Divider(
-      thickness: 1.5,
-    ));
+        ],
+      ),
+    );
   }
 
   void addExamples(
@@ -378,8 +632,8 @@ class MeaningListView extends StatelessWidget {
           "The third sentence",
         ],*/
         list: listTooLong
-            ? thisMeaning.example.sublist(0, 3)
-            : thisMeaning.example,
+            ? thisMeaning.examples.sublist(0, 3)
+            : thisMeaning.examples,
         style: dictionarySentences,
         lineSpacing: 5.0,
       ),
@@ -402,8 +656,8 @@ class MeaningListView extends StatelessWidget {
             wrapLength: 30,
           ),*/
           child: Text(
-            thisSubMeaning.submeaning[0].toUpperCase() +
-                thisSubMeaning.submeaning.substring(1),
+            thisSubMeaning.subMeaning[0].toUpperCase() +
+                thisSubMeaning.subMeaning.substring(1),
             style: dictionaryWords,
             textAlign: TextAlign.justify,
           ),
@@ -415,27 +669,12 @@ class MeaningListView extends StatelessWidget {
     ));
   }
 
-  void addSaveToListOptions(List<Widget> children) {
-    children.add(GFAccordion(
-      titleChild: Text(
-        "Save meaning to a list",
-        style: dictionarySentences,
-      ),
-      contentChild: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: 100),
-        child: ListView(
-          children: <Widget>[
-            SaveToListButton("Word List 1"),
-            SaveToListButton("Word List 2"),
-          ],
-        ),
-      ),
-      collapsedIcon: Icon(Icons.favorite_border),
-      expandedIcon: Icon(Icons.cancel),
-    ));
+  void addSaveToListOptions(
+      List<Widget> children, Meaning meaning, int index, int id) {
+    children.add(SaveMeaningToList(children, meaning, index, id));
   }
 
-  void addSynonyms(List<Widget> children) {
+  void addSynonyms(List<Widget> children, Meaning meaning) {
     children.add(GFAccordion(
       titleChild: Text(
         "Synonyms and related words",
@@ -464,7 +703,7 @@ class MeaningListView extends StatelessWidget {
     ));
   }
 
-  Widget singleMeaning(int n) {
+  Widget singleMeaning(int n, Meaning meaning) {
     return Column(
       children: <Widget>[
         Padding(
@@ -472,7 +711,7 @@ class MeaningListView extends StatelessWidget {
             bottom: 12.0,
           ),
           child: Column(
-            children: getSubMeaningList(n),
+            children: getSubMeaningList(n, meaning),
           ),
         ),
         Divider(
@@ -492,7 +731,7 @@ class MeaningListView extends StatelessWidget {
           //width: 250,
           color: Colors.blue[50],
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             child: ListView(
               children: getChildren(),
             ),
@@ -505,18 +744,31 @@ class MeaningListView extends StatelessWidget {
 
 class SaveToListButton extends StatefulWidget {
   final String text;
+  final int id, subMeaningIndex, meaningID;
+  final Meaning meaning;
+  final bool selected;
 
-  SaveToListButton(this.text);
+  SaveToListButton(this.text, this.id, this.meaning, this.subMeaningIndex,
+      this.selected, this.meaningID);
 
   @override
   _SaveToListButtonState createState() => _SaveToListButtonState(text);
 }
 
 class _SaveToListButtonState extends State<SaveToListButton> {
-  bool selected = false;
+  bool selected;
   String text;
 
   _SaveToListButtonState(this.text);
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    selected = widget.selected;
+    print("In inis state $selected");
+    print("Add save to list ${widget.id}");
+    super.initState();
+  }
 
   void _showToast(BuildContext context, String message) {
     final scaffold = Scaffold.of(context);
@@ -538,6 +790,7 @@ class _SaveToListButtonState extends State<SaveToListButton> {
 
   @override
   Widget build(BuildContext context) {
+    print("Now this is shit ${widget.meaningID} ${widget.selected}");
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -547,12 +800,14 @@ class _SaveToListButtonState extends State<SaveToListButton> {
             text,
             style: dictionarySentences,
           ),
-          GestureDetector(
+          /*GestureDetector(
             child:
                 selected ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
             onTap: () {
               setState(() {
                 selected = !selected;
+                _userDataController.addWordToList(widget.id, _word.word,
+                    widget.meaning, selected, widget.subMeaningIndex);
               });
               if (selected)
                 _showToast(context, 'Added to $text');
@@ -560,9 +815,39 @@ class _SaveToListButtonState extends State<SaveToListButton> {
                 Scaffold.of(context).removeCurrentSnackBar();
               }
             },
-          )
+          )*/
+          RowButton(
+            selected,
+            () {
+              setState(() {
+                selected = !selected;
+                _userDataController.addWordToList(widget.id, _word.word,
+                    widget.meaning, selected, widget.subMeaningIndex);
+              });
+              if (selected)
+                _showToast(context, 'Added to $text');
+              else {
+                Scaffold.of(context).removeCurrentSnackBar();
+              }
+            },
+          ),
         ],
       ),
+    );
+  }
+}
+
+class RowButton extends StatelessWidget {
+  final bool selected;
+  final Function onTap;
+
+  RowButton(this.selected, this.onTap);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: selected ? Icon(Icons.favorite) : Icon(Icons.favorite_border),
+      onTap: onTap,
     );
   }
 }
@@ -652,5 +937,36 @@ class MoreListView extends StatelessWidget {
       ),
     ]);
     return list;
+  }
+}
+
+class SaveMeaningToList extends StatelessWidget {
+  final List<Widget> children;
+  final Meaning meaning;
+  final int index, id;
+
+  SaveMeaningToList(this.children, this.meaning, this.index, this.id);
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> listViewChildren = List();
+    for (WordList list in _wordLists)
+      listViewChildren.add(SaveToListButton(list.name, list.id, meaning, index,
+          list.hasWord(meaning.id.toString(), index), id));
+
+    return GFAccordion(
+      titleChild: Text(
+        "Save meaning to a list",
+        style: dictionarySentences,
+      ),
+      contentChild: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: 100),
+        child: ListView(
+          children: listViewChildren,
+        ),
+      ),
+      collapsedIcon: Icon(Icons.favorite_border),
+      expandedIcon: Icon(Icons.cancel),
+    );
   }
 }

@@ -1,20 +1,52 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
+import 'package:wm3k/analysis_classes/wordList.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/helper/buttons.dart';
 import 'package:wm3k/wm3k_design/screens/dictionary_page.dart';
+import 'package:wm3k/wm3k_design/screens/notification_card.dart';
 import 'package:wm3k/wm3k_design/themes/app_theme.dart';
-import 'package:wm3k/wm3k_design/themes/dictionary_text_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+CardController _cardController;
+bool _answered = false;
+int _selected = -1, _correct = 0;
+
 class QuizCardScreen extends StatefulWidget {
+  final WordList _wordList;
+
+  QuizCardScreen(this._wordList);
+
   @override
   _QuizCardScreenState createState() => _QuizCardScreenState();
 }
 
 class _QuizCardScreenState extends State<QuizCardScreen> {
+  WordList _wordList;
+  Map options;
+  UserDataController userDataController = UserDataController();
+  List<Map> gm = List();
+
+  @override
+  void initState() {
+    _cardController = CardController();
+    _answered = false;
+    _selected = -1;
+    _correct = 0;
+
+    _wordList = widget._wordList.getShuffledWordList();
+    for (int i = 0; i < widget._wordList.subMeanings.length; i++)
+      gm.add(
+          userDataController.getOptions(_wordList.subMeanings[i].subMeaning));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    int totalCards = _wordList.subMeanings.length;
+
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Container(
@@ -42,9 +74,9 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
                     height: height * 0.9,
                     child: TinderSwapCard(
                       orientation: AmassOrientation.LEFT,
-                      totalNum: 6,
-                      stackNum: 3,
-                      swipeEdge: 4.0,
+                      totalNum: _wordList.subMeanings.length,
+                      stackNum: 2,
+                      swipeEdge: 100,
                       maxWidth: width - 10,
                       maxHeight: height + 50,
                       minWidth: width - 11,
@@ -52,14 +84,18 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
                       cardBuilder: (context, index) {
                         return Center(
                           child: QuizLearnCard(
+                            subMeaning: _wordList.subMeanings[index],
+                            options: gm[index],
                             height: height * 0.81,
                             width: width * 0.85,
                             cardTheme: MyCardTheme(
                                 imagePath: 'assets/bgs/cardbg6.jpg'),
+                            cardNumber: index + 1,
+                            totalCards: _wordList.subMeanings.length,
                           ),
                         );
                       },
-                      cardController: CardController(),
+                      cardController: _cardController,
                       swipeUpdateCallback:
                           (DragUpdateDetails details, Alignment align) {
                         /// Get swiping card's alignment
@@ -70,7 +106,18 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
                         }
                       },
                       swipeCompleteCallback:
-                          (CardSwipeOrientation orientation, int index) {
+                          (CardSwipeOrientation orientation, int index) async {
+                        bool tapped;
+                        if (index == _wordList.subMeanings.length - 1) {
+                          tapped = await showDialog(
+                            child: getEndCard(),
+                            context: context,
+                          );
+                          if (tapped == null || tapped == false)
+                            Navigator.pop(context);
+                          else if (tapped) {}
+                        }
+
                         /// Get orientation & index of swiped card!
                       },
                     ),
@@ -83,6 +130,22 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Center getEndCard() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.only(top: 20),
+        child: NotificationCard(
+          headerText: "QUIZ",
+          h2Text: "Your Score: $_correct/${_wordList.subMeanings.length}\n",
+          buttonText: "Go Back",
+          onTap: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
     );
   }
@@ -139,7 +202,9 @@ class QuizLearnCard extends StatefulWidget {
   final double height, width;
   final Color lightColor, darkColor;
   final MyCardTheme cardTheme;
-  final String word;
+  final FireBaseSubMeaning subMeaning;
+  final int cardNumber, totalCards;
+  final Map options;
 
   QuizLearnCard({
     this.height,
@@ -147,7 +212,10 @@ class QuizLearnCard extends StatefulWidget {
     this.lightColor,
     this.cardTheme,
     this.darkColor,
-    this.word = 'word',
+    @required this.subMeaning,
+    this.cardNumber,
+    this.totalCards,
+    @required this.options,
   });
 
   @override
@@ -155,11 +223,7 @@ class QuizLearnCard extends StatefulWidget {
 }
 
 class _QuizLearnCardState extends State<QuizLearnCard> {
-  Widget mainView;
-
-  @override
   initState() {
-    mainView = getMeaning();
     super.initState();
   }
 
@@ -201,7 +265,8 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                           width: width * 0.4,
                           startColor: Color(0xFF192221),
                           endColor: Color(0xFFFF34AB),
-                          text: '1 / 2 Completed',
+                          text:
+                              '${widget.cardNumber} / ${widget.totalCards} Completed',
                         ),
                         SizedBox(
                           width: 7,
@@ -216,13 +281,13 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                     Stack(
                       children: <Widget>[
                         Container(
-                          height: height * 0.3,
+                          height: height * 0.25,
                           width: width,
                           child: widget.cardTheme.image,
                         ),
                         Positioned(
-                          top: 20,
-                          bottom: 20,
+                          top: 0,
+                          bottom: 0,
                           left: 5,
                           child: Center(
                             child: Container(
@@ -236,11 +301,12 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
                                       Dot(5, color: Colors.white),
-                                      Text(
-                                        "The ${widget.word}",
+                                      AutoSizeText(
+                                        "Meaning of \"${widget.subMeaning.word}\"?",
+                                        maxLines: 1,
                                         style: GoogleFonts.breeSerif(
                                           textStyle: TextStyle(
-                                            fontSize: 30,
+                                            fontSize: 28,
                                             color: Colors.white,
                                           ),
                                         ),
@@ -248,14 +314,16 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                                     ],
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 25.0),
-                                    child: Text(
-                                      "The sentence with the word",
+                                    padding: const EdgeInsets.only(
+                                        left: 25.0, top: 10),
+                                    child: AutoSizeText(
+                                      "Eg: ${widget.subMeaning.getFirstExample()}",
+                                      maxLines: 2,
                                       style: GoogleFonts.courgette(
                                         textStyle: TextStyle(
-                                          fontSize: 26,
-                                          color: Colors.white,
-                                        ),
+                                            fontSize: 22,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   ),
@@ -275,7 +343,7 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
                           SizedBox(
-                            height: height * 0.077,
+                            height: height * 0,
                             width: 10,
                           ),
                           Tabs(
@@ -297,16 +365,15 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                       ),
                     ),
                     Expanded(
-                      child: SingleChildScrollView(
-                        child: Container(
-                          height: height * 0.4,
-                          //color: Colors.deepOrange[50],
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: height * 0.47,
+                        ),
+                        child: SingleChildScrollView(
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: mainView,
+                            child: getMeaning(),
                           ),
-                          //height: height * 0.454,
-                          //color: Colors.red,
                         ),
                       ),
                     ),
@@ -340,7 +407,7 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                   //mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     SizedBox(
-                      height: height * 0.146,
+                      height: height * 0.1,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
@@ -406,11 +473,17 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                           ),
                           child: GradientButton(
                             width: 150,
-                            //startColor: Color(0xFFE0154D),
-                            //endColor: Color(0xFFFF34AB),
+                            onPressed: () {
+                              if (widget.options['answer'] == _selected) {
+                                _correct++;
+                              }
+                              _answered = false;
+                              _selected = -1;
+                              _cardController.triggerRight();
+                            },
                             startColor: Color(0xFF192221),
                             endColor: Color(0xFFFF34AB),
-                            text: "Check Answers",
+                            text: "Next Question",
                           ),
                         ),
                       ),
@@ -431,69 +504,384 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
   }
 
   Widget getMeaning() {
-    return Column(
-      children: <Widget>[
-        Expanded(child: MeaningView()),
-      ],
-    );
+    return MeaningView(widget.options);
   }
 }
 
+/*class QuizLearnCard extends StatelessWidget {
+  final double height, width;
+  final Color lightColor, darkColor;
+  final MyCardTheme cardTheme;
+  final FireBaseSubMeaning subMeaning;
+  final int cardNumber, totalCards;
+  final Map options;
+
+  QuizLearnCard({
+    this.height,
+    this.width,
+    this.lightColor,
+    this.cardTheme,
+    this.darkColor,
+    @required this.subMeaning,
+    this.cardNumber,
+    this.totalCards,
+    @required this.options,
+  });
+
+  Widget getCard(double height, double width) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 30),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: width, maxHeight: height),
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              bottom: 0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image(
+                  image: AssetImage('assets/bgs/bg3.jpg'),
+                  height: height,
+                  width: width,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              child: Container(
+                width: width,
+                height: height,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        SizedBox(
+                          height: height * 0.1,
+                        ),
+                        GradientButton(
+                          height: height * 0.05,
+                          width: width * 0.4,
+                          startColor: Color(0xFF192221),
+                          endColor: Color(0xFFFF34AB),
+                          text: '${cardNumber} / ${totalCards} Completed',
+                        ),
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Dot(6),
+                        Dot(6),
+                        SizedBox(
+                          width: 7,
+                        ),
+                      ],
+                    ),
+                    Stack(
+                      children: <Widget>[
+                        Container(
+                          height: height * 0.25,
+                          width: width,
+                          child: cardTheme.image,
+                        ),
+                        Positioned(
+                          top: 0,
+                          bottom: 0,
+                          left: 5,
+                          child: Center(
+                            child: Container(
+                              width: width,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      Dot(5, color: Colors.white),
+                                      AutoSizeText(
+                                        "Meaning of \"${subMeaning.word}\"?",
+                                        maxLines: 1,
+                                        style: GoogleFonts.breeSerif(
+                                          textStyle: TextStyle(
+                                            fontSize: 28,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 25.0, top: 10),
+                                    child: AutoSizeText(
+                                      "Eg: ${subMeaning.getFirstExample()}",
+                                      maxLines: 2,
+                                      style: GoogleFonts.courgette(
+                                        textStyle: TextStyle(
+                                            fontSize: 22,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom:
+                                  BorderSide(width: 2, color: Colors.black))),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          SizedBox(
+                            height: height * 0,
+                            width: 10,
+                          ),
+                          Tabs(
+                            onPressed: () {},
+                            width: 100,
+                            items: ['Options'],
+                            borderColor: Colors.black54,
+                            borderWidth: 0,
+                            highlightColor: Color(0xFF192221),
+                            textColor: Colors.black,
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 0,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: height * 0.47,
+                        ),
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: getMeaning(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black54,
+                      blurRadius: 5.0, // has the effect of softening the shadow
+                      spreadRadius:
+                          0.0, // has the effect of extending the shadow
+                      offset: Offset(
+                        3.5, // horizontal, move right 10
+                        3.5, // vertical, move down 10
+                      ),
+                    )
+                  ],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20)),
+                ),
+                width: width,
+                child: Row(
+                  //mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    SizedBox(
+                      height: height * 0.1,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 30.0,
+                        right: 15,
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black54,
+                              blurRadius:
+                                  5.0, // has the effect of softening the shadow
+                              spreadRadius:
+                                  0.0, // has the effect of extending the shadow
+                              offset: Offset(
+                                3.5, // horizontal, move right 10
+                                3.5, // vertical, move down 10
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black54,
+                            blurRadius:
+                                5.0, // has the effect of softening the shadow
+                            spreadRadius:
+                                0.0, // has the effect of extending the shadow
+                            offset: Offset(
+                              3.5, // horizontal, move right 10
+                              3.5, // vertical, move down 10
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black54,
+                                blurRadius:
+                                    5.0, // has the effect of softening the shadow
+                                spreadRadius:
+                                    0.0, // has the effect of extending the shadow
+                                offset: Offset(
+                                  3.5, // horizontal, move right 10
+                                  3.5, // vertical, move down 10
+                                ),
+                              )
+                            ],
+                          ),
+                          child: GradientButton(
+                            width: 150,
+                            onPressed: () {
+                              _cardController.triggerRight();
+                            },
+                            //startColor: Color(0xFFE0154D),
+                            //endColor: Color(0xFFFF34AB),
+                            startColor: Color(0xFF192221),
+                            endColor: Color(0xFFFF34AB),
+                            text: "Next Question",
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return getCard(height, width);
+  }
+
+  Widget getMeaning() {
+    print("in get meaning ${options}");
+    return MeaningView(options);
+  }
+}*/
+
 class MeaningView extends StatefulWidget {
+  final Map options;
+
+  MeaningView(
+    this.options,
+  );
+
   @override
   _MeaningViewState createState() => _MeaningViewState();
 }
 
 class _MeaningViewState extends State<MeaningView> {
-  int selected = -1;
+  //int selected = -1;
+  Map options;
+  bool wantInit = true;
 
   initState() {
-    print('die');
+    init();
     super.initState();
-    selected = -1;
-    print("life is shit");
+  }
+
+  void init() {
+    print('die');
+    options = widget.options;
+    //_selected = -1;
+    //answered = false;
   }
 
   Widget getMeaningView() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10, top: 0),
+      padding: const EdgeInsets.only(bottom: 0, top: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          getOptions(0),
-          getOptions(1),
-          getOptions(2),
-          getOptions(3),
+          getOptions(0, options['options'][0]),
+          getOptions(1, options['options'][1]),
+          getOptions(2, options['options'][2]),
+          getOptions(3, options['options'][3]),
         ],
       ),
     );
   }
 
-  Widget getOptions(int id) {
+  Widget getOptions(int id, String text) {
     return Padding(
-      padding: const EdgeInsets.only(left: 23.0, bottom: 5, right: 23.0),
+      padding: const EdgeInsets.only(left: 15.0, bottom: 5, right: 15.0),
       child: Row(
         children: <Widget>[
           Expanded(
             child: GradientOption(
-              selected: selected == id,
-              width: 200,
+              correct: id == options['answer'],
+              selected: _selected == id,
+              width: 254,
+              height: 45,
               startColor: Color(0xFFE9E8E6),
               endColor: Colors.white,
-              startSelectColor: Color(0xFF428EEC),
-              endSelectColor: Color(0xFF5BBFF4),
+              correctColor: Colors.green,
+              incorrectColor: Colors.red,
+              //startSelectColor: Color(0xFF428EEC),
+              //endSelectColor: Color(0xFF5BBFF4),
               //startColor: Color(0xFF192221),
               //endColor: Color(0xFF0887C0),
               onTap: () {
                 setState(() {
-                  if (selected == id)
-                    selected = -1;
+                  wantInit = false;
+                  if (_answered) return;
+                  if (_selected == id)
+                    _selected = -1;
                   else
-                    selected = id;
+                    _selected = id;
+                  _answered = true;
                 });
               },
-              text: "Option (${id + 1})",
+              text: text,
             ),
           ),
         ],
@@ -503,6 +891,8 @@ class _MeaningViewState extends State<MeaningView> {
 
   @override
   Widget build(BuildContext context) {
+    if (wantInit) init();
+    wantInit = true;
     return getMeaningView();
   }
 }
@@ -534,27 +924,28 @@ class CircleButton extends StatelessWidget {
 }
 
 class GradientOption extends StatelessWidget {
-  final Color startColor, endColor, startSelectColor, endSelectColor;
+  final Color startColor, endColor, correctColor, incorrectColor;
   final double height, width;
   final String text;
-  final bool selected;
+  final bool selected, correct;
   final Function onTap;
 
   GradientOption(
       {this.startColor = const Color(0xff374ABE),
       this.endColor = const Color(0xff64B6FF),
-      this.height = 40,
+      this.height,
       this.text = 'Login',
       this.width,
-      this.startSelectColor,
-      this.endSelectColor,
+      this.correctColor,
+      this.incorrectColor,
       this.selected,
-      this.onTap});
+      this.onTap,
+      this.correct});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height,
+      //height: height,
       width: width,
       child: RaisedButton(
         onPressed: onTap,
@@ -565,26 +956,36 @@ class GradientOption extends StatelessWidget {
           decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: selected
-                    ? [startSelectColor, endSelectColor]
-                    : [startColor, endColor],
+                    ? (correct
+                        ? [correctColor, correctColor]
+                        : [incorrectColor, incorrectColor])
+                    : ((_answered && correct)
+                        ? [correctColor, correctColor]
+                        : [startColor, endColor]),
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
               borderRadius: BorderRadius.circular(30.0)),
           child: Container(
-            constraints: BoxConstraints(maxWidth: 300.0, minHeight: height),
+            constraints: BoxConstraints(
+                maxWidth: 300.0, minHeight: height == null ? 20 : height),
             alignment: Alignment.center,
             child: Row(
               children: <Widget>[
                 Padding(
-                    padding: EdgeInsets.only(left: 20, right: 10),
+                    padding: EdgeInsets.only(left: 10, right: 10),
                     child: Icon(selected
                         ? Icons.radio_button_checked
                         : Icons.radio_button_unchecked)),
-                Text(
-                  text,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                    child: Text(
+                      text,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
                 ),
               ],
             ),

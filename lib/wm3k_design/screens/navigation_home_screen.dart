@@ -36,7 +36,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     if (word == wordfound) {
       print(" the properties for $wordfound");
 
-      for (Meaning pos in con.searchedWordMeaning) {
+      /*for (Meaning pos in con.searchedWordMeaning) {
         for (SubMeaning submeaningobject in pos.sub_meaning) {
           print('${pos.partsOfSpeech}:');
           print(submeaningobject.submeaning);
@@ -48,7 +48,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         for (String phrases in con.phrases) print(phrases);
 
         print('\n\n');
-      }
+      }*/
     } else {
       print("The word is $word.word");
     }

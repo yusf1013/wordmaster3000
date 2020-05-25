@@ -1,5 +1,4 @@
 import 'package:wm3k/analysis_classes/wordList.dart';
-import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
 import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
@@ -8,48 +7,13 @@ import 'package:wm3k/wm3k_design/screens/dictionary_page.dart';
 import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
 import 'package:flutter/material.dart';
 import 'package:wm3k/wm3k_design/helper/category_list_view.dart';
+import 'package:wm3k/wm3k_design/screens/select_wordlist_screen.dart';
+import 'package:wm3k/wm3k_design/screens/spellingCard2.dart';
 import 'package:wm3k/wm3k_design/screens/spelling_card.dart';
 import 'package:wm3k/wm3k_design/helper/games_list_view.dart';
 import '../themes/wm3k_app_theme.dart';
 import '../models/category.dart';
 import 'create_list_screen.dart';
-
-/*class MainHomePage extends StatefulWidget {
-  const MainHomePage({Key key}) : super(key: key);
-
-  @override
-  _MainHomePageState createState() => _MainHomePageState();
-}
-
-class _MainHomePageState extends State<MainHomePage>
-    with TickerProviderStateMixin {
-  AnimationController animationController;
-  bool multiple = true;
-
-  @override
-  void initState() {
-    animationController = AnimationController(
-        duration: const Duration(milliseconds: 2000), vsync: this);
-    super.initState();
-    AuthController().sharedShit();
-  }
-
-  Future<bool> getData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 0));
-    return true;
-  }
-
-  @override
-  void dispose() {
-    animationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DesignCourseHomeScreen();
-  }
-}*/
 
 class MainHomePage extends StatefulWidget {
   @override
@@ -98,16 +62,11 @@ class _MainHomePageState extends State<MainHomePage> {
                             DBController.setAllList(snapShot.data);
                             return SearchBarUI(
                               onSubmit: (wordString) async {
-                                print("dsfa");
-                                SearchedWord con = new SearchedWord();
-                                await con.search(wordString);
-                                print('The word is ${con.word}');
-                                //Navigator.pushNamed(context, 'dictionaryPage', arguments: con);
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            DictionaryHomePage(con)));
+                                            DictionaryHomepage(wordString)));
                               },
                             );
                           } else {
@@ -222,13 +181,16 @@ class _MainHomePageState extends State<MainHomePage> {
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
-        builder: (BuildContext context) => SpellingCard(),
+        builder: (BuildContext context) => SpellingBeeWelcomePage(
+          searchBar: false,
+          backButton: true,
+        ),
       ),
     );
   }
 
-  Future<void> moveToWordPage(int id) async {
-    WordList list = await _userDataController.getWordList(id);
+  void moveToWordPage(int id) {
+    WordList list = _userDataController.getWordList(id);
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
@@ -310,7 +272,7 @@ class _MainHomePageState extends State<MainHomePage> {
           moveToWordPage(id);
           //print(id);
         },
-        stream: _userDataController.getWordLists(),
+        stream: _userDataController.getStreamOfWordLists(),
         getCurrentList: _userDataController.getCategoryListForWordList,
         addButtonAction: () async {
           bool success = await showDialog(
