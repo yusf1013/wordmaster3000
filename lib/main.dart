@@ -18,11 +18,11 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     print("Logged in? : ${AuthController().isLoggedIn()}");
     bool loggedIn = AuthController().isLoggedIn();
-
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,

@@ -2,7 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="65dp"
+    android:layout_width="75dp"
     android:id="@+id/chat_head_root"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -13,7 +13,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/ic_launcher_background"
+        android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"
         tools:ignore="ContentDescription"/>
 
 </RelativeLayout>

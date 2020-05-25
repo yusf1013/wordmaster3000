@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
+import 'package:wm3k/wm3k_design/controllers/clipBoardManager.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
 import 'package:wm3k/wm3k_design/screens/leaderboard_screen.dart';
 import 'package:wm3k/wm3k_design/themes/app_theme.dart';
@@ -12,6 +13,7 @@ import 'package:wm3k/wm3k_design/screens/main_home_screen.dart';
 import 'package:wm3k/wm3k_design/screens/toDelete/invite_friend_screen.dart';
 import 'package:wm3k/wm3k_design/screens/market_page.dart';
 import 'package:flutter/material.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 
 import 'toDelete/feedback_screen.dart';
 
@@ -25,15 +27,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   DrawerIndex drawerIndex;
   AnimationController sliderAnimationController;
 
-  static const platform = const MethodChannel('samples.flutter.dev/bubblehead');
-  Future<void> _openchathead() async {
-    print("chat head khular jonno call kora hoitese, bal da ki kore allah jne");
-    try {
-      await platform.invokeMethod('openchathead');
-    } on PlatformException catch (e) {
-      print("failed to open chathead");
-    }
-  }
 
   printSearch(String word) async {
     SearchedWord con = new SearchedWord();
@@ -118,6 +111,16 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     // }
   }*/
 
+  static const platform = const MethodChannel('samples.flutter.dev/bubblehead');
+  Future<void> _openchathead() async {
+    print("chat head khular jonno call kora hoitese, bal da ki kore allah jne");
+    try {
+      await platform.invokeMethod('openchathead');
+    } on PlatformException catch (e) {
+      print("failed to open chathead");
+    }
+    _openchathead();
+  }
   @override
   void initState() {
     drawerIndex = DrawerIndex.HOME;
@@ -125,6 +128,8 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     //printSearch("abalone");
     print("we are calling bubble from here");
     _openchathead();
+    //clipBoardManager clip=clipBoardManager();
+    //clip.repeat();
     //printAllWords();
     /*screenView = Container(
       color: Colors.red,

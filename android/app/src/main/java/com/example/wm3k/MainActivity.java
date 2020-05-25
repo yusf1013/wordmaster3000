@@ -1,12 +1,20 @@
 package com.example.wm3k;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
+import android.database.SQLException;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
+import java.io.IOException;
+
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.MethodChannel;
@@ -15,7 +23,12 @@ import io.flutter.plugin.common.MethodChannel;
 public class MainActivity extends FlutterActivity {
   private static final String CHANNEL = "samples.flutter.dev/bubblehead";
   private static final int PERMISSION_REQUEST_CODE = 2084;
-
+  ClipboardManager clipboardManager;
+  private Handler mhandler= new Handler();
+  public static String word="*****";
+  public static String parts_of_speech="***";
+  public static String meaning="";
+  public static String submeaning="****";
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
     //GeneratedPluginRegistrant.registerWith(flutterEngine);
@@ -54,8 +67,39 @@ public class MainActivity extends FlutterActivity {
     }
   }
 
+  public void getDataFromClipBoard(){
+    System.out.println("trying to copy data from clipboard");
+    clipboardManager=(ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+    String clipdata="";
+    ClipData a=clipboardManager.getPrimaryClip();
+    ClipData.Item item=a.getItemAt(0);
+    clipdata=item.getText().toString();
+    System.out.println(clipdata);
+  }
+
+  public void startCollectingData(){
+    mhandler.postDelayed(cliprunnable,1000);
+  }
+
+  private Runnable cliprunnable = new Runnable() {
+    @Override
+    public void run() {
+      getDataFromClipBoard();
+      mhandler.postDelayed(cliprunnable,1000);
+    }
+  };
+
+
   public void showChatHead(){
-    startService(new Intent(MainActivity.this,chatHeadService.class));
+    //startCollectingData();
+    //startService(new Intent(MainActivity.this,chatHeadService.class));
     //finish();
+    Dbhelper myDbHelper= new Dbhelper(MainActivity.this);
+    try {
+      myDbHelper.createDataBase();
+    } catch (IOException ioe) {
+      throw new Error("Unable to create database");
+    }
+    startService(new Intent(MainActivity.this, ClipBoard.class));
   }
 }

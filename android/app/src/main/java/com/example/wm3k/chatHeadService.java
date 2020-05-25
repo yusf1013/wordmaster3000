@@ -1,5 +1,6 @@
 package com.example.wm3k;
 
+import android.app.Dialog;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -20,6 +21,8 @@ public class chatHeadService extends Service {
 
     private View chatHeadView;
     private WindowManager windowManager;
+    Button closePopUp;
+    Dialog popUp;
 
     @Nullable
     @Override
@@ -36,6 +39,7 @@ public class chatHeadService extends Service {
         button.setText("close");
         final RelativeLayout layout=chatHeadView.findViewById(R.id.chat_head_root);
 
+        popUp=new Dialog(this);
 
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -81,6 +85,7 @@ public class chatHeadService extends Service {
 
                         if(chk==1){
                             layout.addView(button);
+                            showPOPup();
                             chk=2;
                         }
 
@@ -119,6 +124,12 @@ public class chatHeadService extends Service {
             }
 
         });
+    }
+
+    public void showPOPup(){
+        System.out.println("it is being called");
+        //popUp.setContentView(R.layout.dialouge);
+        startService(new Intent(chatHeadService.this,popUpCard.class));
     }
 
     @Override
