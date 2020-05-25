@@ -4,8 +4,10 @@ import 'package:card_settings/widgets/information_fields/card_settings_header.da
 import 'package:card_settings/widgets/text_fields/card_settings_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:card_settings/card_settings.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
+import 'package:intl/intl.dart';
 
 class CreateWordListView extends StatelessWidget {
   @override
@@ -14,7 +16,7 @@ class CreateWordListView extends StatelessWidget {
     return AlertDialog(
       contentPadding: EdgeInsets.all(0),
       titlePadding: EdgeInsets.all(0),
-      content: CardSettings(
+      content: CardSettings.sectioned(
         padding: 0,
         shrinkWrap: true,
         children: <Widget>[
