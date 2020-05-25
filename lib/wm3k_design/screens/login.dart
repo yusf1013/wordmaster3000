@@ -23,6 +23,7 @@ class LoginScreen extends StatelessWidget {
       return e.toString();
     }
     return 'Sign in failed';*/
+    print("Before this");
     return (await userController.logIn(data.name, data.password)
         ? null
         : "Error loggin in!");

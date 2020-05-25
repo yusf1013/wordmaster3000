@@ -70,12 +70,17 @@ class AuthController {
   Future<bool> logIn(String email, String pass) async {
     if (email != null && pass != null) {
       try {
-        await _auth.signInWithEmailAndPassword(email: email, password: pass);
+        AuthResult result = await _auth.signInWithEmailAndPassword(
+            email: email, password: pass);
+        print("Auth result is: ${result.toString()}");
+        if (result == null) return false;
         _writeCredentials(email, pass);
-        _loadEssentials();
+        await _loadEssentials();
         UserDataController().initializeUser();
         return true;
-      } catch (e) {}
+      } catch (e) {
+        print(e);
+      }
     }
     return false;
   }
@@ -91,10 +96,6 @@ class AuthController {
 
   static FirebaseUser getCurrentUser() => _user;
 }
-
-/*class _UserData {
-  List<WordList> allWordLists;
-}*/
 
 class UserDataController {
   FirebaseUser _currentUser;
@@ -116,34 +117,8 @@ class UserDataController {
     user.initWrongOptions();
   }
 
-  //static _UserData _userData = _UserData();
   AssetNameProvider assetNameProvider = AssetNameProvider();
 
-  /*UserDataController() {
-    //loadUser();
-
-    _currentUser = AuthController.getCurrentUser();
-    testStream();
-    print("In Load User ${_currentUser..email}");
-  }*/
-
-  /*void testStream() {
-    Stream<QuerySnapshot> stream = getStreamOfWordLists();
-    print("Created the stream");
-
-    stream.listen((data) {
-      print("Stream DataReceived: " + data.documents.length.toString());
-    }, onDone: () {
-      print(" Stream Task Done");
-    }, onError: (error) {
-      print("Stream Some Error");
-    });
-  }*/
-
-  /*Future loadUser() async {
-    print("In Load User ${_currentUser == null}");
-    _currentUser ??= await _auth.currentUser();
-  }*/
   Map getOptions(String ans) {
     return QuizController(user.wrongOptions).getOptions(ans);
   }
@@ -252,7 +227,6 @@ class UserDataController {
     DocumentSnapshot document = await ref.get();
 
     if (selected) {
-      print("Yes selected: ${meaning.id.toString()}");
       ref
           .collection('words')
           .document(meaning.id.toString() + "," + index.toString())
@@ -273,16 +247,6 @@ class UserDataController {
       int length = document.data['length'] - 1;
       ref.updateData({'length': length});
     }
-
-    /*List words = document.data['words'];
-    List meanings = document.data['meanings'];
-    print(
-        "Before adding: $word - ${meaning.meaning}, id: $id, selected: $selected");
-    selected ? words.add(word) : words.removeLast();
-    selected ? meanings.add(meaning.meaning) : meanings.removeLast();
-
-    ref.updateData({'words': words, 'meanings': meanings});*/
-    print("Done");
   }
 
   void createWordList(String name, String description) async {
@@ -329,9 +293,7 @@ class _User {
     return _singleton;
   }
 
-  _User._internal() {
-    print("Creating user");
-  }
+  _User._internal();
 
   void initWrongOptions() async {
     var v = await _fireStore
@@ -342,18 +304,12 @@ class _User {
     for (String item in l) {
       wrongOptions.add(item);
     }
-    //print("After init: $wrongOptions");
   }
 
   void initWordListStream(Stream<QuerySnapshot> stream) {
     stream.listen((data) async {
-      print("Stream DataReceived: " + data.documents.length.toString());
       wordLists = await getAllWordLists(data);
-    }, onDone: () {
-      print(" Stream Task Done");
-    }, onError: (error) {
-      print("Stream Some Error");
-    });
+    }, onDone: () {}, onError: (error) {});
   }
 
   Future<List<WordList>> getAllWordLists(QuerySnapshot documents) async {
