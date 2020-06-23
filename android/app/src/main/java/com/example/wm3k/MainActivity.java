@@ -6,12 +6,15 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.provider.Settings;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -29,6 +32,7 @@ public class MainActivity extends FlutterActivity {
   public static String parts_of_speech="***";
   public static String meaning="";
   public static String submeaning="****";
+
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
     //GeneratedPluginRegistrant.registerWith(flutterEngine);
@@ -67,7 +71,7 @@ public class MainActivity extends FlutterActivity {
     }
   }
 
-  public void getDataFromClipBoard(){
+  /*public void getDataFromClipBoard(){
     System.out.println("trying to copy data from clipboard");
     clipboardManager=(ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
     String clipdata="";
@@ -87,7 +91,7 @@ public class MainActivity extends FlutterActivity {
       getDataFromClipBoard();
       mhandler.postDelayed(cliprunnable,1000);
     }
-  };
+  };*/
 
 
   public void showChatHead(){
@@ -100,6 +104,7 @@ public class MainActivity extends FlutterActivity {
     } catch (IOException ioe) {
       throw new Error("Unable to create database");
     }
-    startService(new Intent(MainActivity.this, ClipBoard.class));
+    startService(new Intent(MainActivity.this, chatHeadService.class));
+    startService(new Intent(MainActivity.this,ClipBoard.class));
   }
 }

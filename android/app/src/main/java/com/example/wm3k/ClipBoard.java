@@ -5,12 +5,16 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.database.SQLException;
+import android.os.Build;
 import android.os.IBinder;
+
+import androidx.core.app.NotificationCompat;
 
 import java.io.IOException;
 
 public class ClipBoard extends Service {
     private ClipboardManager clipcheckmanager;
+    private boolean dbchker=false;
     IBinder mBinder;
     int mStartMode;
 
@@ -28,9 +32,11 @@ public class ClipBoard extends Service {
                 ClipData a=clipcheckmanager.getPrimaryClip();
                 ClipData.Item item=a.getItemAt(0);
                 clipdata=item.getText().toString();
+                System.out.println("data has been newly copied *******" + clipdata);
                 if(clipdata.length()<=40){
+                    System.out.println("data has been newly copied *******" +clipdata.length());
                     if(clipdata.contains("#") || clipdata.contains("$") || clipdata.contains("*")) {
-
+                        System.out.println("got out due to # $ *");
                     } else{
                         System.out.println("word is " + clipdata);
                         //MainActivity.word=clipdata;
@@ -38,18 +44,20 @@ public class ClipBoard extends Service {
 
                         try {
                             myDbHelper.openDataBase();
+                            dbchker=true;
                         } catch (SQLException sqle) {
                             throw new Error("Unable to open db");
                         }
                         if(myDbHelper.UpdateWordData(clipdata)){
                             System.out.println("word found ********************************************");
-                            startService(new Intent(ClipBoard.this,chatHeadService.class));
+                            startService(new Intent(ClipBoard.this,popUpCard.class));
                         }
                         else{
                             System.out.println("Word not found");
-                            startService(new Intent(ClipBoard.this,chatHeadService.class));
+                            startService(new Intent(ClipBoard.this,popUpCard.class));
 
                         }
+                        if(dbchker==true) myDbHelper.close();
                         //System.out.println(MainActivity.word);
                     }
                 }
@@ -62,4 +70,5 @@ public class ClipBoard extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
+
 }
