@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:wm3k/forum/MyPosts.dart';
+import 'package:wm3k/forum/ViewPost.dart';
 import 'package:wm3k/forum/createpost.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
 
@@ -22,8 +23,9 @@ class _NewsfeedState extends State<Newsfeed> {
     super.initState();
   }
 
-  Widget getPost(){
+  Widget getPost(BuildContext context){
     return Card(
+      elevation: 5,
       child: Container(
         //height: 230,
         child: Column(
@@ -74,7 +76,12 @@ class _NewsfeedState extends State<Newsfeed> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(Icons.comment),
-                        onPressed: () { /* Your code */ },
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => viewPost(user_name: "Radowan Redoy")),
+                          );
+                        },
                       ),
                       Text("Comment"),
                     ],
@@ -133,14 +140,14 @@ class _NewsfeedState extends State<Newsfeed> {
     );
   }
 
-  Widget setBodyForForum(){
+  Widget setBodyForForum(BuildContext context){
     return Expanded(
       child: Container(
         child: ListView.builder(
           //scrollDirection: Axis.horizontal,
             itemCount: 10,
             itemBuilder: (BuildContext context, int index){
-              return getPost();
+              return getPost(context);
             }),
       ),
     );
@@ -171,7 +178,7 @@ class _NewsfeedState extends State<Newsfeed> {
                 height: 15,
               ),
               //body=getPost(),
-              body=setBodyForForum(),
+              body=setBodyForForum(context),
             ConvexAppBar(
                 gradient: LinearGradient(colors: [
                   Color(0xBBBE1781),

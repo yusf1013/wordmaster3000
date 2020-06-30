@@ -4,6 +4,7 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
+import 'package:wm3k/forum/ViewPost.dart';
 import 'package:wm3k/forum/createpost.dart';
 import 'package:wm3k/forum/news_feed.dart';
 import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
@@ -59,6 +60,7 @@ class MyApp extends StatelessWidget {
       //home: WelcomeScreen(),
       //home: MyApp(),
       home: Newsfeed(),
+     // home: viewPost(user_name: "Radowan Redoy"),
       //home:createPost()
       //home: MyPosts(),
       //home: LoginScreen(),
