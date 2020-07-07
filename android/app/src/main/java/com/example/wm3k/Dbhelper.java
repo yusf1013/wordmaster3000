@@ -122,6 +122,12 @@ public class Dbhelper extends SQLiteOpenHelper {
                 MainActivity.submeaning=submeaning;
             }
         }
+        else{
+            MainActivity.word=search;
+            MainActivity.parts_of_speech="NA";
+            MainActivity.meaning="NA";
+            MainActivity.submeaning="NA";
+        }
         return b;
     }
 }

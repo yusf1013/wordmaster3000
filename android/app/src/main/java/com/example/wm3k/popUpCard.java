@@ -45,6 +45,7 @@ public class popUpCard extends Service {
         wm= (WindowManager) getSystemService(WINDOW_SERVICE);
         wm.addView(dialougeview,params);
 
+
         t1=(TextView) dialougeview.findViewById(R.id.word_text_id);
         t1.setText(MainActivity.word);
         String t2_view="{ "+MainActivity.parts_of_speech+" } : "+MainActivity.meaning;

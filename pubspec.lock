@@ -594,7 +594,11 @@ packages:
       name: toast
       url: "https://pub.dartlang.org"
     source: hosted
+<<<<<<< HEAD
     version: "0.1.5"
+=======
+    version: "0.2.15"
+>>>>>>> 1d2e65eca64c15fc05583f77d1a0904a1b5c87fb
   transformer_page_view:
     dependency: transitive
     description:

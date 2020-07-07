@@ -4,6 +4,9 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
+import 'package:wm3k/forum/ViewPost.dart';
+import 'package:wm3k/forum/createpost.dart';
+import 'package:wm3k/forum/news_feed.dart';
 import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/screens/market_page.dart';
 import 'package:wm3k/wm3k_design/screens/memorization_card.dart';
@@ -16,6 +19,8 @@ import 'package:wm3k/wm3k_design/themes/app_theme.dart';
 import 'package:wm3k/wm3k_design/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'forum/MyPosts.dart';
 
 void main() {
   runApp(MyApp());
@@ -52,8 +57,12 @@ class MyApp extends StatelessWidget {
         //canvasColor: Colors.transparent,
       ),
       //home: loggedIn ? WelcomeScreen() : LoginScreen(),
-      home: WelcomeScreen(),
+      //home: WelcomeScreen(),
       //home: MyApp(),
+      home: Newsfeed(),
+     // home: viewPost(user_name: "Radowan Redoy"),
+      //home:createPost()
+      //home: MyPosts(),
       //home: LoginScreen(),
       //home: QuizCardScreen(),
       //home: LeaderBoardPage(),
