@@ -1,23 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_awesome_alert_box/flutter_awesome_alert_box.dart';
+import 'package:menu/menu.dart';
 import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';
 import 'package:wm3k/wm3k_design/models/category.dart';
 import 'package:flutter/material.dart';
 
 import 'custom_widgets.dart';
+import 'menu.dart';
 
 class LearningTabListView extends StatefulWidget {
   final Function callBack;
   //final List<Category> currentList;
   final UserDataController userDataController = UserDataController();
-  final Stream<QuerySnapshot> stream;
-  final Function getCurrentList, addButtonAction;
+  final Stream stream;
+  final Function getCurrentList, addButtonAction, onDelete;
 
   LearningTabListView(
       {this.callBack,
       @required this.stream,
       @required this.getCurrentList,
-      @required this.addButtonAction});
+      @required this.addButtonAction,
+      this.onDelete});
 
   @override
   _LearningTabListViewState createState() => _LearningTabListViewState();
@@ -54,14 +58,14 @@ class _LearningTabListViewState extends State<LearningTabListView>
       child: Container(
         height: 134,
         width: double.infinity,
-        child: StreamBuilder<QuerySnapshot>(
+        child: StreamBuilder(
           stream: widget.stream,
           builder: (context, asyncSnapshot) {
             if (!asyncSnapshot.hasData) {
-              return const SizedBox();
+              return SizedBox();
             } else {
               List<Category> currentList =
-                  widget.getCurrentList(asyncSnapshot.data.documents);
+                  widget.getCurrentList(asyncSnapshot.data);
               return ListView.builder(
                 padding: const EdgeInsets.only(
                     top: 0, bottom: 0, right: 16, left: 16),
@@ -79,12 +83,91 @@ class _LearningTabListViewState extends State<LearningTabListView>
                   animationController.forward();
 
                   if (index < currentList.length)
-                    return CategoryView(
-                      category: currentList[index],
-                      animation: animation,
-                      animationController: animationController,
-                      callback: () {
-                        widget.callBack(currentList[index].id);
+                    return Menu(
+                      child: CategoryView(
+                        category: currentList[index],
+                        animation: animation,
+                        animationController: animationController,
+                        callback: () {
+                          widget.callBack(currentList[index].id);
+                        },
+                      ),
+                      items: [
+                        MenuItem("Delete", () {
+                          DeleteAlertBox(
+                            context: context,
+                            infoMessage:
+                                "You won't be able to recover this list!",
+                            onPressedYes: () {
+                              /*UserDataController()
+                                  .deleteWordList(currentList[index].id);*/
+                              widget.onDelete(currentList[index].id);
+
+                              Navigator.pop(context);
+                            },
+                          );
+                        }),
+                      ],
+                      decoration: MenuDecoration(constraints: BoxConstraints()),
+                      itemBuilder: (
+                        MenuItem item,
+                        MenuDecoration menuDecoration,
+                        VoidCallback dismiss, {
+                        bool isFirst,
+                        bool isLast,
+                      }) {
+                        final BoxConstraints constraints =
+                            menuDecoration.constraints ??
+                                const BoxConstraints();
+
+                        final EdgeInsetsGeometry itemPadding =
+                            menuDecoration.padding ??
+                                const EdgeInsets.only(
+                                  top: 10.0,
+                                  bottom: 10,
+                                  right: 10.0,
+                                );
+
+                        Widget w = InkWell(
+                          splashColor: menuDecoration.splashColor,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 5.0),
+                            child: Row(
+                              children: <Widget>[
+                                Icon(Icons.delete_forever, color: Colors.red),
+                                Container(
+                                  padding: itemPadding,
+                                  constraints: constraints,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    item.text,
+                                    style: menuDecoration.textStyle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          onTap: () {
+                            item.onTap();
+                            dismiss();
+                          },
+                        );
+
+                        var r = menuDecoration.radius;
+                        var radius = BorderRadius.horizontal(
+                          left: isFirst ? Radius.circular(r) : Radius.zero,
+                          right: isLast ? Radius.circular(r) : Radius.zero,
+                        );
+
+                        w = Material(
+                          color: menuDecoration.color,
+                          child: w,
+                        );
+
+                        return ClipRRect(
+                          child: w,
+                          borderRadius: radius,
+                        );
                       },
                     );
                   else

@@ -11,8 +11,8 @@ class Category {
 
   String title;
   int wordCount;
-  int time, id;
-  String text;
+  int time;
+  String text, id;
   String imagePath;
   static int type = 0;
 

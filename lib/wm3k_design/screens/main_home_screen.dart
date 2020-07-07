@@ -1,3 +1,4 @@
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:wm3k/analysis_classes/wordList.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
@@ -13,7 +14,7 @@ import 'package:wm3k/wm3k_design/screens/spelling_card.dart';
 import 'package:wm3k/wm3k_design/helper/games_list_view.dart';
 import '../themes/wm3k_app_theme.dart';
 import '../models/category.dart';
-import 'create_list_screen.dart';
+import 'create_and_share_list_screen.dart';
 
 class MainHomePage extends StatefulWidget {
   @override
@@ -177,6 +178,22 @@ class _MainHomePageState extends State<MainHomePage> {
     );
   }
 
+  void moveToCoursePage(String id) {
+    WordList list = _userDataController.getCourse(id);
+    print("Word list id: $id, is null: ${list == null}");
+    Navigator.push<dynamic>(
+      context,
+      MaterialPageRoute<dynamic>(
+        builder: (BuildContext context) => MyWordList(
+          wordList: list,
+          searchBar: false,
+          backButton: true,
+          deletable: false,
+        ),
+      ),
+    );
+  }
+
   void moveTo() {
     Navigator.push<dynamic>(
       context,
@@ -189,8 +206,9 @@ class _MainHomePageState extends State<MainHomePage> {
     );
   }
 
-  void moveToWordPage(int id) {
+  void moveToWordPage(String id) {
     WordList list = _userDataController.getWordList(id);
+    print("Word list id: $id, is null: ${list == null}");
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
@@ -272,6 +290,7 @@ class _MainHomePageState extends State<MainHomePage> {
           moveToWordPage(id);
           //print(id);
         },
+        onDelete: _userDataController.deleteWordList,
         stream: _userDataController.getStreamOfWordLists(),
         getCurrentList: _userDataController.getCategoryListForWordList,
         addButtonAction: () async {
@@ -293,8 +312,25 @@ class _MainHomePageState extends State<MainHomePage> {
     } else {
       currentList = Category.courseList;
       newWig = LearningTabListView(
-        callBack: () {
-          moveTo();
+        callBack: (id) {
+          moveToCoursePage(id);
+        },
+        onDelete: (id) {
+          _userDataController.unEnrollCourse(id);
+          print("Flutter is SHIT");
+          setState(() {
+            catListView = ModalProgressHUD(
+              inAsyncCall: true,
+              color: Colors.black,
+              child: SizedBox(
+                height: 166,
+              ),
+            );
+          });
+
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            getStartLearningView(categoryTypeData);
+          });
         },
         stream: _userDataController.getCourses(),
         getCurrentList: _userDataController.getCategoryListForCourses,

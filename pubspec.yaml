@@ -47,6 +47,10 @@ dependencies:
   sticky_headers: ^0.1.8+1
   flutter_tts: ^1.2.0
   flutter_awesome_alert_box: ^1.0.1
+  flutter_slidable: ^0.5.4
+  toast: ^0.1.5
+  menu: ^0.1.4
+  http: ^0.12.1
 
 
 dev_dependencies:

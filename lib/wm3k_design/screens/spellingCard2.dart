@@ -13,7 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'notification_card.dart';
 
 CardController _controller = CardController();
-int _correct = 0;
+int _correct = 0, _lastInd = -1;
 var _textController = TextEditingController();
 
 class SpellingCard2 extends StatefulWidget {
@@ -30,6 +30,7 @@ class _SpellingCard2State extends State<SpellingCard2> {
   void initState() {
     _controller = CardController();
     _correct = 0;
+    _lastInd = -1;
     _textController = TextEditingController();
     super.initState();
   }
@@ -94,7 +95,8 @@ class _SpellingCard2State extends State<SpellingCard2> {
                       swipeCompleteCallback:
                           (CardSwipeOrientation orientation, int index) async {
                         /// Get orientation & index of swiped card!
-                        if (index == widget.wordList.subMeanings.length - 1) {
+                        if (index == widget.wordList.subMeanings.length - 1 &&
+                            index == _lastInd) {
                           await showDialog(
                               context: context, child: getEndCard());
                           Navigator.pop(context);
@@ -225,7 +227,6 @@ class _SpellingLearnCardState extends State<SpellingLearnCard> {
   }
 
   Widget getCard(double height, double width) {
-    print(height);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 30),
       child: ConstrainedBox(
@@ -512,6 +513,7 @@ class _SpellingLearnCardState extends State<SpellingLearnCard> {
                             onPressed: () async {
                               FocusScope.of(context).unfocus();
                               _textController.clear();
+                              _lastInd = widget.currentNumber - 1;
                               if (widget.subMeaning.word.toLowerCase() ==
                                   answer.toLowerCase()) {
                                 await showSuccessDialog();

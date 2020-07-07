@@ -22,6 +22,7 @@ class MemorizationCard extends StatefulWidget {
 
 class _MemorizationCardState extends State<MemorizationCard> {
   int _correct = 0;
+  double swipeEdge = 6, lastSwipeAlign;
   List<int> _incorrectList = List();
 
   @override
@@ -62,7 +63,7 @@ class _MemorizationCardState extends State<MemorizationCard> {
                       orientation: AmassOrientation.LEFT,
                       totalNum: widget.wordList.subMeanings.length,
                       stackNum: 3,
-                      swipeEdge: 4.0,
+                      swipeEdge: swipeEdge,
                       maxWidth: width - 10,
                       maxHeight: height + 50,
                       minWidth: width - 11,
@@ -83,11 +84,15 @@ class _MemorizationCardState extends State<MemorizationCard> {
                         } else if (align.x > 0) {
                           //Card is RIGHT swiping
                         }
+                        lastSwipeAlign = align.x;
+                        if (lastSwipeAlign < 0) lastSwipeAlign *= -1;
                       },
                       swipeCompleteCallback:
                           (CardSwipeOrientation orientation, int index) async {
                         bool tapped;
-                        if (index == widget.wordList.subMeanings.length - 1) {
+                        print(lastSwipeAlign);
+                        if (index == widget.wordList.subMeanings.length - 1 &&
+                            lastSwipeAlign > swipeEdge) {
                           tapped = await showDialog(
                             child: getEndCard(),
                             context: context,
@@ -103,7 +108,7 @@ class _MemorizationCardState extends State<MemorizationCard> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => MemorizationCard(
-                                        WordList("", "", tempList, -1))));
+                                        WordList("", "", tempList, "-1"))));
                           }
                         }
                       },

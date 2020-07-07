@@ -197,6 +197,137 @@ class HeaderAppBar extends StatelessWidget {
   }
 }
 
+class HeaderAppBar2 extends StatelessWidget {
+  final String title, promptText;
+  final bool searchBar, backButton;
+  final Color headerColor;
+
+  HeaderAppBar2(
+      {this.title = "MarketPlace",
+      this.promptText = "Search for a course",
+      this.searchBar = true,
+      this.backButton = false,
+      this.headerColor});
+
+  Widget _circularContainer(double height, Color color,
+      {Color borderColor = Colors.transparent, double borderWidth = 2}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(30.0),
+        topRight: Radius.circular(30.0),
+      ),
+      child: Container(
+        height: height,
+        width: height,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+          border: Border.all(color: borderColor, width: borderWidth),
+        ),
+      ),
+    );
+  }
+
+  Widget _header(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    return ClipRRect(
+      borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(50), bottomRight: Radius.circular(50)),
+      child: Container(
+          height: searchBar ? 180 : 120,
+          width: width,
+          decoration: BoxDecoration(
+            color: Color(0xFF282C35),
+          ),
+          child: Stack(
+            fit: StackFit.expand,
+            alignment: Alignment.center,
+            children: <Widget>[
+              Positioned(
+                  top: 30,
+                  right: -100,
+                  child: _circularContainer(300, Color(0xFF1a1110))),
+              Positioned(
+                  top: -100,
+                  left: -45,
+                  child: _circularContainer(width * .5, Colors.black)),
+              Positioned(
+                  top: -180,
+                  right: -30,
+                  child: _circularContainer(width * .7, Colors.transparent,
+                      borderColor: Colors.white38)),
+              Positioned(
+                  top: 30,
+                  left: 0,
+                  child: Container(
+                      width: width,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              backButton
+                                  ? IconButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      icon: Icon(
+                                        Icons.arrow_back_ios,
+                                        size: 30,
+                                        color: headerColor,
+                                      ),
+                                    )
+                                  : SizedBox(
+                                      width: 40,
+                                    ),
+                              Expanded(
+                                child: Center(
+                                  child: AutoSizeText(
+                                    title,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    //maxLines: 2,
+                                    style: TextStyle(
+                                        color: headerColor,
+                                        fontSize: 35,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 30,
+                              ),
+                            ],
+                          ),
+                          //SizedBox(height: 20),
+                        ],
+                      ))),
+              searchBar
+                  ? Positioned(
+                      top: 90,
+                      left: 0,
+                      child: SearchBarUI(
+                        onSubmit: () {},
+                        suggestionList: [],
+                        prompText: promptText,
+                      ),
+                    )
+                  : SizedBox(),
+            ],
+          )),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _header(context);
+  }
+}
+
 class SearchBarUI extends StatelessWidget {
   final EdgeInsets padding;
   final double widthRatio;

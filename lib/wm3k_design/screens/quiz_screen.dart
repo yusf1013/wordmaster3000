@@ -12,7 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 CardController _cardController;
 bool _answered = false;
-int _selected = -1, _correct = 0;
+int _selected = -1, _correct = 0, _lastInd = -1;
 
 class QuizCardScreen extends StatefulWidget {
   final WordList _wordList;
@@ -35,6 +35,7 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
     _answered = false;
     _selected = -1;
     _correct = 0;
+    _lastInd = -1;
 
     _wordList = widget._wordList.getShuffledWordList();
     for (int i = 0; i < widget._wordList.subMeanings.length; i++)
@@ -108,7 +109,10 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
                       swipeCompleteCallback:
                           (CardSwipeOrientation orientation, int index) async {
                         bool tapped;
-                        if (index == _wordList.subMeanings.length - 1) {
+
+                        print("Last Index: $_lastInd");
+                        if (index == _wordList.subMeanings.length - 1 &&
+                            index == _lastInd) {
                           tapped = await showDialog(
                             child: getEndCard(),
                             context: context,
@@ -301,31 +305,39 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
                                       Dot(5, color: Colors.white),
-                                      AutoSizeText(
-                                        "Meaning of \"${widget.subMeaning.word}\"?",
-                                        maxLines: 1,
-                                        style: GoogleFonts.breeSerif(
-                                          textStyle: TextStyle(
-                                            fontSize: 28,
-                                            color: Colors.white,
+                                      Expanded(
+                                        child: AutoSizeText(
+                                          "Meaning of \"${widget.subMeaning.word}\"?",
+                                          maxLines: 1,
+                                          style: GoogleFonts.breeSerif(
+                                            textStyle: TextStyle(
+                                              fontSize: 25,
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ],
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 25.0, top: 10),
-                                    child: AutoSizeText(
-                                      "Eg: ${widget.subMeaning.getFirstExample()}",
-                                      maxLines: 2,
-                                      style: GoogleFonts.courgette(
-                                        textStyle: TextStyle(
-                                            fontSize: 22,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
+                                  Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 25.0, top: 10, right: 5),
+                                          child: AutoSizeText(
+                                            "Eg: ${widget.subMeaning.getFirstExample()}",
+                                            maxLines: 2,
+                                            style: GoogleFonts.courgette(
+                                              textStyle: TextStyle(
+                                                  fontSize: 22,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -473,17 +485,18 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                           ),
                           child: GradientButton(
                             width: 150,
-                            onPressed: () {
+                            onPressed: () async {
                               if (widget.options['answer'] == _selected) {
                                 _correct++;
                               }
                               _answered = false;
                               _selected = -1;
+                              _lastInd = widget.cardNumber - 1;
                               _cardController.triggerRight();
                             },
                             startColor: Color(0xFF192221),
                             endColor: Color(0xFFFF34AB),
-                            text: "Next Question",
+                            text: "Continue",
                           ),
                         ),
                       ),

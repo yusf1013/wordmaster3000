@@ -743,8 +743,8 @@ class MeaningListView extends StatelessWidget {
 }
 
 class SaveToListButton extends StatefulWidget {
-  final String text;
-  final int id, subMeaningIndex, meaningID;
+  final String text, id;
+  final int subMeaningIndex, meaningID;
   final Meaning meaning;
   final bool selected;
 

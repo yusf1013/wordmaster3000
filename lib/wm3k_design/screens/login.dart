@@ -26,7 +26,7 @@ class LoginScreen extends StatelessWidget {
     print("Before this");
     return (await userController.logIn(data.name, data.password)
         ? null
-        : "Error loggin in!");
+        : "Error loggin in! ");
   }
 
   Future<String> _signUp(LoginData data) async {

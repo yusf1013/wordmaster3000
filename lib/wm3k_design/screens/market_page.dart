@@ -1,27 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:toast/toast.dart';
+import 'package:wm3k/analysis_classes/wordList.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
 import 'package:wm3k/wm3k_design/helper/quad_clipper.dart';
+import 'package:wm3k/wm3k_design/screens/course_page.dart';
+import 'package:wm3k/wm3k_design/screens/loading_screen.dart';
+import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
 import 'package:wm3k/wm3k_design/themes/color/light_color.dart';
 import 'package:flutter/material.dart';
 import '../helper/courseModel.dart';
 import '../themes/market_place_theme.dart';
 
-class MarketPage extends StatelessWidget {
+class MarketPage extends StatefulWidget {
   MarketPage({Key key}) : super(key: key);
 
-  double width;
+  @override
+  _MarketPageState createState() => _MarketPageState();
+}
 
-  Widget _circularContainer(double height, Color color,
-      {Color borderColor = Colors.transparent, double borderWidth = 2}) {
-    return Container(
-      height: height,
-      width: height,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-        border: Border.all(color: borderColor, width: borderWidth),
-      ),
-    );
-  }
+class _MarketPageState extends State<MarketPage> {
+  double width;
+  bool contributionsOnly = false;
+  String subHeaderText = "Market Place";
 
   Widget _categoryRow(String title) {
     // This thing includes the popular tags and MP text
@@ -70,65 +71,111 @@ class MarketPage extends StatelessWidget {
     return list;
   }
 
-  Widget _courseList() {
+  Widget _chip(String text, Color textColor,
+      {double height = 0, bool isPrimaryCard = false}) {
     return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: getCourseListChildren(),
+      alignment: Alignment.center,
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: height),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+        color: textColor.withAlpha(isPrimaryCard ? 200 : 50),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+            color: isPrimaryCard ? Colors.white : textColor, fontSize: 12),
       ),
     );
   }
 
-  List<Widget> getCourseListChildren() {
-    List<Widget> list = new List();
-    for (int i = 0; i < CourseList.list.length; i++) {
-      CourseModel model = CourseList.list[i];
-
-      if (i % 3 == 0)
-        list.add(_courceInfo(
-            model, _decorationContainerA(Colors.redAccent, -110, -85),
-            background: LightColor.seeBlue));
-      else if (i % 3 == 1)
-        list.add(_courceInfo(model, _decorationContainerB(),
-            background: LightColor.darkOrange));
-      else
-        list.add(_courceInfo(CourseList.list[2], _decorationContainerC(),
-            background: LightColor.lightOrange2));
-
-      list.add(
-        Divider(
-          thickness: 1,
-          endIndent: 20,
-          indent: 20,
-        ),
-      );
-    }
-    list.removeLast();
-
-    /*list = [
-      _courceInfo(CourseList.list[0],
-          _decorationContainerA(Colors.redAccent, -110, -85),
-          background: LightColor.seeBlue),
-      Divider(
-        thickness: 1,
-        endIndent: 20,
-        indent: 20,
-      ),
-      _courceInfo(CourseList.list[1], _decorationContainerB(),
-          background: LightColor.darkOrange),
-      Divider(
-        thickness: 1,
-        endIndent: 20,
-        indent: 20,
-      ),
-      _courceInfo(CourseList.list[2], _decorationContainerC(),
-          background: LightColor.lightOrange2),
-    ];*/
-
-    return list;
+  BottomNavigationBarItem _bottomIcons(IconData icon, String title) {
+    return BottomNavigationBarItem(
+        //  backgroundColor: Colors.blue,
+        icon: Icon(icon),
+        title: Text(
+          title,
+          style: TextStyle(color: Colors.black),
+        ));
   }
 
-  Widget _card(
+  @override
+  Widget build(BuildContext context) {
+    width = MediaQuery.of(context).size.width;
+    return Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          selectedItemColor: LightColor.extraDarkPurple,
+          unselectedItemColor: Colors.grey.shade300,
+          type: BottomNavigationBarType.fixed,
+          currentIndex: 0,
+          items: [
+            _bottomIcons(Icons.shopping_cart, "New Courses"),
+            _bottomIcons(Icons.list, "My Contribution"),
+          ],
+          onTap: (index) {
+            if (index == 0)
+              setState(() {
+                contributionsOnly = false;
+                subHeaderText = "Market Place";
+              });
+            else if (index == 1)
+              setState(() {
+                contributionsOnly = true;
+                subHeaderText = "My contributions";
+              });
+            /*Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => HomePage()));*/
+          },
+        ),
+        body: Column(
+          children: <Widget>[
+            HeaderAppBar(),
+            SizedBox(
+              height: 20,
+            ),
+            _categoryRow(subHeaderText),
+            Expanded(
+              child: CourseListWidget(contributionsOnly),
+            ),
+            /*Expanded(
+              flex: 5,
+              child: SingleChildScrollView(
+                  child: Container(
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(height: 20),
+                    _categoryRow("Market Place"),
+                    _courseList(),
+                  ],
+                ),
+              )),
+            ),*/
+          ],
+        ));
+  }
+}
+
+class CourseListWidget extends StatelessWidget {
+  final UserDataController userDataController = UserDataController();
+  final bool contributionsOnly;
+
+  CourseListWidget(this.contributionsOnly);
+
+  Widget _circularContainer(double height, Color color,
+      {Color borderColor = Colors.transparent, double borderWidth = 2}) {
+    return Container(
+      height: height,
+      width: height,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color,
+        border: Border.all(color: borderColor, width: borderWidth),
+      ),
+    );
+  }
+
+  Widget _card(double width,
       {Color primaryColor = Colors.redAccent,
       String imgPath,
       Widget backWidget}) {
@@ -151,7 +198,19 @@ class MarketPage extends StatelessWidget {
         ));
   }
 
-  Widget _courceInfo(CourseModel model, Widget decoration, {Color background}) {
+  Positioned _smallContainer(Color primaryColor, double top, double left,
+      {double radius = 10}) {
+    return Positioned(
+        top: top,
+        left: left,
+        child: CircleAvatar(
+          radius: radius,
+          backgroundColor: primaryColor.withAlpha(255),
+        ));
+  }
+
+  Widget _courceInfo(double width, CourseModel model, Widget decoration,
+      {Color background}) {
     return Container(
         height: 170,
         width: width - 20,
@@ -159,7 +218,8 @@ class MarketPage extends StatelessWidget {
           children: <Widget>[
             AspectRatio(
               aspectRatio: .7,
-              child: _card(primaryColor: background, backWidget: decoration),
+              child: _card(width,
+                  primaryColor: background, backWidget: decoration),
             ),
             Expanded(
                 child: Column(
@@ -177,7 +237,7 @@ class MarketPage extends StatelessWidget {
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold)),
                       ),
-                      CircleAvatar(
+                      /*CircleAvatar(
                         radius: 3,
                         backgroundColor: background,
                       ),
@@ -185,6 +245,16 @@ class MarketPage extends StatelessWidget {
                         width: 5,
                       ),
                       Text(model.rating,
+                          style: TextStyle(
+                            color: LightColor.grey,
+                            fontSize: 14,
+                          )),*/
+                      Icon(
+                        Icons.get_app,
+                        color: background,
+                        size: 20,
+                      ),
+                      Text(model.downloads.toString(),
                           style: TextStyle(
                             color: LightColor.grey,
                             fontSize: 14,
@@ -199,13 +269,28 @@ class MarketPage extends StatelessWidget {
                       color: LightColor.grey,
                     )),
                 SizedBox(height: 15),
-                Text(model.description,
-                    style: AppTheme.h6Style.copyWith(
-                        fontSize: 12, color: LightColor.extraDarkPurple)),
-                SizedBox(height: 15),
+                Text(
+                  model.description,
+                  style: AppTheme.h6Style.copyWith(
+                      fontSize: 12, color: LightColor.extraDarkPurple),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 10),
+                Expanded(
+                  child: Container(),
+                ),
+                Text("Total words: ${model.number}",
+                    style: AppTheme.h6Style
+                        .copyWith(fontSize: 12, color: LightColor.grey)),
+                SizedBox(height: 7),
                 Row(
+                  //alignment: WrapAlignment.spaceBetween,
+                  //runSpacing: 5,
+                  //direction: Axis.horizontal,
                   children: getTagChips(model),
-                )
+                ),
+                SizedBox(height: 10),
               ],
             ))
           ],
@@ -221,23 +306,6 @@ class MarketPage extends StatelessWidget {
     }
     list.removeLast();
     return list;
-  }
-
-  Widget _chip(String text, Color textColor,
-      {double height = 0, bool isPrimaryCard = false}) {
-    return Container(
-      alignment: Alignment.center,
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: height),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        color: textColor.withAlpha(isPrimaryCard ? 200 : 50),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-            color: isPrimaryCard ? Colors.white : textColor, fontSize: 12),
-      ),
-    );
   }
 
   Widget _decorationContainerA(Color primaryColor, double top, double left) {
@@ -328,67 +396,97 @@ class MarketPage extends StatelessWidget {
     );
   }
 
-  Positioned _smallContainer(Color primaryColor, double top, double left,
-      {double radius = 10}) {
-    return Positioned(
-        top: top,
-        left: left,
-        child: CircleAvatar(
-          radius: radius,
-          backgroundColor: primaryColor.withAlpha(255),
-        ));
+  Column getCourseListChildren(DocumentSnapshot document, double width, int i) {
+    List<Widget> list = new List();
+    var data = document.data;
+    CourseModel model = CourseModel(
+        name: data['name'],
+        description: data['description'],
+        rating: data['rating'].toString(),
+        author: data['creator'],
+        number: data['length'],
+        downloads: data['downloads'],
+        tags: ["One", "Two", "One", "Two"]);
+
+    if (i % 3 == 0)
+      list.add(_courceInfo(
+          width, model, _decorationContainerA(Colors.redAccent, -110, -85),
+          background: LightColor.seeBlue));
+    else if (i % 3 == 1)
+      list.add(_courceInfo(width, model, _decorationContainerB(),
+          background: LightColor.darkOrange));
+    else
+      list.add(_courceInfo(width, model, _decorationContainerC(),
+          background: LightColor.lightOrange2));
+
+    list.add(
+      Divider(
+        thickness: 1,
+        endIndent: 20,
+        indent: 20,
+      ),
+    );
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: list,
+    );
   }
 
-  BottomNavigationBarItem _bottomIcons(IconData icon, String title) {
-    return BottomNavigationBarItem(
-        //  backgroundColor: Colors.blue,
-        icon: Icon(icon),
-        title: Text(
-          title,
-          style: TextStyle(color: Colors.black),
-        ));
+  Widget _chip(String text, Color textColor,
+      {double height = 0, bool isPrimaryCard = false}) {
+    return Container(
+      //alignment: Alignment.center,
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: height),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+        color: textColor.withAlpha(isPrimaryCard ? 200 : 50),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+            color: isPrimaryCard ? Colors.white : textColor, fontSize: 12),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    width = MediaQuery.of(context).size.width;
-    return Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          selectedItemColor: LightColor.extraDarkPurple,
-          unselectedItemColor: Colors.grey.shade300,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: 0,
-          items: [
-            _bottomIcons(Icons.shopping_cart, "Market"),
-            _bottomIcons(Icons.list, "Memes"),
-          ],
-          onTap: (index) {
-            /*Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => HomePage()));*/
-          },
-        ),
-        body: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 2,
-              child: HeaderAppBar(),
-            ),
-            Expanded(
-              flex: 5,
-              child: SingleChildScrollView(
-                  child: Container(
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 20),
-                    _categoryRow("Market Place"),
-                    _courseList(),
-                  ],
-                ),
-              )),
-            ),
-          ],
-        ));
+    double width = MediaQuery.of(context).size.width;
+    return StreamBuilder<QuerySnapshot>(
+      stream: userDataController.getStreamOfCourses("downloads"),
+      builder: (context, asyncSnapshot) {
+        if (asyncSnapshot.hasData) {
+          var documents = asyncSnapshot.data.documents;
+          return ListView.builder(
+            padding: EdgeInsets.all(0),
+            itemCount: documents.length,
+            itemBuilder: (context, index) {
+              var data = documents[index].data;
+
+              if (data['published'] == false) return Container();
+              if (contributionsOnly &
+                  !userDataController.hasCreatedCourse(data['id']))
+                return Container();
+
+              return GestureDetector(
+                  onTap: () async {
+                    var res = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CoursePage(data["id"]),
+                      ),
+                    );
+                    if (res != null && res == 1)
+                      Toast.show("Course will be removed from market", context,
+                          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                  },
+                  child: getCourseListChildren(documents[index], width, index));
+            },
+          );
+        }
+        return CircularProgressIndicator();
+      },
+    );
   }
 }

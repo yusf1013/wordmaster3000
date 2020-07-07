@@ -6,9 +6,16 @@ class CourseModel {
   String author;
   String rating;
   List<String> tags;
+  int number = 0, downloads = 0;
 
   CourseModel(
-      {this.name, this.description, this.rating, this.author, this.tags});
+      {this.name,
+      this.description,
+      this.rating,
+      this.author,
+      this.tags,
+      this.number,
+      this.downloads});
 }
 
 class CourseList {

@@ -1,9 +1,10 @@
 import 'package:wm3k/dbConnection/connector.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 
 class WordList {
   String name, description;
   List<FireBaseSubMeaning> subMeanings;
-  int id;
+  String id;
 
   WordList(this.name, this.description, this.subMeanings, this.id);
 
@@ -22,6 +23,18 @@ class WordList {
       if (sm.isSameSubMeaning(id, index)) return true;
 
     return false;
+  }
+
+  /*void deleteWord(String id, int index)
+  {
+    for (FireBaseSubMeaning sm in subMeanings)
+      if (sm.isSameSubMeaning(id, index)) subMeanings.remove(sm);
+  }*/
+
+  void deleteWord(FireBaseSubMeaning sm) {
+    subMeanings.remove(sm);
+    //print(sm.id + "LALALALA");
+    UserDataController().deleteWordFromList(id, sm.id, sm.index);
   }
 }
 
