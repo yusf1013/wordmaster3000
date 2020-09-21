@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wm3k/dbConnection/connector.dart';
@@ -8,6 +9,7 @@ import 'package:wm3k/forum/ViewPost.dart';
 import 'package:wm3k/forum/createpost.dart';
 import 'package:wm3k/forum/news_feed.dart';
 import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
+import 'package:wm3k/wm3k_design/screens/daily_training_screen.dart';
 import 'package:wm3k/wm3k_design/screens/market_page.dart';
 import 'package:wm3k/wm3k_design/screens/memorization_card.dart';
 import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
@@ -27,7 +29,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     print("Logged in? : ${AuthController().isLoggedIn()}");
@@ -56,13 +57,14 @@ class MyApp extends StatelessWidget {
         textTheme: AppTheme.textTheme,
         //canvasColor: Colors.transparent,
       ),
-      //home: loggedIn ? WelcomeScreen() : LoginScreen(),
+      home: loggedIn ? WelcomeScreen() : LoginScreen(),
+      //home: DailyTrainingScreen(),
       //home: WelcomeScreen(),
       //home: MyApp(),
-      home: Newsfeed(),
-     // home: viewPost(user_name: "Radowan Redoy"),
+      // home: Newsfeed(),
+      // home: viewPost(user_name: "Radowan Redoy"),
       //home:createPost()
-      //home: MyPosts(),
+      //home: MyPosts(),//
       //home: LoginScreen(),
       //home: QuizCardScreen(),
       //home: LeaderBoardPage(),
@@ -98,7 +100,6 @@ class _TempState extends State<Temp> {
 
   @override
   void initState() {
-    // TODO: implement initState
     load();
     super.initState();
   }

@@ -16,7 +16,6 @@ class _LeaderBoardPageState extends State<LeaderBoardPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     appbar = getAppBar("Leaderboard");
     super.initState();
   }

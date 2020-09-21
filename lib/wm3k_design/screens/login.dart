@@ -10,8 +10,6 @@ class LoginScreen extends StatelessWidget {
   Duration get loginTime => Duration(milliseconds: 2250);
   final AuthController userController = AuthController();
 
-  //TODO this function checks login. Check the next functions too
-
   Future<String> _logIn(LoginData data) async {
     print(data.name);
     print(data.password);

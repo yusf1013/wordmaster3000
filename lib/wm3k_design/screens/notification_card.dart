@@ -5,8 +5,9 @@ import 'package:getflutter/getflutter.dart';
 
 class NotificationCard extends StatelessWidget {
   final double height, width;
-  final String headerText, h2Text, bodyText, authorName, buttonText;
+  final String headerText, h2Text, bodyText, authorName, buttonText, h1Message;
   final Function onTap;
+  final IconData iconData;
 
   NotificationCard({
     this.height = 510,
@@ -17,7 +18,9 @@ class NotificationCard extends StatelessWidget {
         "\"You don't have to be great to start, but you have to start to be great.\"",
     this.authorName = "- Zig Ziglar",
     this.buttonText = "Proceed to round 2",
+    this.h1Message = "Well Done",
     this.onTap,
+    this.iconData = Icons.check_circle,
   });
 
   @override
@@ -46,21 +49,6 @@ class NotificationCard extends StatelessWidget {
                 height: height,
                 width: width,
               )),
-          /*Positioned(
-              top: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: new BorderRadius.only(
-                    topLeft: Radius.circular(25),
-                    topRight: Radius.circular(25),
-                    bottomLeft: Radius.elliptical(100, 60),
-                    bottomRight: Radius.elliptical(150, 60),
-                  ),
-                ),
-                height: height / 1.5,
-                width: width,
-              )),*/
           Positioned(
               top: 0,
               child: ClipRRect(
@@ -108,7 +96,7 @@ class NotificationCard extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(top: height * 0.03),
                       child: Text(
-                        "Well Done!",
+                        h1Message,
                         style: TextStyle(
                           inherit: false,
                           color: Colors.white,
@@ -120,7 +108,7 @@ class NotificationCard extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(top: height * 0.025),
                       child: Icon(
-                        Icons.check_circle,
+                        iconData,
                         size: 100,
                         color: Colors.green[700],
                       ),
@@ -225,7 +213,6 @@ class CustomRect extends CustomClipper<Rect> {
 
   @override
   bool shouldReclip(CustomRect oldClipper) {
-    // TODO: implement shouldReclip
     return true;
   }
 }

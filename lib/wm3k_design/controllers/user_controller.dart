@@ -1,8 +1,11 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wm3k/analysis_classes/wordList.dart';
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/wm3k_design/controllers/quiz_controller.dart';
@@ -10,11 +13,11 @@ import 'package:wm3k/wm3k_design/models/assets_data_provider.dart';
 import 'package:wm3k/wm3k_design/models/category.dart';
 import 'package:http/http.dart' as http;
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-final Firestore _fireStore = Firestore.instance;
+auth.FirebaseAuth _auth;
+FirebaseFirestore _fireStore;
 
 class AuthController {
-  static FirebaseUser _user;
+  static auth.User _user;
   static SharedPreferences _sharedPreferences;
   bool _loaded = false;
 
@@ -23,7 +26,10 @@ class AuthController {
   }
 
   void _loadEssentials() async {
-    _user ??= await _auth.currentUser();
+    await Firebase.initializeApp();
+    _auth = auth.FirebaseAuth.instance;
+    _fireStore = FirebaseFirestore.instance;
+    _user ??= await _auth.currentUser;
     _sharedPreferences ??= await SharedPreferences.getInstance();
     _loaded = true;
     _User();
@@ -47,14 +53,14 @@ class AuthController {
 
   Future<bool> signUp(String email, String password) async {
     try {
-      AuthResult result = await _auth.createUserWithEmailAndPassword(
+      var result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       _writeCredentials(email, password);
       List<String> l = List();
       _fireStore
           .collection("users")
-          .document(email)
-          .setData({"courseCreated": l, "courseEnrolled": l});
+          .doc(email)
+          .set({"courseCreated": l, "courseEnrolled": l});
 
       _loadEssentials();
       //UserDataController().initializeUser();
@@ -76,12 +82,14 @@ class AuthController {
   Future<bool> logIn(String email, String pass) async {
     if (email != null && pass != null) {
       try {
-        AuthResult result = await _auth.signInWithEmailAndPassword(
+        var result = await _auth.signInWithEmailAndPassword(
             email: email, password: pass);
         print("Auth result is: ${result.toString()}");
         if (result == null) return false;
         _writeCredentials(email, pass);
         await _loadEssentials();
+        var v = UserDataController();
+        await v.initDT();
         //UserDataController().initializeUser();
         return true;
       } catch (e) {
@@ -100,11 +108,11 @@ class AuthController {
     //UserDataController._userData = null;
   }
 
-  static FirebaseUser getCurrentUser() => _user;
+  static auth.User getCurrentUser() => _user;
 }
 
 class UserDataController {
-  FirebaseUser _currentUser;
+  auth.User _currentUser;
   _User user;
   static final UserDataController _singleton = UserDataController._internal();
 
@@ -117,13 +125,25 @@ class UserDataController {
   }
 
   void _initializeUser() {
+    print("IN INIT USER");
     _currentUser = AuthController.getCurrentUser();
     user = _User();
+    user.initDailyTrainingDetails(
+        getStreamOfCTLists(), getStreamOfWLTLists(), _currentUser.email);
     user.initWordListStream(getStreamOfWordLists());
     user.initWrongOptions();
-    user.initCourseEnrolled(getStreamFromUserDoc());
+    user.initCourseEnrolled(getCourses());
     user.initCourseCreated(getStreamFromUserDoc());
-    //user.initCourseEnrolled(_currentUser.email);
+  }
+
+  void initDT() async {
+    await user.initDailyTrainingDetails(
+        getStreamOfCTLists(), getStreamOfWLTLists(), _currentUser.email);
+    await sleep1();
+  }
+
+  Future sleep1() {
+    return new Future.delayed(const Duration(milliseconds: 250), () => "1");
   }
 
   AssetNameProvider assetNameProvider = AssetNameProvider();
@@ -132,10 +152,26 @@ class UserDataController {
     return QuizController(user.wrongOptions).getOptions(ans);
   }
 
+  Future<QuerySnapshot> getStreamOfCTLists() {
+    return _fireStore
+        .collection('users')
+        .doc('${_currentUser.email}')
+        .collection('courseTraining')
+        .get();
+  }
+
+  Future<QuerySnapshot> getStreamOfWLTLists() {
+    return _fireStore
+        .collection('users')
+        .doc('${_currentUser.email}')
+        .collection('trainingItems')
+        .get();
+  }
+
   Stream<QuerySnapshot> getStreamOfWordLists() {
     return _fireStore
         .collection('users')
-        .document('${_currentUser.email}')
+        .doc('${_currentUser.email}')
         .collection('wordLists')
         .orderBy('id')
         .snapshots();
@@ -144,7 +180,7 @@ class UserDataController {
   Stream<DocumentSnapshot> getStreamFromUserDoc() {
     return _fireStore
         .collection('users')
-        .document('${_currentUser.email}')
+        .doc('${_currentUser.email}')
         .snapshots();
   }
 
@@ -166,10 +202,10 @@ class UserDataController {
   Future<WordList> getCourseFromID(String id) async {
     print("In get Course $id");
     DocumentSnapshot document =
-        await _fireStore.collection("courses").document(id).get();
-    print(document.data['name']);
+        await _fireStore.collection("courses").doc(id).get();
+    print(document.data()['name']);
     if (document != null)
-      return await user.getWordListFromDoc(document);
+      return await user.getWordListFromDoc(document, collection: 'courseWords');
     else
       return null;
   }
@@ -177,51 +213,56 @@ class UserDataController {
   void deleteWordList(String id) {
     _fireStore
         .collection('users')
-        .document('${_currentUser.email}')
+        .doc('${_currentUser.email}')
         .collection('wordLists')
-        .document(id)
+        .doc(id)
         .delete();
   }
 
   void unEnrollCourse(String id) async {
-    var docRef = _fireStore.collection('users').document(_currentUser.email);
-    var doc = await docRef.get();
-    List l = doc.data['coursesEnrolled'];
+    var docRef = _fireStore
+        .collection('users')
+        .doc(_currentUser.email + "/courses/$id")
+        .delete();
+    /*var doc = await docRef.get();
+    List l = doc.data()['coursesEnrolled'];
     l.remove(id);
-    docRef.updateData({'coursesEnrolled': l});
+    docRef.update({'coursesEnrolled': l});*/
   }
 
   void deleteWordFromList(String listID, String wordID, int index) async {
     DocumentReference ref = await _fireStore
         .collection('users')
-        .document('${_currentUser.email}')
+        .doc('${_currentUser.email}')
         .collection('wordLists')
-        .document(listID);
+        .doc(listID);
     DocumentSnapshot document = await ref.get();
 
-    ref.collection("words").document("$wordID,$index").delete();
+    ref.collection("words").doc("$wordID,$index").delete();
 
-    int length = document.data['length'] - 1;
-    ref.updateData({'length': length});
+    int length = document.data()['length'] - 1;
+    ref.update({'length': length});
   }
 
-  Stream<DocumentSnapshot> getCourses() {
+  Stream<QuerySnapshot> getCourses() {
+    /*return _fireStore
+        .collection('users')
+        .doc('${_currentUser.email}')
+        .snapshots();*/
     return _fireStore
         .collection('users')
-        .document('${_currentUser.email}')
+        .doc('${_currentUser.email}')
+        .collection("courses")
         .snapshots();
   }
 
   void unPublishCourse(String id) async {
-    var docRef = _fireStore.collection('users').document(_currentUser.email);
+    var docRef = _fireStore.collection('users').doc(_currentUser.email);
     var doc = await docRef.get();
-    List l = doc.data['coursesCreated'];
+    List l = doc.data()['coursesCreated'];
     l.remove(id);
-    docRef.updateData({'coursesCreated': l});
-    _fireStore
-        .collection('courses')
-        .document(id)
-        .updateData({'published': false});
+    docRef.update({'coursesCreated': l});
+    _fireStore.collection('courses').doc(id).update({'published': false});
   }
 
   WordList getWordList(String id) {
@@ -242,11 +283,11 @@ class UserDataController {
     for (DocumentSnapshot document in documents) {
       list.add(Category(
           imagePath: assetNameProvider.getWordListImage(recent),
-          title: document.data['name'],
-          wordCount: document.data['length'],
-          time: document.data['length'] * 2,
+          title: document.data()['name'],
+          wordCount: document.data()['length'],
+          time: document.data()['length'] * 2,
           text: '',
-          id: document.data['id'].toString()));
+          id: document.data()['id'].toString()));
       recent = false;
     }
     return list;
@@ -257,16 +298,28 @@ class UserDataController {
 
     List<Category> list = new List();
     for (DocumentSnapshot document in user.courseDocList) {
-      print("vojo ${document.data['name']}, ${document.data['words']}");
+      print("vojo ${document.data()['name']}, ${document.data()['words']}");
       list.add(Category(
           imagePath: assetNameProvider.getCourseImage(),
-          title: document.data['name'],
-          wordCount: document.data['length'],
-          time: document.data['length'] * 2,
+          title: document.data()['name'],
+          wordCount: document.data()['length'],
+          time: document.data()['length'] * 2,
           text: '/Day',
-          id: document.data['id']));
+          id: document.data()['id']));
     }
     return list;
+  }
+
+  void generateWLT() async {
+    String url =
+        "https://us-central1-wm3k-f920b.cloudfunctions.net/createWLTraining?u=${_currentUser.email}";
+    await http.get(url);
+  }
+
+  void generateCLT() async {
+    String url =
+        "https://us-central1-wm3k-f920b.cloudfunctions.net/createCourseTraining?u=${_currentUser.email}";
+    await http.get(url);
   }
 
   void addWordToList(
@@ -274,32 +327,34 @@ class UserDataController {
       {String collection = 'wordLists'}) async {
     DocumentReference ref = await _fireStore
         .collection('users')
-        .document('${_currentUser.email}')
+        .doc('${_currentUser.email}')
         .collection(collection)
-        .document(id);
+        .doc(id);
     DocumentSnapshot document = await ref.get();
 
     if (selected) {
       ref
           .collection('words')
-          .document(meaning.id.toString() + "," + index.toString())
+          .doc(meaning.id.toString() + "," + index.toString())
           .setData({
         'meaningID': meaning.id.toString(),
         'subMeaning': meaning.subMeaning[index].subMeaning,
         'subMeaningIndex': index,
         'word': word,
-        'examples': meaning.subMeaning[index].examples
+        'examples': meaning.subMeaning[index].examples,
+        'rating': 1000,
+        'author': _currentUser.email,
       });
-      int length = document.data['length'] + 1;
+      int length = document.data()['length'] + 1;
       print("After adding, length should be: $length");
-      ref.updateData({'length': length});
+      ref.update({'length': length});
     } else {
       ref
           .collection('words')
-          .document(meaning.id.toString() + "," + index.toString())
+          .doc(meaning.id.toString() + "," + index.toString())
           .delete();
-      int length = document.data['length'] - 1;
-      ref.updateData({'length': length});
+      int length = document.data()['length'] - 1;
+      ref.update({'length': length});
     }
   }
 
@@ -307,7 +362,7 @@ class UserDataController {
       {String collection = 'wordLists'}) async {
     QuerySnapshot list = await _fireStore
         .collection('users')
-        .document('${_currentUser.email}')
+        .doc('${_currentUser.email}')
         .collection(collection)
         .getDocuments();
 
@@ -315,9 +370,9 @@ class UserDataController {
 
     _fireStore
         .collection('users')
-        .document('${_currentUser.email}')
+        .doc('${_currentUser.email}')
         .collection(collection)
-        .document(id.toString())
+        .doc(id.toString())
         .setData({
       'id': id,
       'name': name,
@@ -328,28 +383,38 @@ class UserDataController {
     });
     /*DocumentReference d = await _fireStore
         .collection('users')
-        .document('${_currentUser.email}')
+        .doc('${_currentUser.email}')
         .collection(collection)
-        .document(id.toString());*/
+        .doc(id.toString());*/
     //d.collection('words').add({'ad': 1});
     return id;
   }
 
   Future<bool> enrollInCourse(String id) async {
-    var docRef = _fireStore.collection("users").document(_currentUser.email);
-    var doc = await docRef.get();
-    List l = doc.data['coursesEnrolled'];
-    l.add(id);
-    await docRef.updateData({"coursesEnrolled": l});
-    int x = (await _fireStore
-        .collection('courses')
-        .document(id)
-        .get())["downloads"];
-    await _fireStore
-        .collection('courses')
-        .document(id)
-        .updateData({"downloads": x + 1});
+    print("Enroll in course!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: $id");
+
+    try {
+      var url =
+          "http://us-central1-wm3k-f920b.cloudfunctions.net/enrollInCourse?u=${_currentUser.email}&cid=$id";
+      //var url = "https://us-central1-wm3k-f920b.cloudfunctions.net/createCourseDeath?user=hunter@gmail.com&id=hunter@gmail.com,0,405758008";
+      print(url);
+      var res = await http.get(url);
+      print(res.statusCode);
+
+      int x = (await _fireStore.collection('courses').doc(id).get())
+          .data()["downloads"];
+      await _fireStore
+          .collection('courses')
+          .doc(id)
+          .update({"downloads": x + 1});
+    } catch (e) {
+      print(e);
+      return false;
+    }
     return true;
+    /*
+    shit shit
+     */
   }
 
   bool hasCourse(String id) {
@@ -360,6 +425,10 @@ class UserDataController {
     }
 
     return false;
+  }
+
+  DailyTrainingDetails getDailyTrainingDetails() {
+    return user.dailyTraining;
   }
 
   bool hasCreatedCourse(String id) {
@@ -377,16 +446,11 @@ class UserDataController {
     int code = rng.nextInt(1000000000);
     try {
       var url =
-          'https://us-central1-wm3k-f920b.cloudfunctions.net/createCourse?id=${wordList.id}&user=${_currentUser.email}&code=$code&title=$name&desc=$desc';
+          'https://us-central1-wm3k-f920b.cloudfunctions.net/createCourse?id=${wordList.id}&user=${_currentUser.email}&code=$code&title=$name&desc=$desc&length=${wordList.subMeanings.length}';
 
       String res = await http.read(url);
       print(res);
 
-      /*user.coursesCreated.add(wordList.name);
-      await _fireStore
-          .collection('users')
-          .document(_currentUser.email)
-          .setData({"coursesCreated": user.coursesCreated});*/
       if (res.contains("uccess")) {
         return true;
       } else
@@ -395,20 +459,14 @@ class UserDataController {
       print(e);
       return false;
     }
-
-    /*var url = 'https://us-central1-wm3k-f920b.cloudfunctions.net/createCourse';
-    var response = await http
-        .post(url, body: {'id': '$id', 'user': '${_currentUser.email}'});
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');*/
   }
 
   void deleteCourse(String id) async {
-    var dref = _fireStore.collection('users').document(_currentUser.email);
+    var dref = _fireStore.collection('users').doc(_currentUser.email);
     var doc = await dref.get();
-    List list = doc['coursesEnrolled'];
+    List list = doc.data()['coursesEnrolled'];
     list.remove(id);
-    dref.updateData({"coursesEnrolled": list});
+    dref.update({"coursesEnrolled": list});
   }
 
   int _getID(QuerySnapshot list) =>
@@ -419,6 +477,7 @@ class _User {
   static final _User _singleton = _User._internal();
   //QuerySnapshot wordLists;
   List<WordList> wordLists, courses;
+  DailyTrainingDetails dailyTraining;
   List<DocumentSnapshot> courseDocList;
   List<String> coursesCreated = List();
   List<String> wrongOptions = List();
@@ -432,29 +491,40 @@ class _User {
   void initWrongOptions() async {
     var v = await _fireStore
         .collection("tempCollection")
-        .document("grabageOptions")
+        .doc("grabageOptions")
         .get();
-    List l = v.data['words'];
+    List l = v.data()['words'];
     for (String item in l) {
       wrongOptions.add(item);
     }
   }
 
-  void initCourseEnrolled(Stream<DocumentSnapshot> stream) {
+  void initDailyTrainingDetails(Future<QuerySnapshot> clt,
+      Future<QuerySnapshot> wlt, String email) async {
+    dailyTraining = DailyTrainingDetails();
+    dailyTraining.initCourseTrainingList(clt);
+    dailyTraining.initWordListTrainingList(wlt);
+    await dailyTraining.initSmallDetails(email);
+  }
+
+  void initCourseEnrolled(Stream<QuerySnapshot> stream) async {
+    /*//delete this
+    var v = await _fireStore
+        .collectionGroup("words")
+        .where("author == hunter@gmail.com")
+        .get();
+
+    print("Never use flutter");
+    for (var x in v.docs) print(x.data());*/
+
     courses = List();
     courseDocList = List();
     stream.listen((data) async {
-      print(
-          "hhhhh In init course enrolled ${data.data['coursesEnrolled']}, ${courseDocList.length}");
       courses.clear();
       courseDocList.clear();
-      List ids = data.data['coursesEnrolled'];
-      for (String id in ids) {
-        print("hhhhh Idiaaa: $id");
-        DocumentSnapshot d =
-            await _fireStore.collection('courses').document(id).get();
-        courseDocList.add(d);
-        courses.add(await getWordListFromDoc(d));
+      for (DocumentSnapshot doc in data.documents) {
+        courseDocList.add(doc);
+        courses.add(await getWordListFromDoc(doc, collection: 'courseWords'));
       }
     }, onDone: () {}, onError: (error) {});
   }
@@ -462,25 +532,22 @@ class _User {
   void initCourseCreated(Stream<DocumentSnapshot> stream) {
     stream.listen((data) async {
       coursesCreated.clear();
-      List list = data.data['coursesCreated'];
+      List list = data.data()['coursesCreated'];
       for (String item in list) {
         coursesCreated.add(item);
       }
     }, onDone: () {}, onError: (error) {});
   }
 
-  /*void initCourseCreated(String email) async {
-     var v = await _fireStore.collection("users").document(email).get();
-    List l = v.data['coursesCreated'];
-    for (String item in l) {
-      coursesCreated.add(item);
-    }
-  }*/
-
   void initWordListStream(Stream<QuerySnapshot> stream) {
-    stream.listen((data) async {
-      wordLists = await getAllWordLists(data);
-    }, onDone: () {}, onError: (error) {});
+    stream.listen(
+        (data) async {
+          wordLists = await getAllWordLists(data);
+        },
+        onDone: () {},
+        onError: (error) {
+          print(error);
+        });
   }
 
   Future<List<WordList>> getAllWordLists(QuerySnapshot documents) async {
@@ -505,22 +572,137 @@ class _User {
     return null;
   }
 
-  Future<WordList> getWordListFromDoc(DocumentSnapshot document) async {
+  Future<WordList> getWordListFromDoc(DocumentSnapshot document,
+      {String collection = 'words'}) async {
     QuerySnapshot words =
-        await document.reference.collection('words').getDocuments();
+        await document.reference.collection(collection).getDocuments();
 
     List<FireBaseSubMeaning> list = List();
-    for (DocumentSnapshot word in words.documents)
-      list.add(FireBaseSubMeaning(word['meaningID'], word['subMeaning'],
-          word['word'], word['examples'], word['subMeaningIndex']));
-
-    /*int id = -1;
-    if (document.data['id'].runtimeType == 1.runtimeType)
-      id = document.data['id'];*/
-    var v = document.data['id'];
+    for (DocumentSnapshot wor in words.docs) {
+      var word = wor.data();
+      list.add(FireBaseSubMeaning(
+          word['meaningID'],
+          word['subMeaning'],
+          word['word'],
+          word['examples'],
+          word['subMeaningIndex'],
+          word['rating']));
+    }
+    var v = document.data()['id'];
     if (v.runtimeType == 1.runtimeType) v = v.toString();
 
     return WordList(
-        document.data['name'], document.data['description'], list, v);
+        document.data()['name'], document.data()['description'], list, v);
+  }
+}
+
+class DailyTrainingDetails {
+  static final DailyTrainingDetails _singleton =
+      DailyTrainingDetails._internal();
+
+  WordList courseTrainingList,
+      wordListTrainingList,
+      forQuiz = WordList("", "", [], "");
+  int courseTrainingProgressIndex, wordListTrainingProgressIndex;
+  String email;
+  bool testTaken = false;
+
+  factory DailyTrainingDetails() {
+    return _singleton;
+  }
+
+  void increaseCTP() {
+    courseTrainingProgressIndex += 1;
+    _fireStore.collection("users").doc(email).update({
+      "DailyTrainingDetails.courseTrainingProgressIndex":
+          courseTrainingProgressIndex
+    });
+    // updateCloudStore();
+  }
+
+  int getProgress() {
+    int x = ((courseTrainingProgressIndex + wordListTrainingProgressIndex) ~/
+        6.0 *
+        96);
+    if (testTaken) x += 4;
+    return x;
+  }
+
+  void increaseWLTP() {
+    wordListTrainingProgressIndex += 1;
+    _fireStore.collection("users").doc(email).update({
+      "DailyTrainingDetails.wordListTrainingProgressIndex":
+          wordListTrainingProgressIndex
+    });
+  }
+
+  void testTakenDone() {
+    testTaken = true;
+    _fireStore
+        .collection("users")
+        .doc(email)
+        .update({"DailyTrainingDetails.testTaken": testTaken});
+  }
+
+  bool getTestEnabled() {
+    bool testEnabled = courseTrainingProgressIndex > 2 &&
+        wordListTrainingProgressIndex > 2 &&
+        !testTaken;
+    return testEnabled;
+  }
+
+  DailyTrainingDetails._internal();
+
+  void initSmallDetails(String m) async {
+    print("Init small details started");
+    var currentUser = AuthController.getCurrentUser();
+    var doc = await _fireStore.doc("users/${currentUser.email}").get();
+    courseTrainingProgressIndex =
+        doc.data()["DailyTrainingDetails"]["courseTrainingProgressIndex"];
+    wordListTrainingProgressIndex =
+        doc.data()["DailyTrainingDetails"]["wordListTrainingProgressIndex"];
+    email = m;
+    testTaken = doc.data()["DailyTrainingDetails"]["testTaken"];
+    print("Everythig done");
+  }
+
+  void initCourseTrainingList(Future<QuerySnapshot> documents) async {
+    QuerySnapshot docs = await documents;
+    courseTrainingList = await getWordListFromWordsCollection(docs);
+    var x = courseTrainingList.subMeanings;
+    for (int i = 0; i < x.length - 1; i++) {
+      if (x[i].index != x[i + 1].index || x[i].id != x[i + 1].id)
+        forQuiz.subMeanings.add(x[i]);
+    }
+    courseTrainingList = courseTrainingList.getShuffledWordList();
+  }
+
+  void initWordListTrainingList(Future<QuerySnapshot> documents) async {
+    QuerySnapshot docs = await documents;
+    wordListTrainingList = await getWordListFromWordsCollection(docs);
+    var x = wordListTrainingList.subMeanings;
+    for (int i = 0; i < x.length - 1; i++) {
+      if (x[i].index != x[i + 1].index || x[i].id != x[i + 1].id)
+        forQuiz.subMeanings.add(x[i]);
+    }
+    wordListTrainingList = wordListTrainingList.getShuffledWordList();
+  }
+
+  Future<WordList> getWordListFromWordsCollection(QuerySnapshot words) async {
+    List<FireBaseSubMeaning> list = List();
+    for (DocumentSnapshot wor in words.docs) {
+      var word = wor.data();
+      list.add(FireBaseSubMeaning(
+          word['meaningID'],
+          word['subMeaning'],
+          word['word'],
+          word['examples'],
+          word['subMeaningIndex'],
+          word['rating']));
+    }
+    //var v = document.data()['id'];
+    //if (v.runtimeType == 1.runtimeType) v = v.toString();
+
+    return WordList("", "", list, "ID");
   }
 }

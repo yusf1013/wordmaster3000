@@ -24,12 +24,12 @@ class _MemorizationCardState extends State<MemorizationCard> {
   int _correct = 0;
   double swipeEdge = 6, lastSwipeAlign;
   List<int> _incorrectList = List();
+  bool perfectlyDone = false;
 
   @override
   void initState() {
     for (int i = 0; i < widget.wordList.subMeanings.length; i++)
       _incorrectList.add(i);
-    // TODO: implement initState
     super.initState();
   }
 
@@ -69,11 +69,7 @@ class _MemorizationCardState extends State<MemorizationCard> {
                       minWidth: width - 11,
                       minHeight: height * 0.9,
                       cardBuilder: (context, index) {
-                        //return getEndCard();
-                        //if (index < widget.wordList.subMeanings.length)
                         return getLearnCard(index, height, width);
-                        /*else
-                          return getEndCard();*/
                       },
                       cardController: CardController(),
                       swipeUpdateCallback:
@@ -92,13 +88,14 @@ class _MemorizationCardState extends State<MemorizationCard> {
                         bool tapped;
                         print(lastSwipeAlign);
                         if (index == widget.wordList.subMeanings.length - 1 &&
+                            lastSwipeAlign != null &&
                             lastSwipeAlign > swipeEdge) {
                           tapped = await showDialog(
                             child: getEndCard(),
                             context: context,
                           );
                           if (tapped == null || tapped == false)
-                            Navigator.pop(context);
+                            Navigator.pop(context, perfectlyDone);
                           else if (tapped) {
                             List<FireBaseSubMeaning> tempList = List();
                             for (int i in _incorrectList)
@@ -152,6 +149,7 @@ class _MemorizationCardState extends State<MemorizationCard> {
   }
 
   Center getEndCard() {
+    perfectlyDone = (_incorrectList.length == 0);
     return Center(
       child: Padding(
         padding: EdgeInsets.only(top: 0),
@@ -355,8 +353,12 @@ class _LearnCardState extends State<LearnCard> {
                                     padding: const EdgeInsets.only(
                                         left: 25.0, right: 5),
                                     child: AutoSizeText(
-                                      "Eg: " +
-                                          widget.subMeaning.getFirstExample(),
+                                      widget.subMeaning.getFirstExample() ==
+                                              null
+                                          ? " "
+                                          : "Eg: " +
+                                              widget.subMeaning
+                                                  .getFirstExample(),
                                       style: GoogleFonts.courgette(
                                         textStyle: TextStyle(
                                           fontSize: 24,

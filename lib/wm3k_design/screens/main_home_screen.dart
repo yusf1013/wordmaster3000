@@ -318,7 +318,7 @@ class _MainHomePageState extends State<MainHomePage> {
         onDelete: (id) {
           _userDataController.unEnrollCourse(id);
           print("Flutter is SHIT");
-          setState(() {
+          /*setState(() {
             catListView = ModalProgressHUD(
               inAsyncCall: true,
               color: Colors.black,
@@ -326,7 +326,7 @@ class _MainHomePageState extends State<MainHomePage> {
                 height: 166,
               ),
             );
-          });
+          });*/
 
           Future.delayed(const Duration(milliseconds: 1000), () {
             getStartLearningView(categoryTypeData);

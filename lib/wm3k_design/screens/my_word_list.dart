@@ -118,8 +118,7 @@ class MyWordList extends StatelessWidget {
                               );
                               String text = "";
                               if (done)
-                                text =
-                                    "Course has been submitted for review. It may take up to five minutes to add!";
+                                text = "Course successfully added!";
                               else
                                 text = "Course add failed!";
 

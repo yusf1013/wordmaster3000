@@ -45,6 +45,7 @@ class _DictionaryHomepageState extends State<DictionaryHomepage> {
   void loadWordLists() {
     print("start");
     _wordLists = _userDataController.getAllWordLists();
+    print(_wordLists == null);
     print("end");
     //Start removing shit from here
   }
@@ -72,8 +73,8 @@ class _DictionaryHomepageState extends State<DictionaryHomepage> {
     print(tempList);
     Firestore.instance
         .collection("tempCollection")
-        .document("grabageOptions")
-        .updateData({'words': tempList});*/
+        .doc("grabageOptions")
+        .update({'words': tempList});*/
 
     if (mounted)
       setState(() {
@@ -763,7 +764,6 @@ class _SaveToListButtonState extends State<SaveToListButton> {
 
   @override
   void initState() {
-    // TODO: implement initState
     selected = widget.selected;
     print("In inis state $selected");
     print("Add save to list ${widget.id}");

@@ -1,5 +1,7 @@
 import 'package:awesome_button/awesome_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
+import 'package:wm3k/wm3k_design/screens/daily_training_screen.dart';
 import 'package:wm3k/wm3k_design/themes/wm3k_app_theme.dart';
 import 'package:wm3k/wm3k_design/models/category.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,7 +11,7 @@ import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.da
 import 'custom_widgets.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-FirebaseUser _currentUser;
+UserDataController _currentUser;
 bool _userLoaded = false;
 
 class GamesListView extends StatefulWidget {
@@ -288,7 +290,7 @@ class _ProgressCardState extends State<ProgressCard>
 
   void _getUser() async {
     if (!_userLoaded) {
-      _currentUser = await _auth.currentUser();
+      _currentUser = UserDataController();
       if (_currentUser != null)
         setState(() {
           _userLoaded = true;
@@ -304,176 +306,196 @@ class _ProgressCardState extends State<ProgressCard>
 
   @override
   Widget build(BuildContext context) {
-    int progress = _currentUser != null ? 50 : 0;
+    int progress = _currentUser != null
+        ? _currentUser.getDailyTrainingDetails().getProgress()
+        : 0;
     return FadeTransition(
       opacity: animation,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-        child: Stack(
-          children: <Widget>[
-            Container(
-              height: 146,
-              width: MediaQuery.of(context).size.width - 80,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF2980B9), Color(0xFF6DD5FA)],
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return DailyTraining(
+                  UserDataController().getDailyTrainingDetails());
+            }));
+          },
+          child: Stack(
+            children: <Widget>[
+              Container(
+                height: 146,
+                width: MediaQuery.of(context).size.width - 80,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF2980B9), Color(0xFF6DD5FA)],
+                  ),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                      topRight: Radius.circular(40)),
                 ),
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                    topRight: Radius.circular(40)),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                child: Row(
-                  children: [
-                    Row(
-                      children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Image(
-                              image: AssetImage("assets/icons/book.png"),
-                              height: 64,
-                              width: 50,
-                            ),
-                            Container(
-                              color: Colors.white,
-                              width: width,
-                              height: height - 7,
-                            ),
-                            Container(
-                              height: radius,
-                              width: radius,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: width, color: Colors.white),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(radius),
-                                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                  child: Row(
+                    children: [
+                      Row(
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Image(
+                                image: AssetImage("assets/icons/book.png"),
+                                height: 64,
+                                width: 50,
                               ),
-                            ),
-                            Container(
-                              color: Colors.white,
-                              width: width,
-                              height: height + 9,
-                            ),
-                            Container(
-                              height: radius,
-                              width: radius,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: width, color: Colors.white),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(radius),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              color: Colors.white,
-                              width: width,
-                              height: height - 7,
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(
-                              height: 25,
-                            ),
-                            Text(
-                              'Daily Training',
-                              style: TextStyle(
-                                fontSize: 20,
+                              Container(
                                 color: Colors.white,
+                                width: width,
+                                height: height - 7,
                               ),
-                            ),
-                            SizedBox(
-                              height: 13,
-                            ),
-                            Text(
-                              "Progress $progress%",
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width - 200,
-                              child: FAProgressBar(
-                                currentValue: progress,
-                                progressColor: Colors.black,
-                                //displayText: '%',
+                              Container(
+                                height: radius,
+                                width: radius,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: width, color: Colors.white),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(radius),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                color: Colors.white,
+                                width: width,
+                                height: height + 9,
+                              ),
+                              Container(
+                                height: radius,
+                                width: radius,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: width, color: Colors.white),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(radius),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                color: Colors.white,
+                                width: width,
+                                height: height - 7,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              SizedBox(
+                                height: 25,
+                              ),
+                              Text(
+                                'Daily Training',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 13,
+                              ),
+                              Text(
+                                "Progress $progress%",
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width - 200,
+                                child: FAProgressBar(
+                                  currentValue: progress,
+                                  progressColor: Colors.black,
+                                  //displayText: '%',
 
-                                size: 8,
+                                  size: 8,
+                                ),
                               ),
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Column(
-                                  children: <Widget>[
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.access_time,
-                                          size: 25,
-                                        ),
-                                        Text(
-                                          _currentUser != null ? "~20 Min" : "",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 17),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 46,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Column(
+                                    children: <Widget>[
+                                      SizedBox(
+                                        height: 15,
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.access_time,
+                                            size: 25,
+                                          ),
+                                          Text(
+                                            _currentUser != null
+                                                ? " " +
+                                                    ((100 -
+                                                                _currentUser
+                                                                    .getDailyTrainingDetails()
+                                                                    .getProgress()) *
+                                                            0.20)
+                                                        .toInt()
+                                                        .toString() +
+                                                    " Min"
+                                                : "",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 17),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    width: 46,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 100,
+                    ),
+                    AwesomeButton(
+                      blurRadius: 5.0,
+                      splashColor: Color.fromRGBO(255, 255, 255, .4),
+                      borderRadius: BorderRadius.circular(25.0),
+                      height: 50.0,
+                      width: 50.0,
+                      onTap: () => print("tapped"),
+                      color: Colors.black,
+                      child: Icon(
+                        Icons.play_circle_outline,
+                        color: Colors.white,
+                        size: 40.0,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: 100,
-                  ),
-                  AwesomeButton(
-                    blurRadius: 5.0,
-                    splashColor: Color.fromRGBO(255, 255, 255, .4),
-                    borderRadius: BorderRadius.circular(25.0),
-                    height: 50.0,
-                    width: 50.0,
-                    onTap: () => print("tapped"),
-                    color: Colors.black,
-                    child: Icon(
-                      Icons.play_circle_outline,
-                      color: Colors.white,
-                      size: 40.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

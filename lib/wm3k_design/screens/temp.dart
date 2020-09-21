@@ -262,7 +262,7 @@ class _MyHomePageState extends State<MyHomePage> {
             print("Page change to $index");
           },
           itemBuilder: (context, index) {
-            Movie movie = _movieData[index];
+            Movie movie = _moviedata()[index];
             return LearnCard(
               height: height * 0.75,
               width: width * 0.85,

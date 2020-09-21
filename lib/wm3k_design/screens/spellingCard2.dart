@@ -26,6 +26,8 @@ class SpellingCard2 extends StatefulWidget {
 }
 
 class _SpellingCard2State extends State<SpellingCard2> {
+  bool done = false;
+
   @override
   void initState() {
     _controller = CardController();
@@ -99,7 +101,7 @@ class _SpellingCard2State extends State<SpellingCard2> {
                             index == _lastInd) {
                           await showDialog(
                               context: context, child: getEndCard());
-                          Navigator.pop(context);
+                          Navigator.pop(context, done);
                         }
                       },
                     ),
@@ -117,6 +119,7 @@ class _SpellingCard2State extends State<SpellingCard2> {
   }
 
   Center getEndCard() {
+    done = true;
     return Center(
       child: Padding(
         padding: EdgeInsets.only(top: 20),
@@ -145,7 +148,7 @@ class _SpellingCard2State extends State<SpellingCard2> {
               color: Colors.black,
             ),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.pop(context, done);
             },
           ),
         ),

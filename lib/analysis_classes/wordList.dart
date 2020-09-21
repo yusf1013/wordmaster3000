@@ -25,12 +25,6 @@ class WordList {
     return false;
   }
 
-  /*void deleteWord(String id, int index)
-  {
-    for (FireBaseSubMeaning sm in subMeanings)
-      if (sm.isSameSubMeaning(id, index)) subMeanings.remove(sm);
-  }*/
-
   void deleteWord(FireBaseSubMeaning sm) {
     subMeanings.remove(sm);
     //print(sm.id + "LALALALA");
@@ -38,16 +32,37 @@ class WordList {
   }
 }
 
+/*class UniqueWordList extends WordList {
+  UniqueWordList(String name, String description,
+      List<FireBaseSubMeaning> subMeanings, String id) : super(name, description, subMeanings, id) ;
+
+  bool addUniqueWord(FireBaseSubMeaning s) {
+    for(var s2 in subMeanings) {
+      if( s.isSameSubMeaning(s2.id, s2.index)) {
+        return false;
+      }
+    }
+    subMeanings.add(s);
+    return true;
+  }
+
+}*/
+
 class FireBaseSubMeaning {
   String id, subMeaning, word;
   int index;
+  var rating;
   List<String> examples = List();
 
-  FireBaseSubMeaning(
-      this.id, this.subMeaning, this.word, List<dynamic> examples, this.index) {
+  FireBaseSubMeaning(this.id, this.subMeaning, this.word,
+      List<dynamic> examples, this.index, this.rating) {
     word = word[0].toUpperCase() + word.substring(1);
     subMeaning = subMeaning[0].toUpperCase() + subMeaning.substring(1);
     for (String example in examples) this.examples.add(example);
+  }
+
+  String getId() {
+    return id + "," + index.toString();
   }
 
   bool isSameSubMeaning(String id, int index) {

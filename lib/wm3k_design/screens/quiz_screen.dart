@@ -16,8 +16,9 @@ int _selected = -1, _correct = 0, _lastInd = -1;
 
 class QuizCardScreen extends StatefulWidget {
   final WordList _wordList;
+  final Function onCorrect, onIncorrect;
 
-  QuizCardScreen(this._wordList);
+  QuizCardScreen(this._wordList, {this.onCorrect, this.onIncorrect});
 
   @override
   _QuizCardScreenState createState() => _QuizCardScreenState();
@@ -28,6 +29,7 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
   Map options;
   UserDataController userDataController = UserDataController();
   List<Map> gm = List();
+  bool finished = false;
 
   @override
   void initState() {
@@ -85,6 +87,8 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
                       cardBuilder: (context, index) {
                         return Center(
                           child: QuizLearnCard(
+                            onCorrect: widget.onCorrect,
+                            onIncorrect: widget.onCorrect,
                             subMeaning: _wordList.subMeanings[index],
                             options: gm[index],
                             height: height * 0.81,
@@ -118,7 +122,7 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
                             context: context,
                           );
                           if (tapped == null || tapped == false)
-                            Navigator.pop(context);
+                            Navigator.pop(context, finished);
                           else if (tapped) {}
                         }
 
@@ -139,6 +143,7 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
   }
 
   Center getEndCard() {
+    finished = true;
     return Center(
       child: Padding(
         padding: EdgeInsets.only(top: 20),
@@ -209,6 +214,7 @@ class QuizLearnCard extends StatefulWidget {
   final FireBaseSubMeaning subMeaning;
   final int cardNumber, totalCards;
   final Map options;
+  final Function onCorrect, onIncorrect;
 
   QuizLearnCard({
     this.height,
@@ -220,6 +226,8 @@ class QuizLearnCard extends StatefulWidget {
     this.cardNumber,
     this.totalCards,
     @required this.options,
+    this.onCorrect,
+    this.onIncorrect,
   });
 
   @override
@@ -486,9 +494,15 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                           child: GradientButton(
                             width: 150,
                             onPressed: () async {
+                              print("Pressing this button");
                               if (widget.options['answer'] == _selected) {
                                 _correct++;
+                                //extra
+                                print("Correct");
+                                if (widget.onCorrect != null)
+                                  widget.onCorrect(widget.subMeaning);
                               }
+                              print("Incorrect");
                               _answered = false;
                               _selected = -1;
                               _lastInd = widget.cardNumber - 1;

@@ -400,12 +400,12 @@ class CourseListWidget extends StatelessWidget {
     List<Widget> list = new List();
     var data = document.data;
     CourseModel model = CourseModel(
-        name: data['name'],
-        description: data['description'],
-        rating: data['rating'].toString(),
-        author: data['creator'],
-        number: data['length'],
-        downloads: data['downloads'],
+        name: data()['name'],
+        description: data()['description'],
+        rating: data()['rating'].toString(),
+        author: data()['creator'],
+        number: data()['length'],
+        downloads: data()['downloads'],
         tags: ["One", "Two", "One", "Two"]);
 
     if (i % 3 == 0)
@@ -464,9 +464,9 @@ class CourseListWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               var data = documents[index].data;
 
-              if (data['published'] == false) return Container();
+              if (data()['published'] == false) return Container();
               if (contributionsOnly &
-                  !userDataController.hasCreatedCourse(data['id']))
+                  !userDataController.hasCreatedCourse(data()['id']))
                 return Container();
 
               return GestureDetector(
@@ -474,7 +474,7 @@ class CourseListWidget extends StatelessWidget {
                     var res = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CoursePage(data["id"]),
+                        builder: (context) => CoursePage(data()["id"]),
                       ),
                     );
                     if (res != null && res == 1)
