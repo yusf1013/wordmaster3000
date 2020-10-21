@@ -81,12 +81,12 @@ class Category {
   static List<Category> popularCourseList = <Category>[
     Category(
       imagePath: 'assets/design_course/spelling.png',
-      title: 'Spelling Bee',
+      title: 'Spelling Master',
       wordCount: 250,
       time: 25,
       text: '',
     ),
-    Category(
+    /*Category(
       imagePath: 'assets/design_course/versus.png',
       title: 'Vocab Battle',
       wordCount: 100,
@@ -99,6 +99,6 @@ class Category {
       wordCount: 0,
       time: 25,
       text: '',
-    ),
+    ),*/
   ];
 }

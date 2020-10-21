@@ -57,10 +57,17 @@ class AuthController {
           email: email, password: password);
       _writeCredentials(email, password);
       List<String> l = List();
-      _fireStore
-          .collection("users")
-          .doc(email)
-          .set({"courseCreated": l, "courseEnrolled": l});
+      _fireStore.collection("users").doc(email).set({
+        "courseCreated": l,
+        "courseEnrolled": l,
+        /*"DailyTrainingDetails": [
+          {
+            "courseTrainingProgressIndex": 0,
+            "wordListTrainingProgressIndex": 0,
+            "testTaken": false
+          }
+        ]*/
+      });
 
       _loadEssentials();
       //UserDataController().initializeUser();
@@ -131,9 +138,14 @@ class UserDataController {
     user.initDailyTrainingDetails(
         getStreamOfCTLists(), getStreamOfWLTLists(), _currentUser.email);
     user.initWordListStream(getStreamOfWordLists());
+    user.leaderboard();
     user.initWrongOptions();
     user.initCourseEnrolled(getCourses());
     user.initCourseCreated(getStreamFromUserDoc());
+  }
+
+  List<String> getLeaders() {
+    return user.usernames;
   }
 
   void initDT() async {
@@ -479,8 +491,10 @@ class _User {
   List<WordList> wordLists, courses;
   DailyTrainingDetails dailyTraining;
   List<DocumentSnapshot> courseDocList;
+
   List<String> coursesCreated = List();
   List<String> wrongOptions = List();
+  List<String> usernames = List();
 
   factory _User() {
     return _singleton;
@@ -533,6 +547,7 @@ class _User {
     stream.listen((data) async {
       coursesCreated.clear();
       List list = data.data()['coursesCreated'];
+      if (list == null) list = List();
       for (String item in list) {
         coursesCreated.add(item);
       }
@@ -543,6 +558,28 @@ class _User {
     stream.listen(
         (data) async {
           wordLists = await getAllWordLists(data);
+        },
+        onDone: () {},
+        onError: (error) {
+          print(error);
+        });
+  }
+
+  void leaderboard() async {
+    var stream = await _fireStore
+        .collection("users")
+        .orderBy("score", descending: true)
+        .limit(20)
+        .snapshots();
+
+    stream.listen(
+        (QuerySnapshot data) async {
+          usernames.clear();
+          for (DocumentSnapshot doc in data.docs) {
+            String name =
+                doc.id + "," + ((doc.data()["score"]).round()).toString();
+            usernames.add(name);
+          }
         },
         onDone: () {},
         onError: (error) {
@@ -657,6 +694,7 @@ class DailyTrainingDetails {
     print("Init small details started");
     var currentUser = AuthController.getCurrentUser();
     var doc = await _fireStore.doc("users/${currentUser.email}").get();
+
     courseTrainingProgressIndex =
         doc.data()["DailyTrainingDetails"]["courseTrainingProgressIndex"];
     wordListTrainingProgressIndex =

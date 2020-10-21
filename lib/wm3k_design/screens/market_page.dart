@@ -130,7 +130,9 @@ class _MarketPageState extends State<MarketPage> {
         ),
         body: Column(
           children: <Widget>[
-            HeaderAppBar(),
+            HeaderAppBar(
+              searchBar: false,
+            ),
             SizedBox(
               height: 20,
             ),

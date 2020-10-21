@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getflutter/components/avatar/gf_avatar.dart';
 import 'package:getflutter/getflutter.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
 import 'package:wm3k/wm3k_design/helper/buttons.dart';
 
@@ -13,6 +14,7 @@ class LeaderBoardPage extends StatefulWidget {
 
 class _LeaderBoardPageState extends State<LeaderBoardPage> {
   Widget appbar, body;
+  UserDataController u = UserDataController();
 
   @override
   void initState() {
@@ -22,7 +24,7 @@ class _LeaderBoardPageState extends State<LeaderBoardPage> {
 
   Widget getLeaderBoardCard(double height, double width) {
     double avatarRadius = 50, heightRatio = 0.6, widthRatio = 0.8;
-
+    List l = u.getLeaders();
     return Column(
       children: <Widget>[
         SizedBox(
@@ -53,15 +55,16 @@ class _LeaderBoardPageState extends State<LeaderBoardPage> {
                             maxHeight:
                                 heightRatio * height - avatarRadius * 0.4),
                         child: ListView.separated(
-                          itemCount: 10,
+                          itemCount: l.length,
                           itemBuilder: (context, index) {
                             return ListTile(
                               leading: Dot(
                                 15,
-                                child: Text(index.toString()),
+                                child: Text((index + 1).toString()),
                                 color: Colors.blue,
                               ),
-                              title: Text("User with name${index + 1}"),
+                              title:
+                                  Text((l[index].split(",")[0]).split("@")[0]),
                               trailing: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
@@ -69,7 +72,7 @@ class _LeaderBoardPageState extends State<LeaderBoardPage> {
                                     "Score",
                                     style: TextStyle(color: Colors.blue),
                                   ),
-                                  Text("95"),
+                                  Text(l[index].split(",")[1]),
                                 ],
                               ),
                             );
@@ -186,13 +189,13 @@ class _LeaderBoardPageState extends State<LeaderBoardPage> {
                   Color(0xFFB31048),
                 ]),
                 items: [
-                  TabItem(icon: Icons.shop, title: 'Games', isIconBlend: true),
-                  TabItem(icon: Icons.spellcheck, title: 'Quiz'),
+                  //TabItem(icon: Icons.shop, title: 'Games', isIconBlend: true),
+                  //TabItem(icon: Icons.spellcheck, title: 'Quiz'),
                   TabItem(icon: Icons.star_border, title: 'Overall'),
-                  TabItem(icon: Icons.whatshot, title: 'Daily'),
-                  TabItem(icon: Icons.cached, title: 'Training'),
+                  //TabItem(icon: Icons.whatshot, title: 'Daily'),
+                  //TabItem(icon: Icons.cached, title: 'Training'),
                 ],
-                initialActiveIndex: 2, //optional, default as 0
+                initialActiveIndex: null, //optional, default as 0
                 onTap: (int i) => print('click index=$i'),
               ),
             ],

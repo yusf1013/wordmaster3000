@@ -51,24 +51,24 @@ class _HomeDrawerState extends State<HomeDrawer> {
         isAssetsImage: false,
         icon: Icon(Icons.store),
       ),
-      DrawerList(
+      /*DrawerList(
         index: DrawerIndex.MyWordList,
         labelName: 'My Word Lists',
         isAssetsImage: false,
         icon: Icon(Icons.library_books),
-      ),
+      ),*/
       DrawerList(
         index: DrawerIndex.LeaderBoard,
         labelName: 'Leaderboard',
         isAssetsImage: false,
         icon: Icon(Icons.thumbs_up_down),
       ),
-      DrawerList(
+      /*DrawerList(
         index: DrawerIndex.MyAccount,
         labelName: 'My Account',
         isAssetsImage: false,
         icon: Icon(Icons.account_circle),
-      ),
+      ),*/
       /*DrawerList(
         index: DrawerIndex.Invite,
         labelName: 'Invite Friend',
@@ -115,7 +115,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
                               shape: BoxShape.circle,
                               boxShadow: <BoxShadow>[
                                 BoxShadow(
-                                    color: AppTheme.grey.withOpacity(0.6),
+                                    //color: AppTheme.grey.withOpacity(0.6),
+                                    color: Colors.white,
                                     offset: const Offset(2.0, 4.0),
                                     blurRadius: 8),
                               ],
@@ -123,7 +124,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             child: ClipRRect(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(60.0)),
-                              child: Image.asset('assets/images/userImage.png'),
+                              child: Image.asset('assets/images/wmicon.png'),
                             ),
                           ),
                         ),
@@ -133,7 +134,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8, left: 4),
                     child: Text(
-                      'Chris Hemsworth',
+                      'WELCOME!',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.grey,

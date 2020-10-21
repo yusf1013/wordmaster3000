@@ -27,7 +27,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   DrawerIndex drawerIndex;
   AnimationController sliderAnimationController;
 
-
   printSearch(String word) async {
     SearchedWord con = new SearchedWord();
     //Word searched= Word();
@@ -58,8 +57,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     List<String> list = await DBManager().getListOfAllWords();
     for (String word in list) print(word);
   }
-
-
 
   /*printsearch(String word) async {
     Connector con = new Connector();
@@ -121,6 +118,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     }
     _openchathead();
   }
+
   @override
   void initState() {
     drawerIndex = DrawerIndex.HOME;
@@ -209,11 +207,14 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         setState(() {
           screenView = MarketPage();
         });
-      else if (drawerIndex == DrawerIndex.MyWordList) {
+      /*else if (drawerIndex == DrawerIndex.MyWordList) {
         setState(() {
-          screenView = MyWordList();
+          screenView = WordListWidget(
+            wordLists: UserDataController().getAllWordLists(),
+          );
         });
-      } else {
+      } */
+      else {
         //do in your way......
       }
     }

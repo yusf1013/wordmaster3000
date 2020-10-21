@@ -73,7 +73,8 @@ class LoginScreen extends StatelessWidget {
           },
           onRecoverPassword: _recoverPassword,
         ),
-        Positioned(
+        //TODO uncomment this positioned widget to get back guest login
+        /*Positioned(
           bottom: 70,
           right: 0,
           child: GestureDetector(
@@ -122,7 +123,7 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
           ),
-        )
+        )*/
       ],
     );
   }
