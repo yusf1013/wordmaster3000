@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:wm3k/forum/MyPosts.dart';
@@ -25,7 +26,7 @@ class _NewsfeedState extends State<Newsfeed> {
     super.initState();
   }
 
-  Widget getPost(BuildContext context) {
+  Widget getPost(BuildContext context, data) {
     return Card(
       elevation: 5,
       child: Container(
@@ -34,19 +35,21 @@ class _NewsfeedState extends State<Newsfeed> {
           children: <Widget>[
             ListTile(
               title: Text(
-                "Radowan Redoy",
+                data()['user_email'],
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              subtitle: Text("time of posting"),
+              subtitle: Text(
+                  new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString(),
+              ),
               trailing: Icon(Icons.more_vert),
               onTap: () {},
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
               child: Text(
-                  "How do you do? I am fine what about you? How is your day going. I am having a normal day"),
+                  data()['post']),
             ),
             SizedBox(
               height: 20,
@@ -160,7 +163,7 @@ class _NewsfeedState extends State<Newsfeed> {
                itemCount: documents.length,
                itemBuilder: (context, index) {
                   var data = documents[index].data;
-                  return getPost(context);
+                  return getPost(context,data);
                 },
             );
          }
