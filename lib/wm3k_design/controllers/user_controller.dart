@@ -98,8 +98,8 @@ class AuthController {
         _writeCredentials(email, pass);
         await _loadEssentials();
         var v = UserDataController();
-        await v.initDT();
-        UserDataController()._initializeUser(); // Why did I comment this out?
+        // await v.initDT();
+        v._initializeUser(); // Why did I comment this out?
         return true;
       } catch (e) {
         print(e);

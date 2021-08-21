@@ -447,7 +447,7 @@ class _ProgressCardState extends State<ProgressCard>
                                                                     .getDailyTrainingDetails()
                                                                     .getProgress()) *
                                                             0.20)
-                                                        .toInt()
+                                                        .round()
                                                         .toString() +
                                                     " Min"
                                                 : "",
