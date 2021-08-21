@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:wm3k/forum/MyPosts.dart';
 import 'package:wm3k/forum/ViewPost.dart';
 import 'package:wm3k/forum/createpost.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
 
 class Newsfeed extends StatefulWidget {
@@ -14,6 +17,7 @@ class Newsfeed extends StatefulWidget {
 
 class _NewsfeedState extends State<Newsfeed> {
   Widget appbar, body;
+  final UserDataController userDataController = UserDataController();
 
   @override
   void initState() {
@@ -22,7 +26,7 @@ class _NewsfeedState extends State<Newsfeed> {
     super.initState();
   }
 
-  Widget getPost(BuildContext context) {
+  Widget getPost(BuildContext context, data) {
     return Card(
       elevation: 5,
       child: Container(
@@ -30,24 +34,22 @@ class _NewsfeedState extends State<Newsfeed> {
         child: Column(
           children: <Widget>[
             ListTile(
-              leading: CircleAvatar(),
               title: Text(
-                "Radowan Redoy",
+                data()['user_email'],
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              subtitle: Text("time of posting"),
+              subtitle: Text(
+                  new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString(),
+              ),
               trailing: Icon(Icons.more_vert),
               onTap: () {},
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
               child: Text(
-                  "How do you do? I am fine what about you? How is your day going. I am having a normal day"),
-            ),
-            SizedBox(
-              height: 20,
+                  data()['post']),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 12, 8),
@@ -62,7 +64,7 @@ class _NewsfeedState extends State<Newsfeed> {
                         icon: new Icon(Icons.thumb_up),
                         onPressed: () {/* Your code */},
                       ),
-                      Text("Like"),
+                      Text(data()['like'].toString()),
                     ],
                   ),
                   SizedBox(
@@ -84,18 +86,6 @@ class _NewsfeedState extends State<Newsfeed> {
                       Text("Comment"),
                     ],
                   ),
-                  // SizedBox(
-                  //   width: 30,
-                  // ),
-                  // Row(
-                  //   children: <Widget>[
-                  //     IconButton(
-                  //       icon: new Icon(Icons.menu),
-                  //       onPressed: () { /* Your code */ },
-                  //     ),
-                  //     Text("More"),
-                  //   ],
-                  // )
                 ],
               ),
             ),
@@ -140,13 +130,25 @@ class _NewsfeedState extends State<Newsfeed> {
   Widget setBodyForForum(BuildContext context) {
     return Expanded(
       child: Container(
-        child: ListView.builder(
+        child: StreamBuilder<QuerySnapshot>(
             //scrollDirection: Axis.horizontal,
-            itemCount: 10,
-            itemBuilder: (BuildContext context, int index) {
-              return getPost(context);
-            }),
-      ),
+        stream: userDataController.getPosts(),
+        builder: (context, asyncSnapshot) {
+         if (asyncSnapshot.hasData) {
+            var documents = asyncSnapshot.data.documents;
+            return ListView.builder(
+               padding: EdgeInsets.all(0),
+               itemCount: documents.length,
+               itemBuilder: (context, index) {
+                  var data = documents[index].data;
+                  return getPost(context,data);
+                },
+            );
+         }
+         return CircularProgressIndicator();
+         },
+        ),
+     ),
     );
   }
 
@@ -220,25 +222,6 @@ class _NewsfeedState extends State<Newsfeed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /* appBar: AppBar(
-        backgroundColor: Color(0xBBBE1781),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: (){
-             // Navigator.pop(context);
-            },
-          ),
-        ],
-        title: Text(
-            "Word Master 3000",
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w500
-            ),
-        ),
-      ),*/
       body: getBody(context),
     );
   }
