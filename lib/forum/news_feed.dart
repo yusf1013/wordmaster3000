@@ -51,9 +51,6 @@ class _NewsfeedState extends State<Newsfeed> {
               child: Text(
                   data()['post']),
             ),
-            SizedBox(
-              height: 20,
-            ),
             Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 12, 8),
               child: Row(
@@ -67,7 +64,7 @@ class _NewsfeedState extends State<Newsfeed> {
                         icon: new Icon(Icons.thumb_up),
                         onPressed: () {/* Your code */},
                       ),
-                      Text("Like"),
+                      Text(data()['like'].toString()),
                     ],
                   ),
                   SizedBox(
@@ -130,25 +127,6 @@ class _NewsfeedState extends State<Newsfeed> {
     );
   }
 
-//  Widget getListOfCurrentPosts(BuildContext context){
-//    return StreamBuilder<QuerySnapshot>(
-//      stream: userDataController.getPosts(),
-//      builder: (context, asyncSnapshot) {
-//        if (asyncSnapshot.hasData) {
-//          var documents = asyncSnapshot.data.documents;
-//          return ListView.builder(
-//            padding: EdgeInsets.all(0),
-//            itemCount: documents.length,
-//            itemBuilder: (context, index) {
-//              var data = documents[index].data;
-//              return getPost(context);
-//              },
-//          );
-//        }
-//        return CircularProgressIndicator();
-//      },
-//    );
-//  }
   Widget setBodyForForum(BuildContext context) {
     return Expanded(
       child: Container(
