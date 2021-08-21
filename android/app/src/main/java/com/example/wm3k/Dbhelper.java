@@ -122,12 +122,18 @@ public class Dbhelper extends SQLiteOpenHelper {
                 MainActivity.meaning=meaning;
                 MainActivity.submeaning=submeaning;
             }
+            else{
+                MainActivity.word=search;
+                MainActivity.parts_of_speech="Not found";
+                MainActivity.meaning="Not found";
+                MainActivity.submeaning="Not found";
+            }
         }
         else{
             MainActivity.word=search;
-            MainActivity.parts_of_speech="NA";
-            MainActivity.meaning="NA";
-            MainActivity.submeaning="NA";
+            MainActivity.parts_of_speech="Not found";
+            MainActivity.meaning="Not found";
+            MainActivity.submeaning="Not found";
         }
         return b;
     }
