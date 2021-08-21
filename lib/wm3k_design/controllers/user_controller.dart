@@ -213,6 +213,13 @@ class UserDataController {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> getPosts() {
+    return _fireStore
+        .collection('posts')
+        .orderBy('time', descending: true)
+        .snapshots();
+  }
+
   WordList getCourse(String id) {
     for (WordList wl in user.courses) if (wl.id == id) return wl;
     return null;
@@ -407,6 +414,19 @@ class UserDataController {
         .doc(id.toString());*/
     //d.collection('words').add({'ad': 1});
     return id;
+  }
+
+  Future<int> createPost(String post) async {
+
+    _fireStore
+        .collection('posts')
+        .doc()
+        .setData({
+      'user_email': _currentUser.email,
+      'post': post,
+      'like': 0,
+      'time': new DateTime.now(),
+    });
   }
 
   Future<bool> enrollInCourse(String id) async {

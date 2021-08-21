@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wm3k/forum/createpost.dart';
 import 'package:wm3k/forum/news_feed.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
+
+import 'ViewPost.dart';
 
 class MyPosts extends StatefulWidget {
   @override
@@ -8,6 +11,8 @@ class MyPosts extends StatefulWidget {
 }
 
 class _MyPostsState extends State<MyPosts> {
+  AuthController _authController = AuthController();
+
   Widget PageHead, User_Detail, body;
 
   Widget getPost() {
@@ -17,9 +22,8 @@ class _MyPostsState extends State<MyPosts> {
         child: Column(
           children: <Widget>[
             ListTile(
-              leading: CircleAvatar(),
               title: Text(
-                "Radowan Redoy",
+                _authController.getUser().email,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                 ),
@@ -59,23 +63,18 @@ class _MyPostsState extends State<MyPosts> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(Icons.comment),
-                        onPressed: () {/* Your code */},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    viewPost(user_name: "Radowan Redoy")),
+                          );
+                        },
                       ),
                       Text("Comment"),
                     ],
                   ),
-                  // SizedBox(
-                  //   width: 30,
-                  // ),
-                  // Row(
-                  //   children: <Widget>[
-                  //     IconButton(
-                  //       icon: new Icon(Icons.menu),
-                  //       onPressed: () { /* Your code */ },
-                  //     ),
-                  //     Text("More"),
-                  //   ],
-                  // )
                 ],
               ),
             ),
@@ -123,21 +122,14 @@ class _MyPostsState extends State<MyPosts> {
     return Row(
       children: <Widget>[
         SizedBox(
-          width: 10,
-        ),
-        Padding(
-          padding: EdgeInsets.all(20),
-          child: CircleAvatar(
-            backgroundImage: AssetImage('assets/images/userImage.png'),
-            radius: 50,
-          ),
+          width: 50,
         ),
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             SafeArea(
               child: Text(
-                "Radowan Redoy",
+                _authController.getUser().email,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 25,

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:wm3k/forum/MyPosts.dart';
 import 'package:wm3k/forum/ViewPost.dart';
 import 'package:wm3k/forum/createpost.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
 
 class Newsfeed extends StatefulWidget {
@@ -14,6 +16,7 @@ class Newsfeed extends StatefulWidget {
 
 class _NewsfeedState extends State<Newsfeed> {
   Widget appbar, body;
+  final UserDataController userDataController = UserDataController();
 
   @override
   void initState() {
@@ -30,7 +33,6 @@ class _NewsfeedState extends State<Newsfeed> {
         child: Column(
           children: <Widget>[
             ListTile(
-              leading: CircleAvatar(),
               title: Text(
                 "Radowan Redoy",
                 style: TextStyle(
@@ -84,18 +86,6 @@ class _NewsfeedState extends State<Newsfeed> {
                       Text("Comment"),
                     ],
                   ),
-                  // SizedBox(
-                  //   width: 30,
-                  // ),
-                  // Row(
-                  //   children: <Widget>[
-                  //     IconButton(
-                  //       icon: new Icon(Icons.menu),
-                  //       onPressed: () { /* Your code */ },
-                  //     ),
-                  //     Text("More"),
-                  //   ],
-                  // )
                 ],
               ),
             ),
@@ -137,16 +127,47 @@ class _NewsfeedState extends State<Newsfeed> {
     );
   }
 
+//  Widget getListOfCurrentPosts(BuildContext context){
+//    return StreamBuilder<QuerySnapshot>(
+//      stream: userDataController.getPosts(),
+//      builder: (context, asyncSnapshot) {
+//        if (asyncSnapshot.hasData) {
+//          var documents = asyncSnapshot.data.documents;
+//          return ListView.builder(
+//            padding: EdgeInsets.all(0),
+//            itemCount: documents.length,
+//            itemBuilder: (context, index) {
+//              var data = documents[index].data;
+//              return getPost(context);
+//              },
+//          );
+//        }
+//        return CircularProgressIndicator();
+//      },
+//    );
+//  }
   Widget setBodyForForum(BuildContext context) {
     return Expanded(
       child: Container(
-        child: ListView.builder(
+        child: StreamBuilder<QuerySnapshot>(
             //scrollDirection: Axis.horizontal,
-            itemCount: 10,
-            itemBuilder: (BuildContext context, int index) {
-              return getPost(context);
-            }),
-      ),
+        stream: userDataController.getPosts(),
+        builder: (context, asyncSnapshot) {
+         if (asyncSnapshot.hasData) {
+            var documents = asyncSnapshot.data.documents;
+            return ListView.builder(
+               padding: EdgeInsets.all(0),
+               itemCount: documents.length,
+               itemBuilder: (context, index) {
+                  var data = documents[index].data;
+                  return getPost(context);
+                },
+            );
+         }
+         return CircularProgressIndicator();
+         },
+        ),
+     ),
     );
   }
 
@@ -220,25 +241,6 @@ class _NewsfeedState extends State<Newsfeed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /* appBar: AppBar(
-        backgroundColor: Color(0xBBBE1781),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: (){
-             // Navigator.pop(context);
-            },
-          ),
-        ],
-        title: Text(
-            "Word Master 3000",
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w500
-            ),
-        ),
-      ),*/
       body: getBody(context),
     );
   }

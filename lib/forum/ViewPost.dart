@@ -90,23 +90,18 @@ class _viewPostState extends State<viewPost> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(Icons.comment),
-                        onPressed: () { /* Your code */ },
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    viewPost(user_name: "Radowan Redoy")),
+                          );
+                        },
                       ),
                       Text("Comment"),
                     ],
                   ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      IconButton(
-                        icon: new Icon(Icons.menu),
-                        onPressed: () { /* Your code */ },
-                      ),
-                      Text("More"),
-                    ],
-                  )
                 ],
               ),
             ),

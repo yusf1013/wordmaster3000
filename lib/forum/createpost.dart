@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 
 class createPost extends StatefulWidget {
   @override
@@ -93,7 +94,17 @@ class _createPostState extends State<createPost> {
                 ),
                 RaisedButton(
                   onPressed: () {
-
+                    setState(() {
+                      post=_controller.text;
+                    });
+                    if ((post != null ))
+                      try {
+                        UserDataController()
+                            .createPost(post);
+                        Navigator.pop(context, true);
+                      } catch (e) {
+                        print('Error creating list $e');
+                      }
                   },
                   elevation: 10,
                   child: Row(
