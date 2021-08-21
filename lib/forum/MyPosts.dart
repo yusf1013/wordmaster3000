@@ -8,9 +8,9 @@ class MyPosts extends StatefulWidget {
 }
 
 class _MyPostsState extends State<MyPosts> {
-  Widget PageHead,User_Detail,body;
+  Widget PageHead, User_Detail, body;
 
-  Widget getPost(){
+  Widget getPost() {
     return Card(
       child: Container(
         //height: 230,
@@ -26,15 +26,12 @@ class _MyPostsState extends State<MyPosts> {
               ),
               subtitle: Text("time of posting"),
               trailing: Icon(Icons.more_vert),
-              onTap: (){
-
-              },
+              onTap: () {},
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
               child: Text(
-                  "How do you do? I am fine what about you? How is your day going. I am having a normal day"
-              ),
+                  "How do you do? I am fine what about you? How is your day going. I am having a normal day"),
             ),
             SizedBox(
               height: 20,
@@ -50,7 +47,7 @@ class _MyPostsState extends State<MyPosts> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(Icons.thumb_up),
-                        onPressed: () { /* Your code */ },
+                        onPressed: () {/* Your code */},
                       ),
                       Text("Like"),
                     ],
@@ -62,23 +59,23 @@ class _MyPostsState extends State<MyPosts> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(Icons.comment),
-                        onPressed: () { /* Your code */ },
+                        onPressed: () {/* Your code */},
                       ),
                       Text("Comment"),
                     ],
                   ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      IconButton(
-                        icon: new Icon(Icons.menu),
-                        onPressed: () { /* Your code */ },
-                      ),
-                      Text("More"),
-                    ],
-                  )
+                  // SizedBox(
+                  //   width: 30,
+                  // ),
+                  // Row(
+                  //   children: <Widget>[
+                  //     IconButton(
+                  //       icon: new Icon(Icons.menu),
+                  //       onPressed: () { /* Your code */ },
+                  //     ),
+                  //     Text("More"),
+                  //   ],
+                  // )
                 ],
               ),
             ),
@@ -92,7 +89,7 @@ class _MyPostsState extends State<MyPosts> {
     );
   }
 
-  Row getAppBar(String title,BuildContext context) {
+  Row getAppBar(String title, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
@@ -122,7 +119,7 @@ class _MyPostsState extends State<MyPosts> {
     );
   }
 
-  Widget getUser_Detail(){
+  Widget getUser_Detail() {
     return Row(
       children: <Widget>[
         SizedBox(
@@ -135,9 +132,9 @@ class _MyPostsState extends State<MyPosts> {
             radius: 50,
           ),
         ),
-       Column(
-         mainAxisAlignment: MainAxisAlignment.start,
-         children: <Widget>[
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
             SafeArea(
               child: Text(
                 "Radowan Redoy",
@@ -148,49 +145,48 @@ class _MyPostsState extends State<MyPosts> {
                 ),
               ),
             ),
-           SizedBox(
-             height: 10,
-           ),
-           /*RaisedButton(
+            SizedBox(
+              height: 10,
+            ),
+            /*RaisedButton(
              onPressed: () {},
              child: const Text('Post Alert', style: TextStyle(fontSize: 20)),
            ),*/
-           RaisedButton(
-             onPressed: () {
-               Navigator.push(
-                 context,
-                 MaterialPageRoute(builder: (context) => createPost()),
-               );
-             },
-               child: Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                 children: <Widget>[
-                   Text(
-                     'Create Post',
-                     style: TextStyle(
-                       fontSize: 15,
-                       fontWeight: FontWeight.w700,
-                       color: Colors.black,
-                     ),
-                   ),
-                   SizedBox(
-                     width: 10,
-                   ),
-                   Icon(
-                     Icons.create,
-                     color: Colors.black,
-                   )
-                 ],
-               ),
-
-           ),
-         ],
-       ),
+            RaisedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => createPost()),
+                );
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    'Create Post',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Icon(
+                    Icons.create,
+                    color: Colors.black,
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
 
-  Widget getMypostsBody(){
+  Widget getMypostsBody() {
     return Stack(
       children: <Widget>[
         Image(
@@ -209,18 +205,18 @@ class _MyPostsState extends State<MyPosts> {
               SizedBox(
                 height: 50,
               ),
-              PageHead=getAppBar("My Posts", context),
+              PageHead = getAppBar("My Posts", context),
               SizedBox(
                 height: 20,
               ),
-              User_Detail=getUser_Detail(),
+              User_Detail = getUser_Detail(),
               Expanded(
                 child: Container(
                   child: ListView.builder(
-                     //scrollDirection: Axis.horizontal,
+                      //scrollDirection: Axis.horizontal,
                       itemCount: 10,
-                      itemBuilder: (BuildContext context, int index){
-                         return getPost();
+                      itemBuilder: (BuildContext context, int index) {
+                        return getPost();
                       }),
                 ),
               ),
@@ -236,5 +232,3 @@ class _MyPostsState extends State<MyPosts> {
     return getMypostsBody();
   }
 }
-
-

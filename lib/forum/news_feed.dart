@@ -13,7 +13,6 @@ class Newsfeed extends StatefulWidget {
 }
 
 class _NewsfeedState extends State<Newsfeed> {
-
   Widget appbar, body;
 
   @override
@@ -23,7 +22,7 @@ class _NewsfeedState extends State<Newsfeed> {
     super.initState();
   }
 
-  Widget getPost(BuildContext context){
+  Widget getPost(BuildContext context) {
     return Card(
       elevation: 5,
       child: Container(
@@ -40,15 +39,12 @@ class _NewsfeedState extends State<Newsfeed> {
               ),
               subtitle: Text("time of posting"),
               trailing: Icon(Icons.more_vert),
-              onTap: (){
-
-              },
+              onTap: () {},
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
               child: Text(
-                  "How do you do? I am fine what about you? How is your day going. I am having a normal day"
-              ),
+                  "How do you do? I am fine what about you? How is your day going. I am having a normal day"),
             ),
             SizedBox(
               height: 20,
@@ -64,7 +60,7 @@ class _NewsfeedState extends State<Newsfeed> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(Icons.thumb_up),
-                        onPressed: () { /* Your code */ },
+                        onPressed: () {/* Your code */},
                       ),
                       Text("Like"),
                     ],
@@ -79,25 +75,27 @@ class _NewsfeedState extends State<Newsfeed> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => viewPost(user_name: "Radowan Redoy")),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    viewPost(user_name: "Radowan Redoy")),
                           );
                         },
                       ),
                       Text("Comment"),
                     ],
                   ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      IconButton(
-                        icon: new Icon(Icons.menu),
-                        onPressed: () { /* Your code */ },
-                      ),
-                      Text("More"),
-                    ],
-                  )
+                  // SizedBox(
+                  //   width: 30,
+                  // ),
+                  // Row(
+                  //   children: <Widget>[
+                  //     IconButton(
+                  //       icon: new Icon(Icons.menu),
+                  //       onPressed: () { /* Your code */ },
+                  //     ),
+                  //     Text("More"),
+                  //   ],
+                  // )
                 ],
               ),
             ),
@@ -111,25 +109,24 @@ class _NewsfeedState extends State<Newsfeed> {
     );
   }
 
-
-  Row getAppBar(String title,BuildContext context) {
+  Row getAppBar(String title, BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Padding(
-            padding: EdgeInsets.only(left: 20, right: 20),
-            child: GestureDetector(
-              child: Icon(Icons.menu),
-              //child: SizedBox(),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            )),
+        // Padding(
+        //     padding: EdgeInsets.only(left: 20, right: 20),
+        //     child: GestureDetector(
+        //       child: Icon(Icons.menu),
+        //       //child: SizedBox(),
+        //       onTap: () {
+        //         Navigator.pop(context);
+        //       },
+        //     )),
         Text(
           title,
           style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w500,
+            fontSize: 22,
+            fontWeight: FontWeight.w500,
           ),
         ),
         SizedBox(
@@ -140,21 +137,20 @@ class _NewsfeedState extends State<Newsfeed> {
     );
   }
 
-  Widget setBodyForForum(BuildContext context){
+  Widget setBodyForForum(BuildContext context) {
     return Expanded(
       child: Container(
         child: ListView.builder(
-          //scrollDirection: Axis.horizontal,
+            //scrollDirection: Axis.horizontal,
             itemCount: 10,
-            itemBuilder: (BuildContext context, int index){
+            itemBuilder: (BuildContext context, int index) {
               return getPost(context);
             }),
       ),
     );
   }
 
-
-  Widget getBody(BuildContext context){
+  Widget getBody(BuildContext context) {
     return Stack(
       children: <Widget>[
         Image(
@@ -171,43 +167,42 @@ class _NewsfeedState extends State<Newsfeed> {
           child: Column(
             children: <Widget>[
               SizedBox(
-                height: 50,
+                height: 43,
               ),
-              appbar=getAppBar("Word Master 3000", context),
+              appbar = getAppBar("Word Master 3000", context),
               SizedBox(
                 height: 15,
               ),
               //body=getPost(),
-              body=setBodyForForum(context),
-            ConvexAppBar(
+              body = setBodyForForum(context),
+              ConvexAppBar(
                 gradient: LinearGradient(colors: [
                   Color(0xBBBE1781),
                   Color(0xFFB31048),
                 ]),
                 items: [
-                  TabItem(icon: Icons.create, title: 'create', isIconBlend: true),
+                  TabItem(
+                      icon: Icons.create, title: 'create', isIconBlend: true),
                   TabItem(icon: Icons.search, title: 'search'),
-                  TabItem(icon: Icons.forum,title: 'forum'),
+                  TabItem(icon: Icons.forum, title: 'forum'),
                   TabItem(icon: Icons.person, title: 'MyPost'),
                   TabItem(icon: Icons.notifications, title: 'notify'),
                 ],
                 initialActiveIndex: 2, //optional, default as 0
-              style: TabStyle.fixedCircle,
-              onTap: (int i) {
+                style: TabStyle.fixedCircle,
+                onTap: (int i) {
                   print('click index=$i');
-                  if(i==0){
+                  if (i == 0) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => createPost()),
                     );
-                  }
-                  else if(i==1){
+                  } else if (i == 1) {
                     setState(() {
                       print("in seach");
                       //body=HeaderAppBar();
                     });
-                  }
-                  else if(i==3){
+                  } else if (i == 3) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => MyPosts()),
@@ -222,11 +217,10 @@ class _NewsfeedState extends State<Newsfeed> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       /* appBar: AppBar(
+      /* appBar: AppBar(
         backgroundColor: Color(0xBBBE1781),
         actions: <Widget>[
           IconButton(
@@ -245,8 +239,7 @@ class _NewsfeedState extends State<Newsfeed> {
             ),
         ),
       ),*/
-        body: getBody(context),
+      body: getBody(context),
     );
   }
 }
-

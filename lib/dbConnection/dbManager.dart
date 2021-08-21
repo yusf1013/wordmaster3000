@@ -14,7 +14,9 @@ class DBManager {
 
   Future<Database> get database async {
     if (_database == null) {
+      print("Tring to open");
       _database = await openDB();
+      print("Opened shit");
     }
     return _database;
   }
@@ -27,7 +29,9 @@ class DBManager {
     if (!exists) {
       try {
         await Directory(dirname(path)).create(recursive: true);
-      } catch (_) {}
+      } catch (_) {
+        print("Cechal");
+      }
 
       ByteData data = await rootBundle.load("assets/WMK3000.db");
       List<int> bytes =

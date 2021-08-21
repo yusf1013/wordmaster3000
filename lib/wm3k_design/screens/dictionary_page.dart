@@ -7,6 +7,7 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:wm3k/analysis_classes/wordList.dart';
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
+import 'package:wm3k/services/TextToSpeech.dart';
 import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
 import 'package:wm3k/wm3k_design/helper/buttons.dart';
@@ -98,6 +99,7 @@ class DictionaryHomePageWidget extends StatelessWidget {
   final Widget meaningListView;
   final int selected;
   final SearchedWord connector;
+  final TextToSpeech tts = new TextToSpeech();
   DictionaryHomePageWidget(this.connector, this.meaningListView,
       {this.selected = 0});
 
@@ -186,7 +188,9 @@ class DictionaryHomePageWidget extends StatelessWidget {
                                 Icons.volume_up,
                                 size: 35,
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                tts.speak(word);
+                              },
                             ),
                           ],
                         ),

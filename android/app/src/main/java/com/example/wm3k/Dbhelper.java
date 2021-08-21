@@ -61,13 +61,14 @@ public class Dbhelper extends SQLiteOpenHelper {
 
     private void copyDataBase() throws IOException {
         InputStream myInput = myContext.getAssets().open(DB_NAME);
+        System.out.println("Open DB Donnne!");
         String outFileName = DB_PATH + DB_NAME;
         OutputStream myOutput = new FileOutputStream(outFileName);
         byte[] buffer = new byte[1024];
         int length;
         while ((length = myInput.read(buffer)) > 0) {
             myOutput.write(buffer, 0, length);
-            System.out.println("data base is being copied");
+            // System.out.println("data base is being copied");
         }
         myOutput.flush();
         myOutput.close();

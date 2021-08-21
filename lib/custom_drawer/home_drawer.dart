@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 /*final FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseUser _currentUser;*/
 final AuthController _authController = AuthController();
+final UserDataController _user = UserDataController();
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer(
@@ -62,6 +63,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
         labelName: 'Leaderboard',
         isAssetsImage: false,
         icon: Icon(Icons.thumbs_up_down),
+      ),
+      DrawerList(
+        index: DrawerIndex.Forum,
+        labelName: 'Forum',
+        isAssetsImage: false,
+        icon: Icon(Icons.people),
       ),
       /*DrawerList(
         index: DrawerIndex.MyAccount,
@@ -134,7 +141,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8, left: 4),
                     child: Text(
-                      'WELCOME!',
+                      'WELCOME, ' +
+                          _authController.getUser().email.split("@")[0] +
+                          "!",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.grey,
@@ -334,6 +343,7 @@ enum DrawerIndex {
   Testing,
   LeaderBoard,
   MyAccount,
+  Forum,
 }
 
 class DrawerList {

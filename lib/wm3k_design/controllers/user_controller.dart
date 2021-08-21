@@ -26,10 +26,13 @@ class AuthController {
   }
 
   void _loadEssentials() async {
-    await Firebase.initializeApp();
+    print("How many times is this shit called?? :( ");
     _auth = auth.FirebaseAuth.instance;
     _fireStore = FirebaseFirestore.instance;
-    _user ??= await _auth.currentUser;
+    // _user ??= _auth.currentUser;
+    _user = _auth.currentUser;
+    print("user: ");
+    print(_user);
     _sharedPreferences ??= await SharedPreferences.getInstance();
     _loaded = true;
     _User();
@@ -60,17 +63,14 @@ class AuthController {
       _fireStore.collection("users").doc(email).set({
         "courseCreated": l,
         "courseEnrolled": l,
-        /*"DailyTrainingDetails": [
-          {
-            "courseTrainingProgressIndex": 0,
-            "wordListTrainingProgressIndex": 0,
-            "testTaken": false
-          }
-        ]*/
+        "DailyTrainingDetails": {
+          "courseTrainingProgressIndex": 0,
+          "wordListTrainingProgressIndex": 0,
+          "testTaken": false
+        }
       });
 
       _loadEssentials();
-      //UserDataController().initializeUser();
       return true;
     } catch (e) {
       print(e);
@@ -82,6 +82,8 @@ class AuthController {
     await _awaitLoad();
     String email = _sharedPreferences.get('email');
     String pass = _sharedPreferences.get('pass');
+    // String email = "";
+    // String pass = "";
     print("Loggin in auto $email $pass");
     return await logIn(email, pass);
   }
@@ -97,7 +99,7 @@ class AuthController {
         await _loadEssentials();
         var v = UserDataController();
         await v.initDT();
-        //UserDataController().initializeUser();
+        UserDataController().initializeUser(); // Why did I comment this out?
         return true;
       } catch (e) {
         print(e);
@@ -115,6 +117,10 @@ class AuthController {
     //UserDataController._userData = null;
   }
 
+  auth.User getUser() {
+    return _user;
+  }
+
   static auth.User getCurrentUser() => _user;
 }
 
@@ -128,10 +134,10 @@ class UserDataController {
   }
 
   UserDataController._internal() {
-    _initializeUser();
+    initializeUser();
   }
 
-  void _initializeUser() {
+  void initializeUser() {
     print("IN INIT USER");
     _currentUser = AuthController.getCurrentUser();
     user = _User();
@@ -181,6 +187,7 @@ class UserDataController {
   }
 
   Stream<QuerySnapshot> getStreamOfWordLists() {
+    print("IN SNAPSHOT ${_currentUser.email}");
     return _fireStore
         .collection('users')
         .doc('${_currentUser.email}')
@@ -518,7 +525,7 @@ class _User {
     dailyTraining = DailyTrainingDetails();
     dailyTraining.initCourseTrainingList(clt);
     dailyTraining.initWordListTrainingList(wlt);
-    await dailyTraining.initSmallDetails(email);
+    dailyTraining.initSmallDetails(email);
   }
 
   void initCourseEnrolled(Stream<QuerySnapshot> stream) async {
@@ -640,7 +647,7 @@ class DailyTrainingDetails {
   WordList courseTrainingList,
       wordListTrainingList,
       forQuiz = WordList("", "", [], "");
-  int courseTrainingProgressIndex, wordListTrainingProgressIndex;
+  int courseTrainingProgressIndex = 0, wordListTrainingProgressIndex = 0;
   String email;
   bool testTaken = false;
 
@@ -658,9 +665,12 @@ class DailyTrainingDetails {
   }
 
   int getProgress() {
-    int x = ((courseTrainingProgressIndex + wordListTrainingProgressIndex) ~/
-        6.0 *
-        96);
+    print(
+        "Get progress started $courseTrainingProgressIndex $wordListTrainingProgressIndex");
+    int x = ((courseTrainingProgressIndex + wordListTrainingProgressIndex) /
+            6.0 *
+            96)
+        .round();
     if (testTaken) x += 4;
     return x;
   }
@@ -708,8 +718,10 @@ class DailyTrainingDetails {
     QuerySnapshot docs = await documents;
     courseTrainingList = await getWordListFromWordsCollection(docs);
     var x = courseTrainingList.subMeanings;
-    for (int i = 0; i < x.length - 1; i++) {
-      if (x[i].index != x[i + 1].index || x[i].id != x[i + 1].id)
+    //
+    if (x.length > 0) forQuiz.subMeanings.add(x[0]);
+    for (int i = 1; i < x.length; i++) {
+      if (x[i].index != x[i - 1].index || x[i].id != x[i - 1].id)
         forQuiz.subMeanings.add(x[i]);
     }
     courseTrainingList = courseTrainingList.getShuffledWordList();
@@ -719,10 +731,13 @@ class DailyTrainingDetails {
     QuerySnapshot docs = await documents;
     wordListTrainingList = await getWordListFromWordsCollection(docs);
     var x = wordListTrainingList.subMeanings;
-    for (int i = 0; i < x.length - 1; i++) {
-      if (x[i].index != x[i + 1].index || x[i].id != x[i + 1].id)
+    //
+    if (x.length > 0) forQuiz.subMeanings.add(x[0]);
+    for (int i = 1; i < x.length; i++) {
+      if (x[i].index != x[i - 1].index || x[i].id != x[i - 1].id)
         forQuiz.subMeanings.add(x[i]);
     }
+
     wordListTrainingList = wordListTrainingList.getShuffledWordList();
   }
 

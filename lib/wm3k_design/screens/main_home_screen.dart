@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:wm3k/wm3k_design/helper/category_list_view.dart';
 import 'package:wm3k/wm3k_design/screens/select_wordlist_screen.dart';
 import 'package:wm3k/wm3k_design/screens/spellingCard2.dart';
-import 'package:wm3k/wm3k_design/screens/spelling_card.dart';
 import 'package:wm3k/wm3k_design/helper/games_list_view.dart';
 import '../themes/wm3k_app_theme.dart';
 import '../models/category.dart';
@@ -288,7 +287,7 @@ class _MainHomePageState extends State<MainHomePage> {
       newWig = LearningTabListView(
         callBack: (id) {
           moveToWordPage(id);
-          //print(id);
+          // print("" + id);
         },
         onDelete: _userDataController.deleteWordList,
         stream: _userDataController.getStreamOfWordLists(),

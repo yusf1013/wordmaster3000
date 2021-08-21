@@ -11,7 +11,6 @@ import 'package:wm3k/wm3k_design/helper/buttons.dart';
 import 'package:wm3k/wm3k_design/screens/memorization_card.dart';
 import 'package:wm3k/wm3k_design/screens/quiz_screen.dart';
 import 'package:wm3k/wm3k_design/screens/spellingCard2.dart';
-import 'package:wm3k/wm3k_design/screens/spelling_card.dart';
 import 'package:http/http.dart' as http;
 
 import 'notification_card.dart';
@@ -98,59 +97,59 @@ class _DailyTrainingScreenState extends State<DailyTrainingScreen> {
   }
 }
 
-class DailyTrainingScreenLoading extends StatefulWidget {
-  final DailyTrainingDetails dt;
-  final List correctOnes;
-
-  DailyTrainingScreenLoading(this.dt, this.correctOnes);
-
-  @override
-  _DailyTrainingScreenLoadingState createState() =>
-      _DailyTrainingScreenLoadingState();
-}
-
-class _DailyTrainingScreenLoadingState
-    extends State<DailyTrainingScreenLoading> {
-  Widget screen = Container(
-    color: Colors.grey,
-  );
-  bool spin = true;
-
-  void initState() {
-    init();
-    super.initState();
-  }
-
-  void init() async {
-    print("Hold on, hold on");
-    for (var v in widget.dt.forQuiz.subMeanings) {
-      int mul = 0;
-      if (widget.correctOnes.contains(v)) {
-        print(v.id);
-        mul = 1;
-      }
-      await http.get(
-          "https://us-central1-wm3k-f920b.cloudfunctions.net/increaseRating?u=${widget.dt.email}&mid=${v.id}&ind=${v.index}&mul=$mul");
-    }
-
-    var u = UserDataController();
-    await u.generateCLT();
-    await u.generateWLT();
-
-    setState(() {
-      screen = DailyTraining(widget.dt);
-      spin = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ModalProgressHUD(
-      inAsyncCall: spin,
-      child: screen,
-    );
-  }
-}
+// class DailyTrainingScreenLoading extends StatefulWidget {
+//   final DailyTrainingDetails dt;
+//   final List correctOnes;
+//
+//   DailyTrainingScreenLoading(this.dt, this.correctOnes);
+//
+//   @override
+//   _DailyTrainingScreenLoadingState createState() =>
+//       _DailyTrainingScreenLoadingState();
+// }
+//
+// class _DailyTrainingScreenLoadingState
+//     extends State<DailyTrainingScreenLoading> {
+//   Widget screen = Container(
+//     color: Colors.grey,
+//   );
+//   bool spin = true;
+//
+//   void initState() {
+//     init();
+//     super.initState();
+//   }
+//
+//   void init() async {
+//     print("Hold on, hold on");
+//     for (var v in widget.dt.forQuiz.subMeanings) {
+//       int mul = 0;
+//       if (widget.correctOnes.contains(v)) {
+//         print(v.id);
+//         mul = 1;
+//       }
+//       await http.get(
+//           "https://us-central1-wm3k-f920b.cloudfunctions.net/increaseRating?u=${widget.dt.email}&mid=${v.id}&ind=${v.index}&mul=$mul");
+//     }
+//
+//     var u = UserDataController();
+//     await u.generateCLT();
+//     await u.generateWLT();
+//
+//     setState(() {
+//       screen = DailyTraining(widget.dt);
+//       spin = false;
+//     });
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return ModalProgressHUD(
+//       inAsyncCall: spin,
+//       child: screen,
+//     );
+//   }
+// }
 
 class DailyTraining extends StatefulWidget {
   final DailyTrainingDetails dt;
@@ -204,8 +203,12 @@ class _DailyTrainingState extends State<DailyTraining> {
                       MaterialPageRoute(builder: (context) {
                     return MemorizationCard(widget.dt.courseTrainingList);
                   }));
+                  print("Ebar ki problem???");
+                  print("$perfectlyDone");
                   if (perfectlyDone != null && perfectlyDone) {
                     widget.dt.increaseCTP();
+                    print(widget.dt.courseTrainingProgressIndex);
+                    print("jesh");
                     return 1;
                   }
                 } else if (index == 1) {
@@ -214,13 +217,19 @@ class _DailyTrainingState extends State<DailyTraining> {
                     return QuizCardScreen(widget.dt.courseTrainingList);
                   }));
                   print("Q: $quizDone");
-                  if (quizDone != null && quizDone) return 1;
+                  if (quizDone != null && quizDone) {
+                    widget.dt.increaseCTP();
+                    return 1;
+                  }
                 } else if (index == 2) {
                   bool done = await Navigator.push(context,
                       MaterialPageRoute(builder: (context) {
                     return SpellingCard2(widget.dt.courseTrainingList);
                   }));
-                  if (done != null && done) return 1;
+                  if (done != null && done) {
+                    widget.dt.increaseCTP();
+                    return 1;
+                  }
                 }
                 return 0;
               },
@@ -245,13 +254,19 @@ class _DailyTrainingState extends State<DailyTraining> {
                     return QuizCardScreen(widget.dt.wordListTrainingList);
                   }));
                   print("Q: $quizDone");
-                  if (quizDone != null && quizDone) return 1;
+                  if (quizDone != null && quizDone) {
+                    widget.dt.increaseWLTP();
+                    return 1;
+                  }
                 } else if (index == 2) {
                   bool done = await Navigator.push(context,
                       MaterialPageRoute(builder: (context) {
                     return SpellingCard2(widget.dt.wordListTrainingList);
                   }));
-                  if (done != null && done) return 1;
+                  if (done != null && done) {
+                    widget.dt.increaseWLTP();
+                    return 1;
+                  }
                 }
                 return 0;
               },

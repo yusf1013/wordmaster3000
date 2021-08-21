@@ -11,7 +11,6 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-
   void initState() {
     tryAutoLogIn();
     super.initState();

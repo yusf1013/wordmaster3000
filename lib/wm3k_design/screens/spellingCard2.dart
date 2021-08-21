@@ -1,6 +1,7 @@
 import 'package:flutter_tindercard/flutter_tindercard.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:wm3k/analysis_classes/wordList.dart';
+import 'package:wm3k/services/TextToSpeech.dart';
 import 'package:wm3k/wm3k_design/helper/alert_box.dart';
 import 'package:wm3k/wm3k_design/helper/buttons.dart';
 import 'package:wm3k/wm3k_design/screens/dictionary_page.dart';
@@ -100,7 +101,12 @@ class _SpellingCard2State extends State<SpellingCard2> {
                         if (index == widget.wordList.subMeanings.length - 1 &&
                             index == _lastInd) {
                           await showDialog(
-                              context: context, child: getEndCard());
+                            context: context,
+                            builder: (context) {
+                              return getEndCard();
+                            },
+                            // child: getEndCard(),
+                          );
                           Navigator.pop(context, done);
                         }
                       },
@@ -208,24 +214,24 @@ class SpellingLearnCard extends StatefulWidget {
 class _SpellingLearnCardState extends State<SpellingLearnCard> {
   Widget mainView;
   bool wantSetState = false;
-  FlutterTts flutterTts = FlutterTts();
+  FlutterTts flutterTts = TextToSpeech();
   String answer = "";
 
   void initialize() {
     mainView = getMeaning();
   }
 
-  void initTTS() {
-    flutterTts.setVolume(1);
-    flutterTts.setSpeechRate(0.5);
-    flutterTts.setPitch(1);
-  }
+  // void initTTS() {
+  //   flutterTts.setVolume(1);
+  //   flutterTts.setSpeechRate(0.5);
+  //   flutterTts.setPitch(1);
+  // }
 
   @override
   initState() {
     answer = "";
     initialize();
-    initTTS();
+    // initTTS();
     super.initState();
   }
 

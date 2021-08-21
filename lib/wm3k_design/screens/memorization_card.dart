@@ -91,7 +91,10 @@ class _MemorizationCardState extends State<MemorizationCard> {
                             lastSwipeAlign != null &&
                             lastSwipeAlign > swipeEdge) {
                           tapped = await showDialog(
-                            child: getEndCard(),
+                            builder: (context) {
+                              return getEndCard();
+                            },
+                            // child: getEndCard(),
                             context: context,
                           );
                           if (tapped == null || tapped == false)

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
 import 'package:wm3k/forum/ViewPost.dart';
@@ -24,7 +24,9 @@ import 'package:flutter/services.dart';
 
 import 'forum/MyPosts.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -33,6 +35,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     print("Logged in? : ${AuthController().isLoggedIn()}");
     bool loggedIn = AuthController().isLoggedIn();
+    if (loggedIn) UserDataController();
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
@@ -57,7 +60,7 @@ class MyApp extends StatelessWidget {
         textTheme: AppTheme.textTheme,
         //canvasColor: Colors.transparent,
       ),
-      home: loggedIn ? WelcomeScreen() : LoginScreen(),
+      home: loggedIn ? NavigationHomeScreen() : LoginScreen(),
       //home: DailyTrainingScreen(),
       //home: WelcomeScreen(),
       //home: MyApp(),

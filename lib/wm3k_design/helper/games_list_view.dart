@@ -314,11 +314,13 @@ class _ProgressCardState extends State<ProgressCard>
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
         child: GestureDetector(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
+          onTap: () async {
+            await Navigator.push(context, MaterialPageRoute(builder: (context) {
               return DailyTraining(
                   UserDataController().getDailyTrainingDetails());
             }));
+            print(
+                "Progress baal ${_currentUser.getDailyTrainingDetails().getProgress()}");
           },
           child: Stack(
             children: <Widget>[

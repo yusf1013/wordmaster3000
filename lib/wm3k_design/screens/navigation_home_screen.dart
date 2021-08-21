@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
+import 'package:wm3k/forum/news_feed.dart';
 import 'package:wm3k/wm3k_design/controllers/clipBoardManager.dart';
 import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
 import 'package:wm3k/wm3k_design/screens/leaderboard_screen.dart';
@@ -206,6 +207,10 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
       } else if (drawerIndex == DrawerIndex.MarketPlace)
         setState(() {
           screenView = MarketPage();
+        });
+      else if (drawerIndex == DrawerIndex.Forum)
+        setState(() {
+          screenView = Newsfeed();
         });
       /*else if (drawerIndex == DrawerIndex.MyWordList) {
         setState(() {

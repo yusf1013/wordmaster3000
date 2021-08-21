@@ -118,7 +118,10 @@ class _QuizCardScreenState extends State<QuizCardScreen> {
                         if (index == _wordList.subMeanings.length - 1 &&
                             index == _lastInd) {
                           tapped = await showDialog(
-                            child: getEndCard(),
+                            builder: (context) {
+                              return getEndCard();
+                            },
+                            // child: getEndCard(),
                             context: context,
                           );
                           if (tapped == null || tapped == false)
@@ -855,7 +858,7 @@ class _MeaningViewState extends State<MeaningView> {
   }
 
   void init() {
-    print('die');
+    // print('die');
     options = widget.options;
     //_selected = -1;
     //answered = false;
