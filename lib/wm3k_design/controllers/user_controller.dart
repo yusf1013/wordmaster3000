@@ -416,13 +416,13 @@ class UserDataController {
     return id;
   }
 
-  Future<int> createPost(String post) async {
+  Future<int> createPost(String post, email) async {
 
     _fireStore
         .collection('posts')
         .doc()
         .setData({
-      'user_email': _currentUser.email,
+      'user_email': email,
       'post': post,
       'like': 0,
       'time': new DateTime.now(),

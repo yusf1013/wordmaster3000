@@ -41,6 +41,7 @@ AppBar getCreatePostAppBar(BuildContext context){
 
 class _createPostState extends State<createPost> {
   TextEditingController _controller=TextEditingController();
+  AuthController _authController = AuthController();
   String post="";
 
   @override
@@ -100,7 +101,7 @@ class _createPostState extends State<createPost> {
                     if ((post != null ))
                       try {
                         UserDataController()
-                            .createPost(post);
+                            .createPost(post,_authController.getUser().email);
                         Navigator.pop(context, true);
                       } catch (e) {
                         print('Error creating list $e');
