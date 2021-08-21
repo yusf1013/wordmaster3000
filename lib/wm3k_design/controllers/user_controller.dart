@@ -99,7 +99,7 @@ class AuthController {
         await _loadEssentials();
         var v = UserDataController();
         await v.initDT();
-        UserDataController().initializeUser(); // Why did I comment this out?
+        UserDataController()._initializeUser(); // Why did I comment this out?
         return true;
       } catch (e) {
         print(e);
@@ -134,10 +134,10 @@ class UserDataController {
   }
 
   UserDataController._internal() {
-    initializeUser();
+    _initializeUser();
   }
 
-  void initializeUser() {
+  void _initializeUser() {
     print("IN INIT USER");
     _currentUser = AuthController.getCurrentUser();
     user = _User();
@@ -715,6 +715,7 @@ class DailyTrainingDetails {
   }
 
   void initCourseTrainingList(Future<QuerySnapshot> documents) async {
+    forQuiz.subMeanings = List();
     QuerySnapshot docs = await documents;
     courseTrainingList = await getWordListFromWordsCollection(docs);
     var x = courseTrainingList.subMeanings;

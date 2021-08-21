@@ -71,10 +71,12 @@ class _DailyTrainingScreenState extends State<DailyTrainingScreen> {
               u.generateWLT();
             }
 
-            /*Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) {
-              return DailyTrainingScreenLoading(widget.dt, correctOnes);
-            }));*/
+            Navigator.pop(context);
+
+            // Navigator.pushReplacement(context,
+            //     MaterialPageRoute(builder: (context) {
+            //   return DailyTrainingScreen();
+            // }));
           },
         ),
       ),
@@ -283,7 +285,7 @@ class _DailyTrainingState extends State<DailyTraining> {
                   : (testEnabled ? Color(0xff64B6FF) : Colors.grey),
               onPressed: testEnabled
                   ? () {
-                      Navigator.pushReplacement(context,
+                      Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return DailyTrainingScreen(widget.dt);
                       }));

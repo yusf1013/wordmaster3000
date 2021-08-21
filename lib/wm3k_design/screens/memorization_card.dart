@@ -11,6 +11,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'notification_card.dart';
 
+CardController _cardController = CardController();
+
 class MemorizationCard extends StatefulWidget {
   final WordList wordList;
 
@@ -71,7 +73,7 @@ class _MemorizationCardState extends State<MemorizationCard> {
                       cardBuilder: (context, index) {
                         return getLearnCard(index, height, width);
                       },
-                      cardController: CardController(),
+                      cardController: _cardController,
                       swipeUpdateCallback:
                           (DragUpdateDetails details, Alignment align) {
                         /// Get swiping card's alignment
@@ -496,6 +498,7 @@ class _LearnCardState extends State<LearnCard> {
                                   selected = widget.crossAction(
                                       selected, widget.currentIndex);
                                 });
+                                _cardController.triggerLeft();
                               },
                               splashColor: Colors.red,
                               child: GestureDetector(
@@ -537,6 +540,7 @@ class _LearnCardState extends State<LearnCard> {
                                 selected = widget.tickAction(
                                     selected, widget.currentIndex);
                               });
+                              _cardController.triggerRight();
                             },
                             splashColor: Colors.greenAccent,
                             child: GestureDetector(
