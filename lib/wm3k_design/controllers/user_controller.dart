@@ -220,6 +220,14 @@ class UserDataController {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> getPostsByemail(email) {
+    return _fireStore
+        .collection('posts')
+        .where('user_email',isEqualTo: email)
+        .orderBy('time', descending: true)
+        .snapshots();
+  }
+
   WordList getCourse(String id) {
     for (WordList wl in user.courses) if (wl.id == id) return wl;
     return null;
