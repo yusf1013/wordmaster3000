@@ -33,7 +33,7 @@ class _MyPostsState extends State<MyPosts> {
                 ),
               ),
               subtitle: Text(new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString()),
-              trailing: Icon(Icons.more_vert),
+              trailing: Icon(Icons.delete),
               onTap: () {},
             ),
             Padding(
@@ -43,7 +43,7 @@ class _MyPostsState extends State<MyPosts> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(12, 12, 12, 8),
+              padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
               child: Row(
                 children: <Widget>[
                   SizedBox(
@@ -52,7 +52,9 @@ class _MyPostsState extends State<MyPosts> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.thumb_up),
+                        icon: new Icon(
+                          Icons.favorite,
+                          color: Colors.pink,),
                         onPressed: () {/* Your code */},
                       ),
                       Text(data()['like'].toString()),
@@ -64,13 +66,13 @@ class _MyPostsState extends State<MyPosts> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.comment),
+                        icon: new Icon(Icons.comment,color: Colors.blue),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    viewPost(user_name: "Radowan Redoy")),
+                                    viewPost(post_id: "Radowan Redoy")),
                           );
                         },
                       ),
@@ -81,7 +83,7 @@ class _MyPostsState extends State<MyPosts> {
               ),
             ),
             SizedBox(
-              height: 15,
+              height: 5,
             ),
           ],
         ),
