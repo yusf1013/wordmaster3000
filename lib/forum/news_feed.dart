@@ -47,7 +47,7 @@ class _NewsfeedState extends State<Newsfeed> {
               onTap: () {},
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
+            padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
               child: Text(
                   data()['post']),
             ),
@@ -103,15 +103,6 @@ class _NewsfeedState extends State<Newsfeed> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        // Padding(
-        //     padding: EdgeInsets.only(left: 20, right: 20),
-        //     child: GestureDetector(
-        //       child: Icon(Icons.menu),
-        //       //child: SizedBox(),
-        //       onTap: () {
-        //         Navigator.pop(context);
-        //       },
-        //     )),
         Text(
           title,
           style: TextStyle(

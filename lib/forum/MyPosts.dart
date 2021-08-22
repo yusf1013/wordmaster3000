@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:wm3k/forum/createpost.dart';
 import 'package:wm3k/forum/news_feed.dart';
 import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
@@ -12,10 +14,12 @@ class MyPosts extends StatefulWidget {
 
 class _MyPostsState extends State<MyPosts> {
   AuthController _authController = AuthController();
+  final UserDataController userDataController = UserDataController();
+
 
   Widget PageHead, User_Detail, body;
 
-  Widget getPost() {
+  Widget getPost(context,data) {
     return Card(
       child: Container(
         //height: 230,
@@ -23,22 +27,20 @@ class _MyPostsState extends State<MyPosts> {
           children: <Widget>[
             ListTile(
               title: Text(
-                _authController.getUser().email,
+                data()['user_email'],
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              subtitle: Text("time of posting"),
+              subtitle: Text(new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString()),
               trailing: Icon(Icons.more_vert),
               onTap: () {},
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
+              padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
               child: Text(
-                  "How do you do? I am fine what about you? How is your day going. I am having a normal day"),
-            ),
-            SizedBox(
-              height: 20,
+                data()['post']
+              ),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 12, 8),
@@ -53,7 +55,7 @@ class _MyPostsState extends State<MyPosts> {
                         icon: new Icon(Icons.thumb_up),
                         onPressed: () {/* Your code */},
                       ),
-                      Text("Like"),
+                      Text(data()['like'].toString()),
                     ],
                   ),
                   SizedBox(
@@ -204,12 +206,24 @@ class _MyPostsState extends State<MyPosts> {
               User_Detail = getUser_Detail(),
               Expanded(
                 child: Container(
-                  child: ListView.builder(
-                      //scrollDirection: Axis.horizontal,
-                      itemCount: 10,
-                      itemBuilder: (BuildContext context, int index) {
-                        return getPost();
-                      }),
+                  child: StreamBuilder<QuerySnapshot>(
+                    //scrollDirection: Axis.horizontal,
+                    stream: userDataController.getPostsByemail(_authController.getUser().email),
+                    builder: (context, asyncSnapshot) {
+                      if (asyncSnapshot.hasData) {
+                        var documents = asyncSnapshot.data.documents;
+                        return ListView.builder(
+                          padding: EdgeInsets.all(0),
+                          itemCount: documents.length,
+                          itemBuilder: (context, index) {
+                            var data = documents[index].data;
+                            return getPost(context,data);
+                          },
+                        );
+                      }
+                      return CircularProgressIndicator();
+                    },
+                  ),
                 ),
               ),
             ],
