@@ -233,6 +233,17 @@ class UserDataController {
     return null;
   }
 
+  Future<DocumentSnapshot> getPostById(id) async{
+    print('yaaaaaaaaaa huuuuuuuuuuuuuuuuuuu');
+    DocumentReference ref = await _fireStore
+        .collection('posts')
+        .doc(id);
+    DocumentSnapshot document = await ref.get();
+
+    print(document);
+    return document;
+  }
+
   Future<WordList> getCourseFromID(String id) async {
     print("In get Course $id");
     DocumentSnapshot document =

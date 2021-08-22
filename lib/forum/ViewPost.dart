@@ -1,18 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 
 class viewPost extends StatefulWidget {
 
-  String user_name;
-  viewPost({Key key,@required this.user_name}) : super(key : key);
+  String post_id;
+  viewPost({Key key,@required this.post_id}) : super(key : key);
   @override
-  _viewPostState createState() => _viewPostState(user_name);
+  _viewPostState createState() => _viewPostState(post_id);
 }
 
 class _viewPostState extends State<viewPost> {
 
-  String user_name;
-  _viewPostState(this.user_name);
+  String post_id;
+  _viewPostState(this.post_id);
+  final UserDataController userDataController = UserDataController();
 
   AppBar getViewPostAppBar(BuildContext context){
     return AppBar(
@@ -29,7 +33,7 @@ class _viewPostState extends State<viewPost> {
         },
       ),
       title: Text(
-          user_name,
+          'Comments',
         style: TextStyle(
           color: Colors.black,
           fontSize: 25,
@@ -38,30 +42,40 @@ class _viewPostState extends State<viewPost> {
     );
   }
 
-  Widget getPost(){
+  Widget getPostFromFirebase(BuildContext context) {
+       return FutureBuilder<DocumentSnapshot>(
+          //scrollDirection: Axis.horizontal,
+          future: userDataController.getPostById(this.post_id),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var document = snapshot.data;
+              return getPost(document);
+            }
+            return CircularProgressIndicator();
+          },
+        );
+  }
+
+  Widget getPost(data){
+    print(data['user_email']);
     return Card(
       child: Container(
         //height: 230,
         child: Column(
           children: <Widget>[
             ListTile(
-              leading: CircleAvatar(),
               title: Text(
-                "Radowan Redoy",
+                data['user_email'],
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              subtitle: Text("time of posting"),
-              trailing: Icon(Icons.more_vert),
-              onTap: (){
-
-              },
+              subtitle: Text(new DateFormat('yyyy-MM-dd – hh:mm a').format(data['time'].toDate()).toString()),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
               child: Text(
-                  "How do you do? I am fine what about you? How is your day going. I am having a normal day"
+                  data['post']
               ),
             ),
             SizedBox(
@@ -77,7 +91,9 @@ class _viewPostState extends State<viewPost> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.thumb_up),
+                        icon: new Icon(
+                          Icons.favorite,
+                          color: Colors.pink,),
                         onPressed: () { /* Your code */ },
                       ),
                       Text("Like"),
@@ -89,14 +105,8 @@ class _viewPostState extends State<viewPost> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.comment),
+                        icon: new Icon(Icons.comment,color: Colors.blue),
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    viewPost(user_name: "Radowan Redoy")),
-                          );
                         },
                       ),
                       Text("Comment"),
@@ -125,7 +135,6 @@ class _viewPostState extends State<viewPost> {
               height: 10,
             ),
             ListTile(
-              leading: CircleAvatar(),
               title: Text(
                 "Radowan Redoy",
                 style: TextStyle(
@@ -149,16 +158,16 @@ class _viewPostState extends State<viewPost> {
     );
   }
 
-  Widget getPostBody(){
+  Widget getPostBody(context){
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          getPost(),
+          getPostFromFirebase(context),
           Padding(
             padding: EdgeInsets.only(top: 5,left: 10,right: 10),
             child: Container(
               child: TextField(
-                maxLength: 50,
+                maxLength: 100,
                 decoration: InputDecoration(
                   hintText: 'Comment',
                   border: OutlineInputBorder(
@@ -194,7 +203,7 @@ class _viewPostState extends State<viewPost> {
     return Scaffold(
       //resizeToAvoidBottomPadding: false,
       appBar: getViewPostAppBar(context),
-      body: getPostBody(),
+      body: getPostBody(context),
     );
   }
 }

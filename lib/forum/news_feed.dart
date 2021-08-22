@@ -26,7 +26,7 @@ class _NewsfeedState extends State<Newsfeed> {
     super.initState();
   }
 
-  Widget getPost(BuildContext context, data) {
+  Widget getPost(BuildContext context, data,String id) {
     return Card(
       elevation: 5,
       child: Container(
@@ -47,7 +47,7 @@ class _NewsfeedState extends State<Newsfeed> {
               onTap: () {},
             ),
             Padding(
-            padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+            padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
               child: Text(
                   data()['post']),
             ),
@@ -61,7 +61,9 @@ class _NewsfeedState extends State<Newsfeed> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.thumb_up),
+                        icon: new Icon(
+                          Icons.favorite,
+                          color: Colors.pink,),
                         onPressed: () {/* Your code */},
                       ),
                       Text(data()['like'].toString()),
@@ -73,13 +75,14 @@ class _NewsfeedState extends State<Newsfeed> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.comment),
+                        icon: new Icon(Icons.comment,
+                            color: Colors.blue),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    viewPost(user_name: "Radowan Redoy")),
+                                    viewPost(post_id: id)),
                           );
                         },
                       ),
@@ -132,7 +135,8 @@ class _NewsfeedState extends State<Newsfeed> {
                itemCount: documents.length,
                itemBuilder: (context, index) {
                   var data = documents[index].data;
-                  return getPost(context,data);
+                  var id = documents[index].id;
+                  return getPost(context,data,id);
                 },
             );
          }
