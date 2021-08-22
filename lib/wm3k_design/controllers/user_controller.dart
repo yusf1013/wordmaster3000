@@ -220,6 +220,15 @@ class UserDataController {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> getCommentOfPosts(id) {
+    return _fireStore
+        .collection('posts')
+        .doc(id)
+        .collection('comments')
+        .orderBy('time', descending: true)
+        .snapshots();
+  }
+
   Stream<QuerySnapshot> getPostsByemail(email) {
     return _fireStore
         .collection('posts')

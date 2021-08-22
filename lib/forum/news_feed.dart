@@ -18,12 +18,20 @@ class Newsfeed extends StatefulWidget {
 class _NewsfeedState extends State<Newsfeed> {
   Widget appbar, body;
   final UserDataController userDataController = UserDataController();
+  AuthController _authController = AuthController();
 
   @override
   void initState() {
     // TODO: implement initState
     //appbar = getAppBar("Leaderboard");
     super.initState();
+  }
+  
+  Widget getTrailer(String email){
+    if(_authController.getUser().email == email){
+      return Icon(Icons.delete);
+    }
+    return null;
   }
 
   Widget getPost(BuildContext context, data,String id) {
@@ -43,7 +51,7 @@ class _NewsfeedState extends State<Newsfeed> {
               subtitle: Text(
                   new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString(),
               ),
-              trailing: Icon(Icons.more_vert),
+              trailing: getTrailer(data()['user_email']),
               onTap: () {},
             ),
             Padding(
