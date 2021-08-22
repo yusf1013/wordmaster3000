@@ -19,7 +19,7 @@ class _MyPostsState extends State<MyPosts> {
 
   Widget PageHead, User_Detail, body;
 
-  Widget getPost(context,data) {
+  Widget getPost(context,data,String id) {
     return Card(
       child: Container(
         //height: 230,
@@ -53,7 +53,7 @@ class _MyPostsState extends State<MyPosts> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(
-                          Icons.favorite,
+                          Icons.volunteer_activism_rounded,
                           color: Colors.pink,),
                         onPressed: () {/* Your code */},
                       ),
@@ -72,7 +72,7 @@ class _MyPostsState extends State<MyPosts> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    viewPost(post_id: "Radowan Redoy")),
+                                    viewPost(post_id: id)),
                           );
                         },
                       ),
@@ -219,7 +219,8 @@ class _MyPostsState extends State<MyPosts> {
                           itemCount: documents.length,
                           itemBuilder: (context, index) {
                             var data = documents[index].data;
-                            return getPost(context,data);
+                            var id = documents[index].id;
+                            return getPost(context,data,id);
                           },
                         );
                       }

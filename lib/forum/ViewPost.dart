@@ -15,8 +15,11 @@ class viewPost extends StatefulWidget {
 class _viewPostState extends State<viewPost> {
 
   String post_id;
+  String comment;
   _viewPostState(this.post_id);
   final UserDataController userDataController = UserDataController();
+  TextEditingController _controller=TextEditingController();
+  AuthController _authController = AuthController();
 
   AppBar getViewPostAppBar(BuildContext context){
     return AppBar(
@@ -92,11 +95,11 @@ class _viewPostState extends State<viewPost> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(
-                          Icons.favorite,
+                          Icons.volunteer_activism_rounded,
                           color: Colors.pink,),
                         onPressed: () { /* Your code */ },
                       ),
-                      Text("Like"),
+                      Text(data['like'].toString()),
                     ],
                   ),
                   SizedBox(
@@ -168,6 +171,7 @@ class _viewPostState extends State<viewPost> {
             child: Container(
               child: TextField(
                 maxLength: 100,
+                controller: _controller,
                 decoration: InputDecoration(
                   hintText: 'Comment',
                   border: OutlineInputBorder(
@@ -176,7 +180,17 @@ class _viewPostState extends State<viewPost> {
                   icon: IconButton(
                     icon: Icon(Icons.send),
                     onPressed: (){
-
+                      setState(() {
+                        comment=_controller.text;
+                      });
+                      if ((comment != null ))
+                        try {
+                          UserDataController()
+                              .saveComment(comment,_authController.getUser().email,this.post_id);
+                          Navigator.pop(context, true);
+                        } catch (e) {
+                          print('Error creating list $e');
+                        }
                     },
                   ),
                 ),

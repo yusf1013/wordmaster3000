@@ -62,7 +62,7 @@ class _NewsfeedState extends State<Newsfeed> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(
-                          Icons.favorite,
+                          Icons.volunteer_activism_rounded,
                           color: Colors.pink,),
                         onPressed: () {/* Your code */},
                       ),

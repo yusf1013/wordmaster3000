@@ -436,7 +436,6 @@ class UserDataController {
   }
 
   Future<int> createPost(String post, email) async {
-
     _fireStore
         .collection('posts')
         .doc()
@@ -445,6 +444,20 @@ class UserDataController {
       'post': post,
       'like': 0,
       'time': new DateTime.now(),
+    });
+  }
+
+  Future<int> saveComment(String comment, email, parent_id) async {
+    _fireStore
+        .collection('posts')
+        .doc(parent_id)
+        .collection('comments')
+        .doc()
+        .setData({
+          'user_email': email,
+          'comment': comment,
+          'parent_id': parent_id,
+          'time': new DateTime.now(),
     });
   }
 
