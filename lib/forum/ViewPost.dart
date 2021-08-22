@@ -15,8 +15,11 @@ class viewPost extends StatefulWidget {
 class _viewPostState extends State<viewPost> {
 
   String post_id;
+  String comment;
   _viewPostState(this.post_id);
   final UserDataController userDataController = UserDataController();
+  TextEditingController _controller=TextEditingController();
+  AuthController _authController = AuthController();
 
   AppBar getViewPostAppBar(BuildContext context){
     return AppBar(
@@ -92,11 +95,11 @@ class _viewPostState extends State<viewPost> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(
-                          Icons.favorite,
+                          Icons.volunteer_activism_rounded,
                           color: Colors.pink,),
                         onPressed: () { /* Your code */ },
                       ),
-                      Text("Like"),
+                      Text(data['like'].toString()),
                     ],
                   ),
                   SizedBox(
@@ -125,7 +128,7 @@ class _viewPostState extends State<viewPost> {
     );
   }
 
-  Widget getComments(){
+  Widget getComments(data){
     return Card(
       elevation: 5,
       child: Container(
@@ -136,17 +139,25 @@ class _viewPostState extends State<viewPost> {
             ),
             ListTile(
               title: Text(
-                "Radowan Redoy",
+                data()['user_email'],
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              subtitle: Text("time of posting"),
+              subtitle: Text(new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString()),
             ),
             Padding(
-              padding: EdgeInsets.all(10),
-              child: Text(
-                  "You should check out word master 3000 for your prbolem"
+              padding: EdgeInsets.all(2),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 20) ,
+                    child: Text(
+                      data()['comment'],
+                    ),
+                  ),
+                ),
               ),
             ),
             SizedBox(
@@ -159,42 +170,77 @@ class _viewPostState extends State<viewPost> {
   }
 
   Widget getPostBody(context){
-    return SingleChildScrollView(
-      child: Column(
+    return Stack(
         children: <Widget>[
-          getPostFromFirebase(context),
-          Padding(
-            padding: EdgeInsets.only(top: 5,left: 10,right: 10),
-            child: Container(
-              child: TextField(
-                maxLength: 100,
-                decoration: InputDecoration(
-                  hintText: 'Comment',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  icon: IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: (){
+          Positioned(
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            child: Column(
+              children: <Widget>[
+                getPostFromFirebase(context),
+                Padding(
+                  padding: EdgeInsets.only(top: 5,left: 10,right: 10),
+                  child: Container(
+                    child: TextField(
+                      maxLength: 100,
+                      controller: _controller,
+                      decoration: InputDecoration(
+                        hintText: 'Comment',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                        ),
+                        icon: IconButton(
+                          icon: Icon(Icons.send),
+                          onPressed: (){
+                            setState(() {
+                              comment=_controller.text;
+                            });
+                            if ((comment != null ))
+                              try {
+                                UserDataController()
+                                    .saveComment(comment,_authController.getUser().email,this.post_id);
+                                  comment=null;
+                                  _controller.clear();
 
-                    },
+                              } catch (e) {
+                                print('Error creating list $e');
+                              }
+                          },
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Expanded(
+                  child: Container(
+                    child: StreamBuilder<QuerySnapshot>(
+                      //scrollDirection: Axis.horizontal,
+                      stream: userDataController.getCommentOfPosts(this.post_id),
+                      builder: (context, asyncSnapshot) {
+                        if (asyncSnapshot.hasData) {
+                          var documents = asyncSnapshot.data.documents;
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            padding: EdgeInsets.all(0),
+                            itemCount: documents.length,
+                            itemBuilder: (context, index) {
+                              var data = documents[index].data;
+                              var id = documents[index].id;
+                              return getComments(data);
+                            },
+                          );
+                        }
+                        return CircularProgressIndicator();
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          Container(
-            height: MediaQuery.of(context).size.height,
-            //child: Text("Hello"),
-            child: ListView.builder(
-              //scrollDirection: Axis.horizontal,
-                itemCount: 10,
-                itemBuilder: (BuildContext context, int index){
-                  return getComments();
-                }),
-          ),
         ],
-      ),
     );
   }
   
