@@ -273,6 +273,20 @@ class UserDataController {
         .delete();
   }
 
+  void deletePost(id){
+    _fireStore
+        .collection('posts')
+        .doc(id)
+        .delete();
+  }
+
+  void deleteComment(post_id,comment_id){
+    _fireStore
+        .collection('posts')
+        .doc(post_id).collection('comments').doc(comment_id)
+        .delete();
+  }
+
   void unEnrollCourse(String id) async {
     var docRef = _fireStore
         .collection('users')
@@ -296,6 +310,16 @@ class UserDataController {
 
     int length = document.data()['length'] - 1;
     ref.update({'length': length});
+  }
+
+  void increaseLike(String post_id) async {
+    DocumentReference ref = await _fireStore
+        .collection('posts')
+        .doc(post_id);
+    DocumentSnapshot document = await ref.get();
+
+    int like = document.data()['like'] + 1;
+    ref.update({'like': like});
   }
 
   Stream<QuerySnapshot> getCourses() {

@@ -45,6 +45,38 @@ class _viewPostState extends State<viewPost> {
     );
   }
 
+  Widget getTrailer(context,String email,String comment_id){
+    if(_authController.getUser().email == email){
+      return   IconButton(
+        icon: const Icon(Icons.delete),
+        tooltip: 'Delete',
+        onPressed: () => showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Delete Comment'),
+            content: const Text('Are You Sure , you want to delete this?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => {
+                  Navigator.pop(context,'Cancel')
+                },
+                child: Text('NO',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
+              ),
+              TextButton(
+                onPressed: () => {
+                  userDataController.deleteComment(this.post_id,comment_id),
+                  Navigator.pop(context,'Ok')
+                },
+                child: Text('Yes',style: TextStyle(color: Colors.red.withOpacity(0.8)),),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return null;
+  }
+
   Widget getPostFromFirebase(BuildContext context) {
        return FutureBuilder<DocumentSnapshot>(
           //scrollDirection: Axis.horizontal,
@@ -97,7 +129,27 @@ class _viewPostState extends State<viewPost> {
                         icon: new Icon(
                           Icons.volunteer_activism_rounded,
                           color: Colors.pink,),
-                        onPressed: () { /* Your code */ },
+                        onPressed: () async {
+                          if(data['user_email'].toString() == _authController.getUser().email){
+                            showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                content: const Text('You can not like your own post'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => {
+                                      Navigator.pop(context,'Cancel')
+                                    },
+                                    child: Text('Ok',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }else{
+                            await userDataController.increaseLike(this.post_id);
+                            setState(() {});
+                          }
+                        },
                       ),
                       Text(data['like'].toString()),
                     ],
@@ -128,7 +180,7 @@ class _viewPostState extends State<viewPost> {
     );
   }
 
-  Widget getComments(data){
+  Widget getComments(data,String comment_id){
     return Card(
       elevation: 5,
       child: Container(
@@ -145,6 +197,7 @@ class _viewPostState extends State<viewPost> {
                 ),
               ),
               subtitle: Text(new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString()),
+              trailing: getTrailer(context, data()['user_email'], comment_id),
             ),
             Padding(
               padding: EdgeInsets.all(2),
@@ -227,8 +280,8 @@ class _viewPostState extends State<viewPost> {
                             itemCount: documents.length,
                             itemBuilder: (context, index) {
                               var data = documents[index].data;
-                              var id = documents[index].id;
-                              return getComments(data);
+                              var comment_id = documents[index].id;
+                              return getComments(data,comment_id);
                             },
                           );
                         }
