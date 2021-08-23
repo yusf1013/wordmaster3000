@@ -27,9 +27,29 @@ class _NewsfeedState extends State<Newsfeed> {
     super.initState();
   }
   
-  Widget getTrailer(String email){
+  Widget getTrailer(context,String email){
     if(_authController.getUser().email == email){
-      return Icon(Icons.delete);
+      return   IconButton(
+        icon: const Icon(Icons.delete),
+        tooltip: 'Delete',
+        onPressed: () => showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Delete Post'),
+            content: const Text('Are You Sure , you want to delete this?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: Text('NO',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'OK'),
+                child: Text('Yes',style: TextStyle(color: Colors.red.withOpacity(0.8)),),
+              ),
+            ],
+          ),
+        ),
+      );
     }
     return null;
   }
@@ -51,7 +71,7 @@ class _NewsfeedState extends State<Newsfeed> {
               subtitle: Text(
                   new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString(),
               ),
-              trailing: getTrailer(data()['user_email']),
+              trailing: getTrailer(context,data()['user_email']),
               onTap: () {},
             ),
             Padding(
