@@ -312,6 +312,16 @@ class UserDataController {
     ref.update({'length': length});
   }
 
+  void increaseLike(String post_id) async {
+    DocumentReference ref = await _fireStore
+        .collection('posts')
+        .doc(post_id);
+    DocumentSnapshot document = await ref.get();
+
+    int like = document.data()['like'] + 1;
+    ref.update({'like': like});
+  }
+
   Stream<QuerySnapshot> getCourses() {
     /*return _fireStore
         .collection('users')

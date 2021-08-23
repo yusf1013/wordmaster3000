@@ -77,7 +77,20 @@ class _MyPostsState extends State<MyPosts> {
                         icon: new Icon(
                           Icons.volunteer_activism_rounded,
                           color: Colors.pink,),
-                        onPressed: () {/* Your code */},
+                        onPressed: () { showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            content: const Text('You can not like your own post'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => {
+                                  Navigator.pop(context,'Cancel')
+                                },
+                                child: Text('Ok',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
+                              ),
+                            ],),
+                          );
+                        },
                       ),
                       Text(data()['like'].toString()),
                     ],
