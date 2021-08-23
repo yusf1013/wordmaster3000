@@ -230,6 +230,8 @@ class UserDataController {
   }
 
   Stream<QuerySnapshot> getPostsByemail(email) {
+    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    print(email);
     return _fireStore
         .collection('posts')
         .where('user_email',isEqualTo: email)
