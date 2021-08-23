@@ -249,15 +249,52 @@ class _MyPostsState extends State<MyPosts> {
                     builder: (context, asyncSnapshot) {
                       if (asyncSnapshot.hasData) {
                         var documents = asyncSnapshot.data.documents;
-                        return ListView.builder(
-                          padding: EdgeInsets.all(0),
-                          itemCount: documents.length,
-                          itemBuilder: (context, index) {
-                            var data = documents[index].data;
-                            var id = documents[index].id;
-                            return getPost(context,data,id);
-                          },
-                        );
+                        if(documents.length > 0){
+                          return ListView.builder(
+                            padding: EdgeInsets.all(0),
+                            itemCount: documents.length,
+                            itemBuilder: (context, index) {
+                              var data = documents[index].data;
+                              var id = documents[index].id;
+                              return getPost(context,data,id);
+                            },
+                          );
+                        }else{
+                          return new ListView.builder(
+                            shrinkWrap: true,
+                            padding: EdgeInsets.all(0),
+                            itemCount: 1,
+                            itemBuilder: (context, index) {
+                              return new Center(
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 100,
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.all(20),
+                                      width: 200,
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                            image: AssetImage("assets/images/nodata.jpg"),
+                                            fit: BoxFit.fill
+                                        ),
+                                      ),
+                                    ),
+                                    new Text('No Posts to Show',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontSize: 20,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }
                       }
                       return CircularProgressIndicator();
                     },

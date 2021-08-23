@@ -274,16 +274,45 @@ class _viewPostState extends State<viewPost> {
                       builder: (context, asyncSnapshot) {
                         if (asyncSnapshot.hasData) {
                           var documents = asyncSnapshot.data.documents;
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            padding: EdgeInsets.all(0),
-                            itemCount: documents.length,
-                            itemBuilder: (context, index) {
-                              var data = documents[index].data;
-                              var comment_id = documents[index].id;
-                              return getComments(data,comment_id);
-                            },
-                          );
+                          if(documents.length > 0){
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              padding: EdgeInsets.all(0),
+                              itemCount: documents.length,
+                              itemBuilder: (context, index) {
+                                var data = documents[index].data;
+                                var comment_id = documents[index].id;
+                                return getComments(data,comment_id);
+                              },
+                            );
+                          }else{
+                            return new ListView.builder(
+                              shrinkWrap: true,
+                              padding: EdgeInsets.all(0),
+                              itemCount: 1,
+                              itemBuilder: (context, index) {
+                                return new Center(
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.all(20),
+                                        width: 150,
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                              image: AssetImage("assets/images/nodata.jpg"),
+                                              fit: BoxFit.fill
+                                          ),
+                                        ),
+                                      ),
+                                      new Text('No Comments to Show'),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          }
                         }
                         return CircularProgressIndicator();
                       },

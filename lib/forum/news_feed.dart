@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:wm3k/forum/MyPosts.dart';
 import 'package:wm3k/forum/ViewPost.dart';
 import 'package:wm3k/forum/createpost.dart';
+import 'package:wm3k/forum/search.dart';
 import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 import 'package:wm3k/wm3k_design/helper/app_bars.dart';
 
@@ -248,10 +249,10 @@ class _NewsfeedState extends State<Newsfeed> {
                       MaterialPageRoute(builder: (context) => createPost()),
                     );
                   } else if (i == 1) {
-                    setState(() {
-                      print("in seach");
-                      //body=HeaderAppBar();
-                    });
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => search()),
+                    );
                   } else if (i == 3) {
                     Navigator.push(
                       context,
