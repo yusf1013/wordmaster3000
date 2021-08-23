@@ -273,6 +273,13 @@ class UserDataController {
         .delete();
   }
 
+  void deletePost(id){
+    _fireStore
+        .collection('posts')
+        .doc(id)
+        .delete();
+  }
+
   void unEnrollCourse(String id) async {
     var docRef = _fireStore
         .collection('users')

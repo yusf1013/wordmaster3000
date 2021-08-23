@@ -47,7 +47,10 @@ class _MyPostsState extends State<MyPosts> {
                         child: Text('NO',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
                       ),
                       TextButton(
-                        onPressed: () => Navigator.pop(context, 'OK'),
+                          onPressed: () => {
+                            userDataController.deletePost(id),
+                            Navigator.pop(context, 'Ok')
+                          },
                         child: Text('Yes',style: TextStyle(color: Colors.red.withOpacity(0.8)),),
                       ),
                     ],
