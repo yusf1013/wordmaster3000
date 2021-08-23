@@ -102,7 +102,7 @@ class _searchState extends State<search> {
                           }
                         },
                       ),
-                      Text(data['like'].toString()),
+                      Text(data()['like'].toString()),
                     ],
                   ),
                   SizedBox(
@@ -137,47 +137,6 @@ class _searchState extends State<search> {
     );
   }
 
-  Widget getComments(data,String comment_id){
-    return Card(
-      elevation: 5,
-      child: Container(
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 10,
-            ),
-            ListTile(
-              title: Text(
-                data()['user_email'],
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              subtitle: Text(new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString()),
-            ),
-            Padding(
-              padding: EdgeInsets.all(2),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 20) ,
-                    child: Text(
-                      data()['comment'],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget getPostsOfSearchedUser(context){
     return Stack(
       children: <Widget>[
@@ -196,23 +155,26 @@ class _searchState extends State<search> {
                     controller: _controller,
                     decoration: InputDecoration(
                       hintText: 'Search User',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                      border: InputBorder.none,
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: (){
+                          setState(() {
+                            serach_field=null;
+                            search_result = false;
+                          });
+                          _controller.clear();
+                        },
                       ),
                       icon: IconButton(
                         icon: Icon(Icons.search),
                         onPressed: (){
                           setState(() {
                             serach_field=_controller.text;
-                          });
-                          if ((serach_field != null ))
-                            try {
-                              serach_field=null;
-                              _controller.clear();
-
-                            } catch (e) {
-                              print('Error creating list $e');
+                            if ((serach_field != null )) {
+                              search_result = true;
                             }
+                          });
                         },
                       ),
                     ),
@@ -221,39 +183,99 @@ class _searchState extends State<search> {
               ),
               new Expanded(
                 child: search_result == true
-                    ? new ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, i) {
-                    return new Card(
-                      child: new ListTile(
-                        leading: new Text('data'),
-                        title:new Text('data'),
+                    ? new Container(
+                      child: StreamBuilder<QuerySnapshot>(
+                      stream: userDataController.getPostsByemail(serach_field),
+                      builder: (context, asyncSnapshot) {
+                        if (asyncSnapshot.hasData) {
+                        var documents = asyncSnapshot.data.documents;
+                        if(documents.length > 0){
+                          return ListView.builder(
+                            padding: EdgeInsets.all(0),
+                            itemCount: documents.length,
+                            itemBuilder: (context, index) {
+                              var data = documents[index].data;
+                              var id = documents[index].id;
+                              return getPost(data,id);
+                            },
+                          );
+                        }else{
+                          return new ListView.builder(
+                            shrinkWrap: true,
+                            padding: EdgeInsets.all(0),
+                            itemCount: 1,
+                            itemBuilder: (context, index) {
+                              return new Center(
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 100,
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.all(20),
+                                      width: 200,
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                            image: AssetImage("assets/images/nodata.jpg"),
+                                            fit: BoxFit.fill
+                                        ),
+                                      ),
+                                    ),
+                                    new Text('No Posts For this user',
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      }
+                        return SizedBox(
+                            height: 100,
+                            child: CircularProgressIndicator()
+                        );
+                      },
+                     ),
+                    )
+                    : new ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.all(0),
+                  itemCount: 1,
+                  itemBuilder: (context, index) {
+                    return new Center(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 100,
+                          ),
+                          Container(
+                            margin: EdgeInsets.all(20),
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                  image: AssetImage("assets/images/nodata.jpg"),
+                                  fit: BoxFit.fill
+                              ),
+                            ),
+                          ),
+                          new Text('No data to Show',
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(0.6),
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
                       ),
-                      margin: const EdgeInsets.all(0.0),
                     );
                   },
-                )
-                    : new Center(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 100,
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(20),
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: AssetImage("assets/images/nodata.jpg"),
-                              fit: BoxFit.fill
-                          ),
-                        ),
-                      ),
-                      new Text('Now Data to Show'),
-                    ],
-                  ),
                 ),
               ),
             ],
