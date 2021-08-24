@@ -49,13 +49,6 @@ class _activityState extends State<activity> {
     );
   }
 
-  Widget getBody(){
-    return new Expanded(
-        child: on_your_post == true
-        ? new Container(child: Text('On you Post')) : new Container(child: Text('Your activity'))
-    );
-  }
-
   Widget getPostsOfactivityedUser(context){
     return Stack(
       children: <Widget>[
@@ -66,51 +59,7 @@ class _activityState extends State<activity> {
           left: 0,
           child: Column(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(top: 15.0),
-                child: ToggleButtons(
-                  borderColor: Colors.black,
-                  fillColor: Colors.green,
-                  borderWidth: 2,
-                  selectedBorderColor: Colors.black,
-                  selectedColor: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'On Your Post',
-                        style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Your Activity',
-                        style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                  onPressed: (int index) {
-                    setState(() {
-                      for (int i = 0; i < isSelected.length; i++) {
-                        if(i==index){
-                          isSelected[i] = true;
-                          if(i==0){
-                            on_your_post = true;
-                          }else{
-                            on_your_post = false;
-                          }
-                        }else{
-                          isSelected[i] = false;
-                        }
-                      }
-                    });
-                  },
-                  isSelected: isSelected,
-                ),
-              ),
-              getBody(),
+
             ],
           ),
         ),
