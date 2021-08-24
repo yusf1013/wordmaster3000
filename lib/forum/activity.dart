@@ -49,6 +49,127 @@ class _activityState extends State<activity> {
     );
   }
 
+  Widget getBody(){
+    return new Expanded(
+        child: on_your_post == true
+        ? Container(
+            child: StreamBuilder<QuerySnapshot>(
+              //scrollDirection: Axis.horizontal,
+              stream: userDataController.getActivitiesbyReceiver(_authController.getUser().email),
+              builder: (context, asyncSnapshot) {
+                if (asyncSnapshot.hasData) {
+                  var documents = asyncSnapshot.data.documents;
+                  if(documents.length > 0){
+                    return ListView.builder(
+                      padding: EdgeInsets.all(0),
+                      itemCount: documents.length,
+                      itemBuilder: (context, index) {
+                        var data = documents[index].data;
+                        var id = documents[index].id;
+                        // return getPost(context,data,id);
+                      },
+                    );
+                  }else{
+                    return new ListView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.all(0),
+                      itemCount: 1,
+                      itemBuilder: (context, index) {
+                        return new Center(
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 100,
+                              ),
+                              Container(
+                                margin: EdgeInsets.all(20),
+                                width: 200,
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: AssetImage("assets/images/nodata.jpg"),
+                                      fit: BoxFit.fill
+                                  ),
+                                ),
+                              ),
+                              new Text('No data to Show',
+                                style: TextStyle(
+                                  color: Colors.black.withOpacity(0.6),
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  }
+                }
+                return CircularProgressIndicator();
+              },
+            ),
+          )
+            : Container(child: StreamBuilder<QuerySnapshot>(
+          //scrollDirection: Axis.horizontal,
+          stream: userDataController.getActivitiesbyAuthor(_authController.getUser().email),
+          builder: (context, asyncSnapshot) {
+            if (asyncSnapshot.hasData) {
+              var documents = asyncSnapshot.data.documents;
+              if(documents.length > 0){
+                return ListView.builder(
+                  padding: EdgeInsets.all(0),
+                  itemCount: documents.length,
+                  itemBuilder: (context, index) {
+                    var data = documents[index].data;
+                    var id = documents[index].id;
+                    // return getPost(context,data,id);
+                    return Text('okkk');
+                  },
+                );
+              }else{
+                return new ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.all(0),
+                  itemCount: 1,
+                  itemBuilder: (context, index) {
+                    return new Center(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 100,
+                          ),
+                          Container(
+                            margin: EdgeInsets.all(20),
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                  image: AssetImage("assets/images/nodata.jpg"),
+                                  fit: BoxFit.fill
+                              ),
+                            ),
+                          ),
+                          new Text('No Activity to Show',
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(0.6),
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }
+            }
+              return CircularProgressIndicator();
+          },
+        ))
+    );
+  }
+
   Widget getPostsOfactivityedUser(context){
     return Stack(
       children: <Widget>[
@@ -59,7 +180,51 @@ class _activityState extends State<activity> {
           left: 0,
           child: Column(
             children: <Widget>[
-
+              Padding(
+                padding: const EdgeInsets.only(top: 15.0),
+                child: ToggleButtons(
+                  borderColor: Colors.black,
+                  fillColor: Colors.green,
+                  borderWidth: 2,
+                  selectedBorderColor: Colors.black,
+                  selectedColor: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'On Your Feed',
+                        style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Your Activity',
+                        style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                  onPressed: (int index) {
+                    setState(() {
+                      for (int i = 0; i < isSelected.length; i++) {
+                        if(i==index){
+                          isSelected[i] = true;
+                          if(i==0){
+                            on_your_post = true;
+                          }else{
+                            on_your_post = false;
+                          }
+                        }else{
+                          isSelected[i] = false;
+                        }
+                      }
+                    });
+                  },
+                  isSelected: isSelected,
+                ),
+              ),
+              getBody(),
             ],
           ),
         ),
