@@ -248,8 +248,8 @@ class UserDataController {
   }
 
   Stream<QuerySnapshot> getPostsByemail(email) {
-    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-    print(email);
+    //print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    //print(email);
     return _fireStore
         .collection('posts')
         .where('user_email',isEqualTo: email)
@@ -257,6 +257,25 @@ class UserDataController {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> getActivitiesbyReceiver(email) {
+    //print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    //print(email);
+    return _fireStore
+        .collection('notifications')
+        .where('receiver',isEqualTo: email)
+        .orderBy('time', descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getActivitiesbyAuthor(email) {
+    //print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    //print(email);
+    return _fireStore
+        .collection('notifications')
+        .where('author',isEqualTo: email)
+        .orderBy('time', descending: true)
+        .snapshots();
+  }
   WordList getCourse(String id) {
     for (WordList wl in user.courses) if (wl.id == id) return wl;
     return null;
@@ -302,18 +321,38 @@ class UserDataController {
         .delete();
   }
 
-  void deletePost(id){
-    _fireStore
+  void deletePost(id) async{
+    await _fireStore
         .collection('posts')
         .doc(id)
-        .delete();
+        .delete().then((value) => {
+    _fireStore.collection('notifications').where('parent_id',isEqualTo: id).get().then((QuerySnapshot querySnapshot) => {
+          querySnapshot.docs.forEach((element) {
+            print('deleteing baaaaaaaaaaaayaaaaaa');
+              _fireStore
+                  .collection('notifications')
+                  .doc(element.documentID)
+                  .delete();
+              })
+          })
+    });
   }
 
   void deleteComment(post_id,comment_id){
     _fireStore
         .collection('posts')
         .doc(post_id).collection('comments').doc(comment_id)
-        .delete();
+        .delete().then((value) => {
+      _fireStore.collection('notifications').where('comment_id',isEqualTo: comment_id).get().then((QuerySnapshot querySnapshot) => {
+        querySnapshot.docs.forEach((element) {
+          print('deleteing baaaaaaaaaaaayaaaaaa');
+          _fireStore
+              .collection('notifications')
+              .doc(element.documentID)
+              .delete();
+        })
+      })
+    });
   }
 
   void unEnrollCourse(String id) async {
@@ -509,26 +548,55 @@ class UserDataController {
   Future<int> createPost(String post, email) async {
     _fireStore
         .collection('posts')
-        .doc()
-        .setData({
+        .add({
       'user_email': email,
       'post': post,
       'like': 0,
       'time': new DateTime.now(),
+    }).then((value) => {
+      print(value.id),
+      _fireStore
+          .collection('notifications')
+          .doc()
+          .setData({
+        'author': email,
+        'parent_id': value.id,
+        'receiver' : 'self',
+        'time': new DateTime.now(),
+        'comment_id': null,
+        'body': 'post',
+      })
     });
   }
 
-  Future<int> saveComment(String comment, email, parent_id) async {
-    _fireStore
+  Future<int> saveComment(String comment, email, parent_id,receiver) async {
+    await _fireStore
         .collection('posts')
         .doc(parent_id)
         .collection('comments')
-        .doc()
-        .setData({
+        .add({
           'user_email': email,
           'comment': comment,
           'parent_id': parent_id,
           'time': new DateTime.now(),
+    }).then((value) => {
+      if(receiver != null ){
+        if(receiver == email){
+          receiver = 'self'
+        },
+        print("calling boss"),
+        _fireStore
+            .collection('notifications')
+            .doc()
+            .setData({
+          'author': email,
+          'parent_id': parent_id,
+          'comment_id': value.id,
+          'receiver' : receiver,
+          'time': new DateTime.now(),
+          'body': 'comment',
+        })
+      }
     });
   }
 

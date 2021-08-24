@@ -16,6 +16,7 @@ class _viewPostState extends State<viewPost> {
 
   String post_id;
   String comment;
+  String receiver;
   _viewPostState(this.post_id);
   final UserDataController userDataController = UserDataController();
   TextEditingController _controller=TextEditingController();
@@ -84,6 +85,7 @@ class _viewPostState extends State<viewPost> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var document = snapshot.data;
+              this.receiver = document['user_email'];
               return getPost(document);
             }
             return CircularProgressIndicator();
@@ -127,7 +129,7 @@ class _viewPostState extends State<viewPost> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(
-                          Icons.volunteer_activism_rounded,
+                          Icons.volunteer_activism,
                           color: Colors.pink,),
                         onPressed: () async {
                           if(data['user_email'].toString() == _authController.getUser().email){
@@ -253,7 +255,7 @@ class _viewPostState extends State<viewPost> {
                             if ((comment != null ))
                               try {
                                 UserDataController()
-                                    .saveComment(comment,_authController.getUser().email,this.post_id);
+                                    .saveComment(comment,_authController.getUser().email,this.post_id,this.receiver);
                                   comment=null;
                                   _controller.clear();
 
