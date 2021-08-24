@@ -73,7 +73,7 @@ class _activityState extends State<activity> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(bottom: 10),
+                    padding: EdgeInsets.only(bottom: 10,left: 10, right: 7),
                     child: Text(
                         data()['author'] + 'commented on your post'
                     ),
@@ -111,7 +111,7 @@ class _activityState extends State<activity> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(bottom: 10),
+                  padding: EdgeInsets.only(bottom: 10,left: 10, right: 7),
                   child: Text(
                       'You created a Post'
                   ),
@@ -145,7 +145,7 @@ class _activityState extends State<activity> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(bottom: 10),
+                  padding: EdgeInsets.only(bottom: 10,left: 10, right: 7),
                   child: data()['receiver'] == 'self' ? Text(
                       'You commented on your post'
                   ): Text(

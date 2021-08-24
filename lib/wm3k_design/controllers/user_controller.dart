@@ -243,7 +243,7 @@ class UserDataController {
     //print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     //print(email);
     return _fireStore
-        .collection('notifications')
+        .collection('activities')
         .where('receiver',isEqualTo: email)
         .orderBy('time', descending: true)
         .snapshots();
@@ -253,7 +253,7 @@ class UserDataController {
     //print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     //print(email);
     return _fireStore
-        .collection('notifications')
+        .collection('activities')
         .where('author',isEqualTo: email)
         .orderBy('time', descending: true)
         .snapshots();
@@ -299,11 +299,11 @@ class UserDataController {
         .collection('posts')
         .doc(id)
         .delete().then((value) => {
-    _fireStore.collection('notifications').where('parent_id',isEqualTo: id).get().then((QuerySnapshot querySnapshot) => {
+    _fireStore.collection('activities').where('parent_id',isEqualTo: id).get().then((QuerySnapshot querySnapshot) => {
           querySnapshot.docs.forEach((element) {
             print('deleteing baaaaaaaaaaaayaaaaaa');
               _fireStore
-                  .collection('notifications')
+                  .collection('activities')
                   .doc(element.documentID)
                   .delete();
               })
@@ -316,11 +316,11 @@ class UserDataController {
         .collection('posts')
         .doc(post_id).collection('comments').doc(comment_id)
         .delete().then((value) => {
-      _fireStore.collection('notifications').where('comment_id',isEqualTo: comment_id).get().then((QuerySnapshot querySnapshot) => {
+      _fireStore.collection('activities').where('comment_id',isEqualTo: comment_id).get().then((QuerySnapshot querySnapshot) => {
         querySnapshot.docs.forEach((element) {
           print('deleteing baaaaaaaaaaaayaaaaaa');
           _fireStore
-              .collection('notifications')
+              .collection('activities')
               .doc(element.documentID)
               .delete();
         })
@@ -520,7 +520,7 @@ class UserDataController {
     }).then((value) => {
       print(value.id),
       _fireStore
-          .collection('notifications')
+          .collection('activities')
           .doc()
           .setData({
         'author': email,
@@ -550,7 +550,7 @@ class UserDataController {
         },
         print("calling boss"),
         _fireStore
-            .collection('notifications')
+            .collection('activities')
             .doc()
             .setData({
           'author': email,
