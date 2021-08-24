@@ -20,11 +20,13 @@ public class ClipBoard extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        System.out.println("Ok we are starting");
         clipcheckmanager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         clipcheckmanager.addPrimaryClipChangedListener(new ClipboardManager.OnPrimaryClipChangedListener() {
 
             @Override
             public void onPrimaryClipChanged() {
+                System.out.println("okkk we have changed");
                // String newClip = clipcheckmanager.getText().toString();
                 //Toast.makeText(getApplicationContext(), newClip.toString(),  Toast.LENGTH_LONG).show();
                 //Log.i("LOG", newClip.toString() + "");

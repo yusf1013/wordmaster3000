@@ -87,6 +87,80 @@ class _activityState extends State<activity> {
       );
     }
 
+  Widget getAuthorActivity(data){
+    return data()['body'] == 'post' ? Padding(
+      padding: EdgeInsets.all(4),
+      child: GestureDetector(
+        onTap: () =>{
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    viewPost(post_id: data()['parent_id'].toString())),
+          )
+        },
+        child: Card(
+          elevation: 12,
+          child: Container(
+            //height: 230,
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                  title: Text(
+                    new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString(),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 10),
+                  child: Text(
+                      'You created a Post'
+                  ),
+                ),
+              ],
+            ),
+            //color: Colors.red,
+          ),
+        ),
+      ),
+    ) : Padding(
+      padding: EdgeInsets.all(4),
+      child: GestureDetector(
+        onTap: () =>{
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    viewPost(post_id: data()['parent_id'].toString())),
+          )
+        },
+        child: Card(
+          elevation: 12,
+          child: Container(
+            //height: 230,
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                  title: Text(
+                    new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString(),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 10),
+                  child: data()['receiver'] == 'self' ? Text(
+                      'You commented on your post'
+                  ): Text(
+                      'You commented on '+ data()['receiver']+ '\'s post'
+                  ),
+                ),
+              ],
+            ),
+            //color: Colors.red,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget getBody(){
     return new Expanded(
         child: on_your_post == true
@@ -162,7 +236,7 @@ class _activityState extends State<activity> {
                     var data = documents[index].data;
                     var id = documents[index].id;
                     // return getPost(context,data,id);
-                    return Text('okkk');
+                    return getAuthorActivity(data);
                   },
                 );
               }else{
