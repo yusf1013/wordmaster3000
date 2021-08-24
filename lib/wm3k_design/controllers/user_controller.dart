@@ -315,7 +315,17 @@ class UserDataController {
     _fireStore
         .collection('posts')
         .doc(post_id).collection('comments').doc(comment_id)
-        .delete();
+        .delete().then((value) => {
+      _fireStore.collection('notifications').where('comment_id',isEqualTo: comment_id).get().then((QuerySnapshot querySnapshot) => {
+        querySnapshot.docs.forEach((element) {
+          print('deleteing baaaaaaaaaaaayaaaaaa');
+          _fireStore
+              .collection('notifications')
+              .doc(element.documentID)
+              .delete();
+        })
+      })
+    });
   }
 
   void unEnrollCourse(String id) async {
@@ -517,6 +527,7 @@ class UserDataController {
         'parent_id': value.id,
         'receiver' : 'self',
         'time': new DateTime.now(),
+        'comment_id': null,
         'body': 'post',
       })
     });
@@ -527,8 +538,7 @@ class UserDataController {
         .collection('posts')
         .doc(parent_id)
         .collection('comments')
-        .doc()
-        .setData({
+        .add({
           'user_email': email,
           'comment': comment,
           'parent_id': parent_id,
@@ -545,6 +555,7 @@ class UserDataController {
             .setData({
           'author': email,
           'parent_id': parent_id,
+          'comment_id': value.id,
           'receiver' : receiver,
           'time': new DateTime.now(),
           'body': 'comment',
