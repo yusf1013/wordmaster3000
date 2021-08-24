@@ -129,7 +129,7 @@ class _viewPostState extends State<viewPost> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(
-                          Icons.volunteer_activism_rounded,
+                          Icons.volunteer_activism,
                           color: Colors.pink,),
                         onPressed: () async {
                           if(data['user_email'].toString() == _authController.getUser().email){

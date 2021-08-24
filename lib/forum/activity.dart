@@ -49,6 +49,44 @@ class _activityState extends State<activity> {
     );
   }
 
+    Widget getReceiverActivity(data){
+      return Padding(
+        padding: EdgeInsets.all(4),
+        child: GestureDetector(
+          onTap: () =>{
+          Navigator.push(
+            context,
+              MaterialPageRoute(
+                builder: (context) =>
+                viewPost(post_id: data()['parent_id'].toString())),
+              )
+          },
+          child: Card(
+            elevation: 12,
+            child: Container(
+              //height: 230,
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    title: Text(
+                      new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString(),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: Text(
+                        data()['author'] + 'commented on your post'
+                    ),
+                  ),
+                ],
+              ),
+              //color: Colors.red,
+            ),
+          ),
+        ),
+      );
+    }
+
   Widget getBody(){
     return new Expanded(
         child: on_your_post == true
@@ -66,7 +104,7 @@ class _activityState extends State<activity> {
                       itemBuilder: (context, index) {
                         var data = documents[index].data;
                         var id = documents[index].id;
-                        // return getPost(context,data,id);
+                        return getReceiverActivity(data);
                       },
                     );
                   }else{

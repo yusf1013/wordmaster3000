@@ -75,7 +75,7 @@ class _MyPostsState extends State<MyPosts> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(
-                          Icons.volunteer_activism_rounded,
+                          Icons.volunteer_activism,
                           color: Colors.pink,),
                         onPressed: () { showDialog<String>(
                           context: context,
