@@ -1,6 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:wm3k/forum/createpost.dart';
 import 'package:wm3k/forum/news_feed.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
+
+import 'ViewPost.dart';
 
 class MyPosts extends StatefulWidget {
   @override
@@ -8,36 +13,59 @@ class MyPosts extends StatefulWidget {
 }
 
 class _MyPostsState extends State<MyPosts> {
+  AuthController _authController = AuthController();
+  final UserDataController userDataController = UserDataController();
+
+
   Widget PageHead, User_Detail, body;
 
-  Widget getPost() {
+  Widget getPost(context,data,String id) {
     return Card(
       child: Container(
         //height: 230,
         child: Column(
           children: <Widget>[
             ListTile(
-              leading: CircleAvatar(),
               title: Text(
-                "Radowan Redoy",
+                data()['user_email'],
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              subtitle: Text("time of posting"),
-              trailing: Icon(Icons.more_vert),
-              onTap: () {},
+              subtitle: Text(new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString()),
+              trailing:  IconButton(
+                icon: const Icon(Icons.delete),
+                tooltip: 'Delete',
+                onPressed: () => showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('Delete Post'),
+                    content: const Text('Are You Sure , you want to delete this?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'Cancel'),
+                        child: Text('NO',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
+                      ),
+                      TextButton(
+                          onPressed: () => {
+                            userDataController.deletePost(id),
+                            Navigator.pop(context, 'Ok')
+                          },
+                        child: Text('Yes',style: TextStyle(color: Colors.red.withOpacity(0.8)),),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
+              padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
               child: Text(
-                  "How do you do? I am fine what about you? How is your day going. I am having a normal day"),
-            ),
-            SizedBox(
-              height: 20,
+                data()['post']
+              ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(12, 12, 12, 8),
+              padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
               child: Row(
                 children: <Widget>[
                   SizedBox(
@@ -46,10 +74,25 @@ class _MyPostsState extends State<MyPosts> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.thumb_up),
-                        onPressed: () {/* Your code */},
+                        icon: new Icon(
+                          Icons.volunteer_activism_rounded,
+                          color: Colors.pink,),
+                        onPressed: () { showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            content: const Text('You can not like your own post'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => {
+                                  Navigator.pop(context,'Cancel')
+                                },
+                                child: Text('Ok',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
+                              ),
+                            ],),
+                          );
+                        },
                       ),
-                      Text("Like"),
+                      Text(data()['like'].toString()),
                     ],
                   ),
                   SizedBox(
@@ -58,29 +101,24 @@ class _MyPostsState extends State<MyPosts> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.comment),
-                        onPressed: () {/* Your code */},
+                        icon: new Icon(Icons.comment,color: Colors.blue),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    viewPost(post_id: id)),
+                          );
+                        },
                       ),
                       Text("Comment"),
                     ],
                   ),
-                  // SizedBox(
-                  //   width: 30,
-                  // ),
-                  // Row(
-                  //   children: <Widget>[
-                  //     IconButton(
-                  //       icon: new Icon(Icons.menu),
-                  //       onPressed: () { /* Your code */ },
-                  //     ),
-                  //     Text("More"),
-                  //   ],
-                  // )
                 ],
               ),
             ),
             SizedBox(
-              height: 15,
+              height: 5,
             ),
           ],
         ),
@@ -123,21 +161,14 @@ class _MyPostsState extends State<MyPosts> {
     return Row(
       children: <Widget>[
         SizedBox(
-          width: 10,
-        ),
-        Padding(
-          padding: EdgeInsets.all(20),
-          child: CircleAvatar(
-            backgroundImage: AssetImage('assets/images/userImage.png'),
-            radius: 50,
-          ),
+          width: 50,
         ),
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             SafeArea(
               child: Text(
-                "Radowan Redoy",
+                _authController.getUser().email,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 25,
@@ -212,12 +243,62 @@ class _MyPostsState extends State<MyPosts> {
               User_Detail = getUser_Detail(),
               Expanded(
                 child: Container(
-                  child: ListView.builder(
-                      //scrollDirection: Axis.horizontal,
-                      itemCount: 10,
-                      itemBuilder: (BuildContext context, int index) {
-                        return getPost();
-                      }),
+                  child: StreamBuilder<QuerySnapshot>(
+                    //scrollDirection: Axis.horizontal,
+                    stream: userDataController.getPostsByemail(_authController.getUser().email),
+                    builder: (context, asyncSnapshot) {
+                      if (asyncSnapshot.hasData) {
+                        var documents = asyncSnapshot.data.documents;
+                        if(documents.length > 0){
+                          return ListView.builder(
+                            padding: EdgeInsets.all(0),
+                            itemCount: documents.length,
+                            itemBuilder: (context, index) {
+                              var data = documents[index].data;
+                              var id = documents[index].id;
+                              return getPost(context,data,id);
+                            },
+                          );
+                        }else{
+                          return new ListView.builder(
+                            shrinkWrap: true,
+                            padding: EdgeInsets.all(0),
+                            itemCount: 1,
+                            itemBuilder: (context, index) {
+                              return new Center(
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 100,
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.all(20),
+                                      width: 200,
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                            image: AssetImage("assets/images/nodata.jpg"),
+                                            fit: BoxFit.fill
+                                        ),
+                                      ),
+                                    ),
+                                    new Text('No Posts to Show',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontSize: 20,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      }
+                      return CircularProgressIndicator();
+                    },
+                  ),
                 ),
               ),
             ],

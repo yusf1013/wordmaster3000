@@ -65,13 +65,5 @@ public class popUpCard extends Service {
 
             }
         });
-        detailsbutton=(Button) dialougeview.findViewById(R.id.open_details_button);
-        detailsbutton.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                System.out.println("Details showing is requested");
-            }
-        });
     }
 }

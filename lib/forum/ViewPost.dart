@@ -1,18 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
 
 class viewPost extends StatefulWidget {
 
-  String user_name;
-  viewPost({Key key,@required this.user_name}) : super(key : key);
+  String post_id;
+  viewPost({Key key,@required this.post_id}) : super(key : key);
   @override
-  _viewPostState createState() => _viewPostState(user_name);
+  _viewPostState createState() => _viewPostState(post_id);
 }
 
 class _viewPostState extends State<viewPost> {
 
-  String user_name;
-  _viewPostState(this.user_name);
+  String post_id;
+  String comment;
+  _viewPostState(this.post_id);
+  final UserDataController userDataController = UserDataController();
+  TextEditingController _controller=TextEditingController();
+  AuthController _authController = AuthController();
 
   AppBar getViewPostAppBar(BuildContext context){
     return AppBar(
@@ -29,7 +36,7 @@ class _viewPostState extends State<viewPost> {
         },
       ),
       title: Text(
-          user_name,
+          'Comments',
         style: TextStyle(
           color: Colors.black,
           fontSize: 25,
@@ -38,30 +45,72 @@ class _viewPostState extends State<viewPost> {
     );
   }
 
-  Widget getPost(){
+  Widget getTrailer(context,String email,String comment_id){
+    if(_authController.getUser().email == email){
+      return   IconButton(
+        icon: const Icon(Icons.delete),
+        tooltip: 'Delete',
+        onPressed: () => showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Delete Comment'),
+            content: const Text('Are You Sure , you want to delete this?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => {
+                  Navigator.pop(context,'Cancel')
+                },
+                child: Text('NO',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
+              ),
+              TextButton(
+                onPressed: () => {
+                  userDataController.deleteComment(this.post_id,comment_id),
+                  Navigator.pop(context,'Ok')
+                },
+                child: Text('Yes',style: TextStyle(color: Colors.red.withOpacity(0.8)),),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return null;
+  }
+
+  Widget getPostFromFirebase(BuildContext context) {
+       return FutureBuilder<DocumentSnapshot>(
+          //scrollDirection: Axis.horizontal,
+          future: userDataController.getPostById(this.post_id),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var document = snapshot.data;
+              return getPost(document);
+            }
+            return CircularProgressIndicator();
+          },
+        );
+  }
+
+  Widget getPost(data){
+    print(data['user_email']);
     return Card(
       child: Container(
         //height: 230,
         child: Column(
           children: <Widget>[
             ListTile(
-              leading: CircleAvatar(),
               title: Text(
-                "Radowan Redoy",
+                data['user_email'],
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              subtitle: Text("time of posting"),
-              trailing: Icon(Icons.more_vert),
-              onTap: (){
-
-              },
+              subtitle: Text(new DateFormat('yyyy-MM-dd – hh:mm a').format(data['time'].toDate()).toString()),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
               child: Text(
-                  "How do you do? I am fine what about you? How is your day going. I am having a normal day"
+                  data['post']
               ),
             ),
             SizedBox(
@@ -77,10 +126,32 @@ class _viewPostState extends State<viewPost> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.thumb_up),
-                        onPressed: () { /* Your code */ },
+                        icon: new Icon(
+                          Icons.volunteer_activism_rounded,
+                          color: Colors.pink,),
+                        onPressed: () async {
+                          if(data['user_email'].toString() == _authController.getUser().email){
+                            showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                content: const Text('You can not like your own post'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => {
+                                      Navigator.pop(context,'Cancel')
+                                    },
+                                    child: Text('Ok',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }else{
+                            await userDataController.increaseLike(this.post_id);
+                            setState(() {});
+                          }
+                        },
                       ),
-                      Text("Like"),
+                      Text(data['like'].toString()),
                     ],
                   ),
                   SizedBox(
@@ -89,24 +160,13 @@ class _viewPostState extends State<viewPost> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.comment),
-                        onPressed: () { /* Your code */ },
+                        icon: new Icon(Icons.comment,color: Colors.blue),
+                        onPressed: () {
+                        },
                       ),
                       Text("Comment"),
                     ],
                   ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      IconButton(
-                        icon: new Icon(Icons.menu),
-                        onPressed: () { /* Your code */ },
-                      ),
-                      Text("More"),
-                    ],
-                  )
                 ],
               ),
             ),
@@ -120,7 +180,7 @@ class _viewPostState extends State<viewPost> {
     );
   }
 
-  Widget getComments(){
+  Widget getComments(data,String comment_id){
     return Card(
       elevation: 5,
       child: Container(
@@ -130,19 +190,27 @@ class _viewPostState extends State<viewPost> {
               height: 10,
             ),
             ListTile(
-              leading: CircleAvatar(),
               title: Text(
-                "Radowan Redoy",
+                data()['user_email'],
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              subtitle: Text("time of posting"),
+              subtitle: Text(new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString()),
+              trailing: getTrailer(context, data()['user_email'], comment_id),
             ),
             Padding(
-              padding: EdgeInsets.all(10),
-              child: Text(
-                  "You should check out word master 3000 for your prbolem"
+              padding: EdgeInsets.all(2),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 20) ,
+                    child: Text(
+                      data()['comment'],
+                    ),
+                  ),
+                ),
               ),
             ),
             SizedBox(
@@ -154,43 +222,107 @@ class _viewPostState extends State<viewPost> {
     );
   }
 
-  Widget getPostBody(){
-    return SingleChildScrollView(
-      child: Column(
+  Widget getPostBody(context){
+    return Stack(
         children: <Widget>[
-          getPost(),
-          Padding(
-            padding: EdgeInsets.only(top: 5,left: 10,right: 10),
-            child: Container(
-              child: TextField(
-                maxLength: 50,
-                decoration: InputDecoration(
-                  hintText: 'Comment',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  icon: IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: (){
+          Positioned(
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            child: Column(
+              children: <Widget>[
+                getPostFromFirebase(context),
+                Padding(
+                  padding: EdgeInsets.only(top: 5,left: 10,right: 10),
+                  child: Container(
+                    child: TextField(
+                      maxLength: 100,
+                      controller: _controller,
+                      decoration: InputDecoration(
+                        hintText: 'Comment',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                        ),
+                        icon: IconButton(
+                          icon: Icon(Icons.send),
+                          onPressed: (){
+                            setState(() {
+                              comment=_controller.text;
+                            });
+                            if ((comment != null ))
+                              try {
+                                UserDataController()
+                                    .saveComment(comment,_authController.getUser().email,this.post_id);
+                                  comment=null;
+                                  _controller.clear();
 
-                    },
+                              } catch (e) {
+                                print('Error creating list $e');
+                              }
+                          },
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Expanded(
+                  child: Container(
+                    child: StreamBuilder<QuerySnapshot>(
+                      //scrollDirection: Axis.horizontal,
+                      stream: userDataController.getCommentOfPosts(this.post_id),
+                      builder: (context, asyncSnapshot) {
+                        if (asyncSnapshot.hasData) {
+                          var documents = asyncSnapshot.data.documents;
+                          if(documents.length > 0){
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              padding: EdgeInsets.all(0),
+                              itemCount: documents.length,
+                              itemBuilder: (context, index) {
+                                var data = documents[index].data;
+                                var comment_id = documents[index].id;
+                                return getComments(data,comment_id);
+                              },
+                            );
+                          }else{
+                            return new ListView.builder(
+                              shrinkWrap: true,
+                              padding: EdgeInsets.all(0),
+                              itemCount: 1,
+                              itemBuilder: (context, index) {
+                                return new Center(
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.all(20),
+                                        width: 150,
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                              image: AssetImage("assets/images/nodata.jpg"),
+                                              fit: BoxFit.fill
+                                          ),
+                                        ),
+                                      ),
+                                      new Text('No Comments to Show'),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                        }
+                        return CircularProgressIndicator();
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          Container(
-            height: MediaQuery.of(context).size.height,
-            //child: Text("Hello"),
-            child: ListView.builder(
-              //scrollDirection: Axis.horizontal,
-                itemCount: 10,
-                itemBuilder: (BuildContext context, int index){
-                  return getComments();
-                }),
-          ),
         ],
-      ),
     );
   }
   
@@ -199,7 +331,7 @@ class _viewPostState extends State<viewPost> {
     return Scaffold(
       //resizeToAvoidBottomPadding: false,
       appBar: getViewPostAppBar(context),
-      body: getPostBody(),
+      body: getPostBody(context),
     );
   }
 }

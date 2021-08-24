@@ -231,9 +231,46 @@ class UserDataController {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> getPosts() {
+    return _fireStore
+        .collection('posts')
+        .orderBy('time', descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getCommentOfPosts(id) {
+    return _fireStore
+        .collection('posts')
+        .doc(id)
+        .collection('comments')
+        .orderBy('time', descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getPostsByemail(email) {
+    print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+    print(email);
+    return _fireStore
+        .collection('posts')
+        .where('user_email',isEqualTo: email)
+        .orderBy('time', descending: true)
+        .snapshots();
+  }
+
   WordList getCourse(String id) {
     for (WordList wl in user.courses) if (wl.id == id) return wl;
     return null;
+  }
+
+  Future<DocumentSnapshot> getPostById(id) async{
+    print('yaaaaaaaaaa huuuuuuuuuuuuuuuuuuu');
+    DocumentReference ref = await _fireStore
+        .collection('posts')
+        .doc(id);
+    DocumentSnapshot document = await ref.get();
+
+    print(document);
+    return document;
   }
 
   Future<WordList> getCourseFromID(String id) async {
@@ -262,6 +299,20 @@ class UserDataController {
         .doc('${_currentUser.email}')
         .collection('wordLists')
         .doc(id)
+        .delete();
+  }
+
+  void deletePost(id){
+    _fireStore
+        .collection('posts')
+        .doc(id)
+        .delete();
+  }
+
+  void deleteComment(post_id,comment_id){
+    _fireStore
+        .collection('posts')
+        .doc(post_id).collection('comments').doc(comment_id)
         .delete();
   }
 
@@ -297,6 +348,16 @@ class UserDataController {
 
     int length = document.data()['length'] - 1;
     ref.update({'length': length});
+  }
+
+  void increaseLike(String post_id) async {
+    DocumentReference ref = await _fireStore
+        .collection('posts')
+        .doc(post_id);
+    DocumentSnapshot document = await ref.get();
+
+    int like = document.data()['like'] + 1;
+    ref.update({'like': like});
   }
 
   Stream<QuerySnapshot> getCourses() {
@@ -443,6 +504,32 @@ class UserDataController {
         .doc(id.toString());*/
     //d.collection('words').add({'ad': 1});
     return id;
+  }
+
+  Future<int> createPost(String post, email) async {
+    _fireStore
+        .collection('posts')
+        .doc()
+        .setData({
+      'user_email': email,
+      'post': post,
+      'like': 0,
+      'time': new DateTime.now(),
+    });
+  }
+
+  Future<int> saveComment(String comment, email, parent_id) async {
+    _fireStore
+        .collection('posts')
+        .doc(parent_id)
+        .collection('comments')
+        .doc()
+        .setData({
+          'user_email': email,
+          'comment': comment,
+          'parent_id': parent_id,
+          'time': new DateTime.now(),
+    });
   }
 
   Future<bool> enrollInCourse(String id) async {
