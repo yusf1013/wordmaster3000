@@ -16,10 +16,9 @@ class _MyPostsState extends State<MyPosts> {
   AuthController _authController = AuthController();
   final UserDataController userDataController = UserDataController();
 
-
   Widget PageHead, User_Detail, body;
 
-  Widget getPost(context,data,String id) {
+  Widget getPost(context, data, String id) {
     return Card(
       child: Container(
         //height: 230,
@@ -32,26 +31,36 @@ class _MyPostsState extends State<MyPosts> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              subtitle: Text(new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString()),
-              trailing:  IconButton(
+              subtitle: Text(new DateFormat('yyyy-MM-dd – hh:mm a')
+                  .format(data()['time'].toDate())
+                  .toString()),
+              trailing: IconButton(
                 icon: const Icon(Icons.delete),
                 tooltip: 'Delete',
                 onPressed: () => showDialog<String>(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
                     title: const Text('Delete Post'),
-                    content: const Text('Are You Sure , you want to delete this?'),
+                    content:
+                        const Text('Are You Sure , you want to delete this?'),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.pop(context, 'Cancel'),
-                        child: Text('NO',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
+                        child: Text(
+                          'NO',
+                          style:
+                              TextStyle(color: Colors.green.withOpacity(0.8)),
+                        ),
                       ),
                       TextButton(
-                          onPressed: () => {
-                            userDataController.deletePost(id),
-                            Navigator.pop(context, 'Ok')
-                          },
-                        child: Text('Yes',style: TextStyle(color: Colors.red.withOpacity(0.8)),),
+                        onPressed: () => {
+                          userDataController.deletePost(id),
+                          Navigator.pop(context, 'Ok')
+                        },
+                        child: Text(
+                          'Yes',
+                          style: TextStyle(color: Colors.red.withOpacity(0.8)),
+                        ),
                       ),
                     ],
                   ),
@@ -60,9 +69,7 @@ class _MyPostsState extends State<MyPosts> {
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-              child: Text(
-                data()['post']
-              ),
+              child: Text(data()['post']),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
@@ -75,20 +82,27 @@ class _MyPostsState extends State<MyPosts> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(
-                          Icons.volunteer_activism_rounded,
-                          color: Colors.pink,),
-                        onPressed: () { showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            content: const Text('You can not like your own post'),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () => {
-                                  Navigator.pop(context,'Cancel')
-                                },
-                                child: Text('Ok',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
-                              ),
-                            ],),
+                          Icons.volunteer_activism,
+                          color: Colors.pink,
+                        ),
+                        onPressed: () {
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              content:
+                                  const Text('You can not like your own post'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () =>
+                                      {Navigator.pop(context, 'Cancel')},
+                                  child: Text(
+                                    'Ok',
+                                    style: TextStyle(
+                                        color: Colors.green.withOpacity(0.8)),
+                                  ),
+                                ),
+                              ],
+                            ),
                           );
                         },
                       ),
@@ -101,13 +115,12 @@ class _MyPostsState extends State<MyPosts> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.comment,color: Colors.blue),
+                        icon: new Icon(Icons.comment, color: Colors.blue),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    viewPost(post_id: id)),
+                                builder: (context) => viewPost(post_id: id)),
                           );
                         },
                       ),
@@ -245,21 +258,22 @@ class _MyPostsState extends State<MyPosts> {
                 child: Container(
                   child: StreamBuilder<QuerySnapshot>(
                     //scrollDirection: Axis.horizontal,
-                    stream: userDataController.getPostsByemail(_authController.getUser().email),
+                    stream: userDataController
+                        .getPostsByemail(_authController.getUser().email),
                     builder: (context, asyncSnapshot) {
                       if (asyncSnapshot.hasData) {
                         var documents = asyncSnapshot.data.documents;
-                        if(documents.length > 0){
+                        if (documents.length > 0) {
                           return ListView.builder(
                             padding: EdgeInsets.all(0),
                             itemCount: documents.length,
                             itemBuilder: (context, index) {
                               var data = documents[index].data;
                               var id = documents[index].id;
-                              return getPost(context,data,id);
+                              return getPost(context, data, id);
                             },
                           );
-                        }else{
+                        } else {
                           return new ListView.builder(
                             shrinkWrap: true,
                             padding: EdgeInsets.all(0),
@@ -278,15 +292,16 @@ class _MyPostsState extends State<MyPosts> {
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         image: DecorationImage(
-                                            image: AssetImage("assets/images/nodata.jpg"),
-                                            fit: BoxFit.fill
-                                        ),
+                                            image: AssetImage(
+                                                "assets/images/nodata.jpg"),
+                                            fit: BoxFit.fill),
                                       ),
                                     ),
-                                    new Text('No Posts to Show',
+                                    new Text(
+                                      'No Posts to Show',
                                       style: TextStyle(
-                                          color: Colors.black.withOpacity(0.6),
-                                          fontSize: 20,
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontSize: 20,
                                       ),
                                     ),
                                   ],

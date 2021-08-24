@@ -27,10 +27,10 @@ class _NewsfeedState extends State<Newsfeed> {
     //appbar = getAppBar("Leaderboard");
     super.initState();
   }
-  
-  Widget getTrailer(context,String email,String id){
-    if(_authController.getUser().email == email){
-      return   IconButton(
+
+  Widget getTrailer(context, String email, String id) {
+    if (_authController.getUser().email == email) {
+      return IconButton(
         icon: const Icon(Icons.delete),
         tooltip: 'Delete',
         onPressed: () => showDialog<String>(
@@ -40,17 +40,21 @@ class _NewsfeedState extends State<Newsfeed> {
             content: const Text('Are You Sure , you want to delete this?'),
             actions: <Widget>[
               TextButton(
-                onPressed: () => {
-                  Navigator.pop(context,'Cancel')
-                },
-                child: Text('NO',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
+                onPressed: () => {Navigator.pop(context, 'Cancel')},
+                child: Text(
+                  'NO',
+                  style: TextStyle(color: Colors.green.withOpacity(0.8)),
+                ),
               ),
               TextButton(
-                  onPressed: () => {
-                    userDataController.deletePost(id),
-                    Navigator.pop(context,'Ok')
-                  },
-                child: Text('Yes',style: TextStyle(color: Colors.red.withOpacity(0.8)),),
+                onPressed: () => {
+                  userDataController.deletePost(id),
+                  Navigator.pop(context, 'Ok')
+                },
+                child: Text(
+                  'Yes',
+                  style: TextStyle(color: Colors.red.withOpacity(0.8)),
+                ),
               ),
             ],
           ),
@@ -60,7 +64,7 @@ class _NewsfeedState extends State<Newsfeed> {
     return null;
   }
 
-  Widget getPost(BuildContext context, data,String id) {
+  Widget getPost(BuildContext context, data, String id) {
     return Card(
       elevation: 5,
       child: Container(
@@ -75,15 +79,16 @@ class _NewsfeedState extends State<Newsfeed> {
                 ),
               ),
               subtitle: Text(
-                  new DateFormat('yyyy-MM-dd – hh:mm a').format(data()['time'].toDate()).toString(),
+                new DateFormat('yyyy-MM-dd – hh:mm a')
+                    .format(data()['time'].toDate())
+                    .toString(),
               ),
-              trailing: getTrailer(context,data()['user_email'],id),
+              trailing: getTrailer(context, data()['user_email'], id),
               onTap: () {},
             ),
             Padding(
-            padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
-              child: Text(
-                  data()['post']),
+              padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
+              child: Text(data()['post']),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 12, 8),
@@ -96,25 +101,31 @@ class _NewsfeedState extends State<Newsfeed> {
                     children: <Widget>[
                       IconButton(
                         icon: new Icon(
-                          Icons.volunteer_activism_rounded,
-                          color: Colors.pink,),
+                          Icons.volunteer_activism,
+                          color: Colors.pink,
+                        ),
                         onPressed: () async {
-                          if(data()['user_email'].toString() == _authController.getUser().email){
+                          if (data()['user_email'].toString() ==
+                              _authController.getUser().email) {
                             showDialog<String>(
                               context: context,
                               builder: (BuildContext context) => AlertDialog(
-                                content: const Text('You can not like your own post'),
+                                content: const Text(
+                                    'You can not like your own post'),
                                 actions: <Widget>[
                                   TextButton(
-                                    onPressed: () => {
-                                      Navigator.pop(context,'Cancel')
-                                    },
-                                    child: Text('Ok',style: TextStyle(color: Colors.green.withOpacity(0.8)),),
+                                    onPressed: () =>
+                                        {Navigator.pop(context, 'Cancel')},
+                                    child: Text(
+                                      'Ok',
+                                      style: TextStyle(
+                                          color: Colors.green.withOpacity(0.8)),
+                                    ),
                                   ),
                                 ],
                               ),
                             );
-                          }else{
+                          } else {
                             await userDataController.increaseLike(id);
                             setState(() {});
                           }
@@ -129,14 +140,12 @@ class _NewsfeedState extends State<Newsfeed> {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        icon: new Icon(Icons.comment,
-                            color: Colors.blue),
+                        icon: new Icon(Icons.comment, color: Colors.blue),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    viewPost(post_id: id)),
+                                builder: (context) => viewPost(post_id: id)),
                           );
                         },
                       ),
@@ -179,25 +188,25 @@ class _NewsfeedState extends State<Newsfeed> {
     return Expanded(
       child: Container(
         child: StreamBuilder<QuerySnapshot>(
-            //scrollDirection: Axis.horizontal,
-        stream: userDataController.getPosts(),
-        builder: (context, asyncSnapshot) {
-         if (asyncSnapshot.hasData) {
-            var documents = asyncSnapshot.data.documents;
-            return ListView.builder(
-               padding: EdgeInsets.all(0),
-               itemCount: documents.length,
-               itemBuilder: (context, index) {
+          //scrollDirection: Axis.horizontal,
+          stream: userDataController.getPosts(),
+          builder: (context, asyncSnapshot) {
+            if (asyncSnapshot.hasData) {
+              var documents = asyncSnapshot.data.documents;
+              return ListView.builder(
+                padding: EdgeInsets.all(0),
+                itemCount: documents.length,
+                itemBuilder: (context, index) {
                   var data = documents[index].data;
                   var id = documents[index].id;
-                  return getPost(context,data,id);
+                  return getPost(context, data, id);
                 },
-            );
-         }
-         return CircularProgressIndicator();
-         },
+              );
+            }
+            return CircularProgressIndicator();
+          },
         ),
-     ),
+      ),
     );
   }
 

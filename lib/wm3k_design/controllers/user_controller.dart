@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_core/firebase_core.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wm3k/analysis_classes/wordList.dart';
@@ -67,7 +68,8 @@ class AuthController {
           "courseTrainingProgressIndex": 0,
           "wordListTrainingProgressIndex": 0,
           "testTaken": false
-        }
+        },
+        "score": 0,
       });
 
       _loadEssentials();
@@ -252,7 +254,7 @@ class UserDataController {
     print(email);
     return _fireStore
         .collection('posts')
-        .where('user_email',isEqualTo: email)
+        .where('user_email', isEqualTo: email)
         .orderBy('time', descending: true)
         .snapshots();
   }
@@ -262,11 +264,9 @@ class UserDataController {
     return null;
   }
 
-  Future<DocumentSnapshot> getPostById(id) async{
+  Future<DocumentSnapshot> getPostById(id) async {
     print('yaaaaaaaaaa huuuuuuuuuuuuuuuuuuu');
-    DocumentReference ref = await _fireStore
-        .collection('posts')
-        .doc(id);
+    DocumentReference ref = await _fireStore.collection('posts').doc(id);
     DocumentSnapshot document = await ref.get();
 
     print(document);
@@ -302,17 +302,16 @@ class UserDataController {
         .delete();
   }
 
-  void deletePost(id){
-    _fireStore
-        .collection('posts')
-        .doc(id)
-        .delete();
+  void deletePost(id) {
+    _fireStore.collection('posts').doc(id).delete();
   }
 
-  void deleteComment(post_id,comment_id){
+  void deleteComment(post_id, comment_id) {
     _fireStore
         .collection('posts')
-        .doc(post_id).collection('comments').doc(comment_id)
+        .doc(post_id)
+        .collection('comments')
+        .doc(comment_id)
         .delete();
   }
 
@@ -351,9 +350,7 @@ class UserDataController {
   }
 
   void increaseLike(String post_id) async {
-    DocumentReference ref = await _fireStore
-        .collection('posts')
-        .doc(post_id);
+    DocumentReference ref = await _fireStore.collection('posts').doc(post_id);
     DocumentSnapshot document = await ref.get();
 
     int like = document.data()['like'] + 1;
@@ -507,10 +504,7 @@ class UserDataController {
   }
 
   Future<int> createPost(String post, email) async {
-    _fireStore
-        .collection('posts')
-        .doc()
-        .setData({
+    _fireStore.collection('posts').doc().setData({
       'user_email': email,
       'post': post,
       'like': 0,
@@ -525,10 +519,10 @@ class UserDataController {
         .collection('comments')
         .doc()
         .setData({
-          'user_email': email,
-          'comment': comment,
-          'parent_id': parent_id,
-          'time': new DateTime.now(),
+      'user_email': email,
+      'comment': comment,
+      'parent_id': parent_id,
+      'time': new DateTime.now(),
     });
   }
 
@@ -590,10 +584,10 @@ class UserDataController {
       var url =
           'https://us-central1-wm3k-f920b.cloudfunctions.net/createCourse?id=${wordList.id}&user=${_currentUser.email}&code=$code&title=$name&desc=$desc&length=${wordList.subMeanings.length}';
 
-      String res = await http.read(url);
+      Response res = await http.get(url);
       print(res);
 
-      if (res.contains("uccess")) {
+      if (res.statusCode == 200) {
         return true;
       } else
         return false;
