@@ -216,6 +216,7 @@ class _SpellingLearnCardState extends State<SpellingLearnCard> {
   bool wantSetState = false;
   FlutterTts flutterTts = TextToSpeech();
   String answer = "";
+  TextToSpeech speech = TextToSpeech();
 
   void initialize() {
     mainView = getMeaning();
@@ -601,8 +602,7 @@ class _SpellingLearnCardState extends State<SpellingLearnCard> {
     Column column = getMeaningView(
         widget.subMeaning.getSubMeaning(), widget.subMeaning.word);
     for (int i = 0; i < widget.subMeaning.examples.length && i < 2; i++) {
-      column.children.add(
-          getSentence(widget.subMeaning.examples[i], widget.subMeaning.word));
+      column.children.add(getSentence(widget.subMeaning.examples[i], i + 1));
     }
 
     return Padding(
@@ -643,7 +643,31 @@ class _SpellingLearnCardState extends State<SpellingLearnCard> {
     return column;
   }
 
-  Padding getSentence(String example, String word) {
+  Padding getSentence(String example, int n) {
+    // example = example.replaceAll(word, "_____");
+    return Padding(
+      padding: const EdgeInsets.only(left: 23.0, top: 5),
+      child: GestureDetector(
+        onTap: () {
+          speech.speak(example);
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "➣ Example $n (Tap to play)",
+              style: dictionarySentences,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Icon(Icons.volume_down_outlined),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  /*Padding getSentence(String example, String word) {
     example = example.replaceAll(word, "_____");
     return Padding(
       padding: const EdgeInsets.only(left: 23.0, top: 5),
@@ -652,7 +676,7 @@ class _SpellingLearnCardState extends State<SpellingLearnCard> {
         style: dictionarySentences,
       ),
     );
-  }
+  }*/
 }
 
 class CircleButton extends StatelessWidget {

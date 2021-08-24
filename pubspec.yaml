@@ -55,6 +55,8 @@ dependencies:
   url_launcher: ^5.5.3
   clippy_flutter: ^1.1.1
   step_progress_indicator: ^0.2.4+7
+  blur: ^3.0.0
+
 
 
 

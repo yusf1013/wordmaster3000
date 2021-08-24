@@ -337,7 +337,11 @@ class _QuizLearnCardState extends State<QuizLearnCard> {
                                           padding: const EdgeInsets.only(
                                               left: 25.0, top: 10, right: 5),
                                           child: AutoSizeText(
-                                            "Eg: ${widget.subMeaning.getFirstExample()}",
+                                            widget.subMeaning
+                                                        .getFirstExample() ==
+                                                    null
+                                                ? " "
+                                                : "Eg: ${widget.subMeaning.getFirstExample()}",
                                             maxLines: 2,
                                             style: GoogleFonts.courgette(
                                               textStyle: TextStyle(

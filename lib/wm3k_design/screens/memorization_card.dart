@@ -24,7 +24,7 @@ class MemorizationCard extends StatefulWidget {
 
 class _MemorizationCardState extends State<MemorizationCard> {
   int _correct = 0;
-  double swipeEdge = 6, lastSwipeAlign;
+  double swipeEdge = 6, lastSwipeAlign = 12;
   List<int> _incorrectList = List();
   bool perfectlyDone = false;
 
@@ -87,6 +87,7 @@ class _MemorizationCardState extends State<MemorizationCard> {
                       },
                       swipeCompleteCallback:
                           (CardSwipeOrientation orientation, int index) async {
+                        print("In swipeCompleteCallback");
                         bool tapped;
                         print(lastSwipeAlign);
                         if (index == widget.wordList.subMeanings.length - 1 &&
@@ -112,7 +113,8 @@ class _MemorizationCardState extends State<MemorizationCard> {
                                     builder: (context) => MemorizationCard(
                                         WordList("", "", tempList, "-1"))));
                           }
-                        }
+                        } else
+                          lastSwipeAlign = 12;
                       },
                     ),
                   ),

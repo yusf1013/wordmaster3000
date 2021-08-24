@@ -71,6 +71,8 @@ class AuthController {
       });
 
       _loadEssentials();
+      var v = UserDataController();
+      v._initializeUser();
       return true;
     } catch (e) {
       print(e);
@@ -160,8 +162,24 @@ class UserDataController {
     await sleep1();
   }
 
+  Future<void> initWDT(bool loadForQuiz) async {
+    await user.dailyTraining.initWordListTrainingList(getStreamOfWLTLists(),
+        loadForQuiz: loadForQuiz);
+    // await sleepOneSecond();
+  }
+
+  Future<void> initCDT(bool loadForQuiz) async {
+    await user.dailyTraining
+        .initCourseTrainingList(getStreamOfCTLists(), loadForQuiz: loadForQuiz);
+    // await sleepOneSecond();
+  }
+
   Future sleep1() {
     return new Future.delayed(const Duration(milliseconds: 250), () => "1");
+  }
+
+  Future sleepOneSecond() {
+    return new Future.delayed(const Duration(milliseconds: 1000), () => "1");
   }
 
   AssetNameProvider assetNameProvider = AssetNameProvider();
@@ -231,6 +249,15 @@ class UserDataController {
 
   void deleteWordList(String id) {
     _fireStore
+        .collection('users/${_currentUser.email}/wordLists/$id/words')
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.delete();
+      }
+    });
+
+    _fireStore
         .collection('users')
         .doc('${_currentUser.email}')
         .collection('wordLists')
@@ -239,6 +266,15 @@ class UserDataController {
   }
 
   void unEnrollCourse(String id) async {
+    _fireStore
+        .collection('users/${_currentUser.email}/courses/$id/courseWords')
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.delete();
+      }
+    });
+
     var docRef = _fireStore
         .collection('users')
         .doc(_currentUser.email + "/courses/$id")
@@ -646,7 +682,7 @@ class DailyTrainingDetails {
 
   WordList courseTrainingList,
       wordListTrainingList,
-      forQuiz = WordList("", "", [], "");
+      forQuiz = WordList("Summary", "", [], "");
   int courseTrainingProgressIndex = 0, wordListTrainingProgressIndex = 0;
   String email;
   bool testTaken = false;
@@ -691,11 +727,22 @@ class DailyTrainingDetails {
         .update({"DailyTrainingDetails.testTaken": testTaken});
   }
 
-  bool getTestEnabled() {
-    bool testEnabled = courseTrainingProgressIndex > 2 &&
+  bool getTestEnabled(bool courseUnlocked, bool wlUnlocked) {
+    if (testTaken) return false;
+
+    if (courseUnlocked && wlUnlocked)
+      return courseTrainingProgressIndex > 2 &&
+          wordListTrainingProgressIndex > 2;
+
+    if (courseUnlocked) return courseTrainingProgressIndex > 2;
+
+    if (wlUnlocked) return wordListTrainingProgressIndex > 2;
+
+    return false;
+    /*bool testEnabled = courseTrainingProgressIndex > 2 &&
         wordListTrainingProgressIndex > 2 &&
         !testTaken;
-    return testEnabled;
+    return testEnabled;*/
   }
 
   DailyTrainingDetails._internal();
@@ -714,31 +761,37 @@ class DailyTrainingDetails {
     print("Everythig done");
   }
 
-  void initCourseTrainingList(Future<QuerySnapshot> documents) async {
+  Future<void> initCourseTrainingList(Future<QuerySnapshot> documents,
+      {bool loadForQuiz = true}) async {
     forQuiz.subMeanings = List();
     QuerySnapshot docs = await documents;
     courseTrainingList = await getWordListFromWordsCollection(docs);
-    var x = courseTrainingList.subMeanings;
-    //
-    if (x.length > 0) forQuiz.subMeanings.add(x[0]);
-    for (int i = 1; i < x.length; i++) {
-      if (x[i].index != x[i - 1].index || x[i].id != x[i - 1].id)
-        forQuiz.subMeanings.add(x[i]);
+
+    if (loadForQuiz) {
+      var x = courseTrainingList.subMeanings;
+      if (x.length > 0) forQuiz.subMeanings.add(x[0]);
+      for (int i = 1; i < x.length; i++) {
+        if (x[i].index != x[i - 1].index || x[i].id != x[i - 1].id)
+          forQuiz.subMeanings.add(x[i]);
+      }
     }
+
     courseTrainingList = courseTrainingList.getShuffledWordList();
   }
 
-  void initWordListTrainingList(Future<QuerySnapshot> documents) async {
+  Future<void> initWordListTrainingList(Future<QuerySnapshot> documents,
+      {bool loadForQuiz = true}) async {
     QuerySnapshot docs = await documents;
     wordListTrainingList = await getWordListFromWordsCollection(docs);
-    var x = wordListTrainingList.subMeanings;
-    //
-    if (x.length > 0) forQuiz.subMeanings.add(x[0]);
-    for (int i = 1; i < x.length; i++) {
-      if (x[i].index != x[i - 1].index || x[i].id != x[i - 1].id)
-        forQuiz.subMeanings.add(x[i]);
-    }
 
+    if (loadForQuiz) {
+      var x = wordListTrainingList.subMeanings;
+      if (x.length > 0) forQuiz.subMeanings.add(x[0]);
+      for (int i = 1; i < x.length; i++) {
+        if (x[i].index != x[i - 1].index || x[i].id != x[i - 1].id)
+          forQuiz.subMeanings.add(x[i]);
+      }
+    }
     wordListTrainingList = wordListTrainingList.getShuffledWordList();
   }
 

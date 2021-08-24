@@ -1,8 +1,10 @@
+import 'package:blur/blur.dart';
 import 'package:clippy_flutter/arc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 import 'package:wm3k/analysis_classes/wordList.dart';
@@ -12,7 +14,10 @@ import 'package:wm3k/wm3k_design/screens/memorization_card.dart';
 import 'package:wm3k/wm3k_design/screens/quiz_screen.dart';
 import 'package:wm3k/wm3k_design/screens/spellingCard2.dart';
 import 'package:http/http.dart' as http;
+import 'dart:math';
+import 'package:http/http.dart' as http;
 
+import 'my_word_list.dart';
 import 'notification_card.dart';
 
 class DailyTrainingScreen extends StatefulWidget {
@@ -176,129 +181,276 @@ class _DailyTrainingState extends State<DailyTraining> {
   @override
   Widget build(BuildContext context) {
     //double width = MediaQuery.of(context).size.width;
+    var u = UserDataController();
+    int courses = u.user.courses.length;
+    int lists = 0;
+    for (var x in u.user.wordLists) {
+      lists = max(lists, x.subMeanings.length);
+    }
 
-    bool testEnabled = widget.dt.getTestEnabled();
+    bool testEnabled = widget.dt.getTestEnabled(
+        !isCourseTrainingDisabled(courses), !isListTrainingDisabled(courses));
     bool testTaken = widget.dt.testTaken;
 
     print("Why?? ${widget.dt.testTaken}");
     print(widget.dt.wordListTrainingProgressIndex);
     print(MediaQuery.of(context).size);
     return Scaffold(
-        body: Stack(
-      children: <Widget>[
-        Image(
-          image: AssetImage('assets/bgs/dtbg1.jpg'),
-          fit: BoxFit.cover,
-          height: MediaQuery.of(context).size.height,
-        ),
-        Column(
-          children: <Widget>[
-            Expanded(
-              child: Container(),
-            ),
-            ProgressCard(
-              height: 250,
-              index: widget.dt.courseTrainingProgressIndex,
-              onPress: (index) async {
-                if (index == 0) {
-                  bool perfectlyDone = await Navigator.push(context,
-                      MaterialPageRoute(builder: (context) {
-                    return MemorizationCard(widget.dt.courseTrainingList);
-                  }));
-                  print("Ebar ki problem???");
-                  print("$perfectlyDone");
-                  if (perfectlyDone != null && perfectlyDone) {
-                    widget.dt.increaseCTP();
-                    print(widget.dt.courseTrainingProgressIndex);
-                    print("jesh");
-                    return 1;
-                  }
-                } else if (index == 1) {
-                  bool quizDone = await Navigator.push(context,
-                      MaterialPageRoute(builder: (context) {
-                    return QuizCardScreen(widget.dt.courseTrainingList);
-                  }));
-                  print("Q: $quizDone");
-                  if (quizDone != null && quizDone) {
-                    widget.dt.increaseCTP();
-                    return 1;
-                  }
-                } else if (index == 2) {
-                  bool done = await Navigator.push(context,
-                      MaterialPageRoute(builder: (context) {
-                    return SpellingCard2(widget.dt.courseTrainingList);
-                  }));
-                  if (done != null && done) {
-                    widget.dt.increaseCTP();
-                    return 1;
-                  }
-                }
-                return 0;
-              },
-            ),
-            ProgressCard(
-              index: widget.dt.wordListTrainingProgressIndex,
-              height: 250,
-              name: "Word Lists",
-              onPress: (index) async {
-                if (index == 0) {
-                  bool perfectlyDone = await Navigator.push(context,
-                      MaterialPageRoute(builder: (context) {
-                    return MemorizationCard(widget.dt.wordListTrainingList);
-                  }));
-                  if (perfectlyDone != null && perfectlyDone) {
-                    widget.dt.increaseWLTP();
-                    return 1;
-                  }
-                } else if (index == 1) {
-                  bool quizDone = await Navigator.push(context,
-                      MaterialPageRoute(builder: (context) {
-                    return QuizCardScreen(widget.dt.wordListTrainingList);
-                  }));
-                  print("Q: $quizDone");
-                  if (quizDone != null && quizDone) {
-                    widget.dt.increaseWLTP();
-                    return 1;
-                  }
-                } else if (index == 2) {
-                  bool done = await Navigator.push(context,
-                      MaterialPageRoute(builder: (context) {
-                    return SpellingCard2(widget.dt.wordListTrainingList);
-                  }));
-                  if (done != null && done) {
-                    widget.dt.increaseWLTP();
-                    return 1;
-                  }
-                }
-                return 0;
-              },
-            ),
-            GradientButton(
-              height: 45,
-              text: testTaken ? "Training Completed" : "Final Daily Test",
-              textSize: 18,
-              startColor: testTaken
-                  ? Colors.green[600]
-                  : (testEnabled ? Color(0xff374ABE) : Colors.grey),
-              endColor: testTaken
-                  ? Colors.green[400]
-                  : (testEnabled ? Color(0xff64B6FF) : Colors.grey),
-              onPressed: testEnabled
-                  ? () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return DailyTrainingScreen(widget.dt);
-                      }));
-                    }
-                  : null,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-          ],
-        ),
-      ],
-    ));
+      body: Stack(
+        children: <Widget>[
+          Image(
+            image: AssetImage('assets/bgs/dtbg1.jpg'),
+            fit: BoxFit.cover,
+            height: MediaQuery.of(context).size.height,
+          ),
+          Column(
+            children: <Widget>[
+              Expanded(
+                child: Container(),
+              ),
+              Stack(
+                children: [
+                  ProgressCard(
+                    height: 250,
+                    index: widget.dt.courseTrainingProgressIndex,
+                    onPress: (index) async {
+                      int ld = widget.dt.courseTrainingList.subMeanings.length;
+                      print("Course training shits - $ld");
+                      // await UserDataController().initCDT(false);
+                      ld = widget.dt.courseTrainingList.subMeanings.length;
+                      if (ld == 0) {
+                        await showDialog(
+                          context: context,
+                          builder: (context) {
+                            var url =
+                                "https://us-central1-wm3k-f920b.cloudfunctions.net/createCourseTraining?u=${AuthController().getUser().email}";
+                            http.get(url).whenComplete(() =>
+                                UserDataController().initCDT(true).whenComplete(
+                                    () => Navigator.pop(context)));
+
+                            return ModalProgressHUD(
+                              inAsyncCall: true,
+                              child: Container(),
+                            );
+                          },
+                        );
+                      }
+
+                      if (index == 0) {
+                        bool perfectlyDone = await Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return MemorizationCard(widget.dt.courseTrainingList);
+                        }));
+                        print("Ebar ki problem???");
+                        print("$perfectlyDone");
+                        if (perfectlyDone != null && perfectlyDone) {
+                          widget.dt.increaseCTP();
+                          print(widget.dt.courseTrainingProgressIndex);
+                          print("jesh");
+                          return 1;
+                        }
+                      } else if (index == 1) {
+                        bool quizDone = await Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return QuizCardScreen(widget.dt.courseTrainingList);
+                        }));
+                        print("Q: $quizDone");
+                        if (quizDone != null && quizDone) {
+                          widget.dt.increaseCTP();
+                          return 1;
+                        }
+                      } else if (index == 2) {
+                        bool done = await Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return SpellingCard2(widget.dt.courseTrainingList);
+                        }));
+                        setState(() {});
+                        if (done != null && done) {
+                          widget.dt.increaseCTP();
+                          return 1;
+                        }
+                      }
+
+                      return 0;
+                    },
+                  ),
+                  isCourseTrainingDisabled(courses)
+                      ? Positioned(
+                          bottom: 15,
+                          top: 15,
+                          left: 15,
+                          right: 15,
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
+                              color: Colors.grey[300].withOpacity(0.85),
+                            ),
+                            child: Center(
+                                child: Padding(
+                              padding: const EdgeInsets.all(18.0),
+                              child: Text(
+                                "Enroll in a course to unlock",
+                                style: TextStyle(
+                                    fontSize: 33,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.black),
+                                textAlign: TextAlign.center,
+                              ),
+                            )),
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
+              Stack(
+                children: [
+                  ProgressCard(
+                    index: widget.dt.wordListTrainingProgressIndex,
+                    height: 250,
+                    name: "Word Lists",
+                    onPress: (index) async {
+                      int ld =
+                          widget.dt.wordListTrainingList.subMeanings.length;
+                      print("Wordlist training shits - $ld");
+                      // await UserDataController().initWDT(false);
+                      ld = widget.dt.wordListTrainingList.subMeanings.length;
+                      if (ld == 0) {
+                        await showDialog(
+                          context: context,
+                          builder: (context) {
+                            http
+                                .get(
+                                    "https://us-central1-wm3k-f920b.cloudfunctions.net/createWLTraining?u=${AuthController().getUser().email}")
+                                .whenComplete(() => UserDataController()
+                                    .initWDT(true)
+                                    .whenComplete(
+                                        () => Navigator.pop(context)));
+
+                            return ModalProgressHUD(
+                              inAsyncCall: true,
+                              child: Container(),
+                            );
+                          },
+                        );
+                        // await http.get(
+                        //     "https://us-central1-wm3k-f920b.cloudfunctions.net/createWLTraining?u=${AuthController().getUser().email}");
+                        // await UserDataController().initWDT(true);
+                      }
+
+                      if (index == 0) {
+                        bool perfectlyDone = await Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return MemorizationCard(
+                              widget.dt.wordListTrainingList);
+                        }));
+                        if (perfectlyDone != null && perfectlyDone) {
+                          widget.dt.increaseWLTP();
+                          return 1;
+                        }
+                      } else if (index == 1) {
+                        bool quizDone = await Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return QuizCardScreen(widget.dt.wordListTrainingList);
+                        }));
+                        print("Q: $quizDone");
+                        if (quizDone != null && quizDone) {
+                          widget.dt.increaseWLTP();
+                          return 1;
+                        }
+                      } else if (index == 2) {
+                        bool done = await Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return SpellingCard2(widget.dt.wordListTrainingList);
+                        }));
+                        setState(() {});
+                        if (done != null && done) {
+                          widget.dt.increaseWLTP();
+                          return 1;
+                        }
+                      }
+                      return 0;
+                    },
+                  ),
+                  isListTrainingDisabled(lists)
+                      ? Positioned(
+                          bottom: 15,
+                          top: 15,
+                          left: 15,
+                          right: 15,
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
+                              color: Colors.grey[300].withOpacity(0.85),
+                            ),
+                            child: Center(
+                                child: Padding(
+                              padding: const EdgeInsets.all(18.0),
+                              child: Text(
+                                "Create word-list & add words to unlock",
+                                style: TextStyle(
+                                    fontSize: 33,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.black),
+                                textAlign: TextAlign.center,
+                              ),
+                            )),
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
+              GradientButton(
+                height: 45,
+                text: testTaken ? "Test Completed (View)" : "Final Daily Test",
+                textSize: 18,
+                startColor: testTaken
+                    ? Colors.green[600]
+                    : (testEnabled ? Color(0xff374ABE) : Colors.grey),
+                endColor: testTaken
+                    ? Colors.green[400]
+                    : (testEnabled ? Color(0xff64B6FF) : Colors.grey),
+                onPressed: testEnabled
+                    ? () async {
+                        await Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return DailyTrainingScreen(widget.dt);
+                        }));
+                        setState(() {});
+                      }
+                    : testTaken
+                        ? () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return MyWordList(
+                                wordList: widget.dt.forQuiz,
+                                searchBar: false,
+                                backButton: true,
+                                deletable: false,
+                              );
+                            }));
+                          }
+                        : null,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool isListTrainingDisabled(int lists) {
+    return lists == 0 && widget.dt.wordListTrainingList.subMeanings.length == 0;
+  }
+
+  bool isCourseTrainingDisabled(int courses) {
+    return courses == 0 && widget.dt.courseTrainingList.subMeanings.length == 0;
   }
 }
 

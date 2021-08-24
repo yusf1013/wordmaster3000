@@ -174,7 +174,8 @@ class GameTile extends StatelessWidget {
                                                   CrossAxisAlignment.center,
                                               children: <Widget>[
                                                 Text(
-                                                  'High Score: ${category.wordCount}',
+                                                  // 'High Score: ${category.wordCount}',
+                                                  "Start playing!",
                                                   textAlign: TextAlign.left,
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.w200,
@@ -280,6 +281,7 @@ class _ProgressCardState extends State<ProgressCard>
   Animation<double> animation;
 
   initState() {
+    Future.delayed(Duration(seconds: 2)).whenComplete(() => setState(() {}));
     _getUser();
     super.initState();
     controller = AnimationController(
