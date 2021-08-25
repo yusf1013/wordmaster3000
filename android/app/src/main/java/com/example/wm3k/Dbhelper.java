@@ -68,7 +68,7 @@ public class Dbhelper extends SQLiteOpenHelper {
         int length;
         while ((length = myInput.read(buffer)) > 0) {
             myOutput.write(buffer, 0, length);
-            // System.out.println("data base is being copied");
+            //System.out.println("data base is being copied");
         }
         myOutput.flush();
         myOutput.close();

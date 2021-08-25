@@ -6,6 +6,7 @@ import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:wm3k/forum/MyPosts.dart';
 import 'package:wm3k/forum/ViewPost.dart';
+import 'package:wm3k/forum/activity.dart';
 import 'package:wm3k/forum/createpost.dart';
 import 'package:wm3k/forum/search.dart';
 import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
@@ -247,7 +248,7 @@ class _NewsfeedState extends State<Newsfeed> {
                   TabItem(icon: Icons.search, title: 'search'),
                   TabItem(icon: Icons.forum, title: 'forum'),
                   TabItem(icon: Icons.person, title: 'MyPost'),
-                  TabItem(icon: Icons.notifications, title: 'notify'),
+                  TabItem(icon: Icons.local_activity, title: 'Activity'),
                 ],
                 initialActiveIndex: 2, //optional, default as 0
                 style: TabStyle.fixedCircle,
@@ -267,6 +268,11 @@ class _NewsfeedState extends State<Newsfeed> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => MyPosts()),
+                    );
+                  } else if (i == 4) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => activity()),
                     );
                   }
                 },
