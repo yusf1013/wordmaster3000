@@ -2,21 +2,13 @@ import 'package:flutter/services.dart';
 import 'package:wm3k/dbConnection/connector.dart';
 import 'package:wm3k/dbConnection/dbManager.dart';
 import 'package:wm3k/forum/news_feed.dart';
-import 'package:wm3k/wm3k_design/controllers/clipBoardManager.dart';
-import 'package:wm3k/wm3k_design/controllers/dictionary_database_controller.dart';
 import 'package:wm3k/wm3k_design/screens/leaderboard_screen.dart';
 import 'package:wm3k/wm3k_design/themes/app_theme.dart';
 import 'package:wm3k/custom_drawer/drawer_user_controller.dart';
 import 'package:wm3k/custom_drawer/home_drawer.dart';
-import 'package:wm3k/wm3k_design/screens/my_word_list.dart';
-import 'package:wm3k/wm3k_design/screens/toDelete/help_screen.dart';
 import 'package:wm3k/wm3k_design/screens/main_home_screen.dart';
-import 'package:wm3k/wm3k_design/screens/toDelete/invite_friend_screen.dart';
 import 'package:wm3k/wm3k_design/screens/market_page.dart';
 import 'package:flutter/material.dart';
-import 'package:wm3k/wm3k_design/controllers/user_controller.dart';
-
-import 'toDelete/feedback_screen.dart';
 
 class NavigationHomeScreen extends StatefulWidget {
   @override
@@ -191,14 +183,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         setState(() {
           screenView = MainHomePage();
           //screenView = DesignCourseHomeScreen();
-        });
-      } else if (drawerIndex == DrawerIndex.Help) {
-        setState(() {
-          screenView = HelpScreen();
-        });
-      } else if (drawerIndex == DrawerIndex.FeedBack) {
-        setState(() {
-          screenView = FeedbackScreen();
         });
       } else if (drawerIndex == DrawerIndex.LeaderBoard) {
         setState(() {

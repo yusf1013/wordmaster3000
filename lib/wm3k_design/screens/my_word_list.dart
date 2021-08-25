@@ -19,7 +19,7 @@ class MyWordList extends StatelessWidget {
   final Color backgroundColor, dotColor, separatorColor;
   final WordList wordList;
   final BottomNavigationBar bottomNavigationBar;
-  final bool deletable;
+  final bool deletable, allowPublish;
 
   MyWordList(
       {this.promptText = 'Search for a list',
@@ -31,7 +31,8 @@ class MyWordList extends StatelessWidget {
       this.bottomNavigationBar,
       this.deletable = true,
       this.dotColor,
-      this.separatorColor});
+      this.separatorColor,
+      this.allowPublish = true});
 
   BottomNavigationBarItem _bottomIcons(IconData icon, String title) {
     return BottomNavigationBarItem(
@@ -49,6 +50,12 @@ class MyWordList extends StatelessWidget {
     WordList thisList = wordList == null
         ? WordList("Title", "Description", [], "-1")
         : wordList;
+    List<BottomNavigationBarItem> bottom = [
+      _bottomIcons(Icons.done_all, "View"),
+      _bottomIcons(Icons.info_outline, "Memorize"),
+      _bottomIcons(Icons.help_outline, "Quiz"),
+    ];
+    if (allowPublish) bottom.add(_bottomIcons(Icons.share, "Publish"));
     return Stack(
       children: <Widget>[
         Container(
@@ -90,12 +97,7 @@ class MyWordList extends StatelessWidget {
                           //backgroundColor: Colors.lightBlue[100],
                           type: BottomNavigationBarType.fixed,
                           currentIndex: 0,
-                          items: [
-                            _bottomIcons(Icons.done_all, "View"),
-                            _bottomIcons(Icons.info_outline, "Memorize"),
-                            _bottomIcons(Icons.help_outline, "Quiz"),
-                            _bottomIcons(Icons.share, "Publish")
-                          ],
+                          items: bottom,
                           onTap: (index) async {
                             if (index == 1)
                               Navigator.push(

@@ -40,7 +40,15 @@ class LightColor {
   static int _index = -1;
 
   static Color getRandomColor() {
-    List<Color> colors = [yellow, darkBlue, darkOrange, darkpurple];
+    // List<Color> colors = [yellow, darkBlue, darkOrange, darkpurple];
+    List<Color> colors = [
+      darkBlue,
+      darkpurple,
+      Colors.orange[700],
+      Colors.red[700],
+      Colors.lightBlue[700],
+      Colors.blue[700],
+    ];
     return _getOneColor(colors);
   }
 

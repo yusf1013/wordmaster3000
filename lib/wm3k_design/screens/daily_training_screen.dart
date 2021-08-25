@@ -430,6 +430,7 @@ class _DailyTrainingState extends State<DailyTraining> {
                                 searchBar: false,
                                 backButton: true,
                                 deletable: false,
+                                allowPublish: false,
                               );
                             }));
                           }

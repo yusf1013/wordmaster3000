@@ -112,6 +112,18 @@ class AuthController {
     return false;
   }
 
+  Future<bool> forgotPass(String email) async {
+    if (email != null) {
+      try {
+        var result = await _auth.sendPasswordResetEmail(email: email);
+        return true;
+      } catch (e) {
+        print(e);
+      }
+    }
+    return false;
+  }
+
   void signOut() {
     _writeCredentials("X", "X");
     _auth.signOut();
@@ -372,9 +384,9 @@ class UserDataController {
   void unPublishCourse(String id) async {
     var docRef = _fireStore.collection('users').doc(_currentUser.email);
     var doc = await docRef.get();
-    List l = doc.data()['coursesCreated'];
+    List l = doc.data()['courseCreated'];
     l.remove(id);
-    docRef.update({'coursesCreated': l});
+    docRef.update({'courseCreated': l});
     _fireStore.collection('courses').doc(id).update({'published': false});
   }
 
@@ -670,7 +682,7 @@ class _User {
   void initCourseCreated(Stream<DocumentSnapshot> stream) {
     stream.listen((data) async {
       coursesCreated.clear();
-      List list = data.data()['coursesCreated'];
+      List list = data.data()['courseCreated'];
       if (list == null) list = List();
       for (String item in list) {
         coursesCreated.add(item);

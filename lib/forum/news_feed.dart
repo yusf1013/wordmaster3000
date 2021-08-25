@@ -203,7 +203,8 @@ class _NewsfeedState extends State<Newsfeed> {
                 },
               );
             }
-            return CircularProgressIndicator();
+            return SizedBox(
+                height: 50, width: 50, child: CircularProgressIndicator());
           },
         ),
       ),

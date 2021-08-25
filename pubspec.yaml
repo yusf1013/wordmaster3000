@@ -84,8 +84,6 @@ flutter:
   assets:
     - assets/images/
     - assets/design_course/
-    - assets/fitness_app/
-    - assets/hotel/
     - assets/icons/
     - assets/bgs/
     - assets/WMK3000.db

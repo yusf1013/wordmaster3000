@@ -44,11 +44,14 @@ class LoginScreen extends StatelessWidget {
         : "Error signing in";
   }
 
-  Future<String> _recoverPassword(String name) {
+  Future<String> _recoverPassword(String name) async {
     print('Name: $name');
-    return Future.delayed(loginTime).then((_) {
-      return null;
-    });
+    if (await userController.forgotPass(name)) return null;
+    return "Error. Please try again";
+
+    // return Future.delayed(loginTime).then((_) {
+    //   return null;
+    // });
   }
 
   @override

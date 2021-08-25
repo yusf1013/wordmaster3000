@@ -23,6 +23,7 @@ class _MarketPageState extends State<MarketPage> {
   double width;
   bool contributionsOnly = false;
   String subHeaderText = "Market Place";
+  int currentIndex = 0;
 
   Widget _categoryRow(String title) {
     // This thing includes the popular tags and MP text
@@ -108,7 +109,7 @@ class _MarketPageState extends State<MarketPage> {
           selectedItemColor: LightColor.extraDarkPurple,
           unselectedItemColor: Colors.grey.shade300,
           type: BottomNavigationBarType.fixed,
-          currentIndex: 0,
+          currentIndex: currentIndex,
           items: [
             _bottomIcons(Icons.shopping_cart, "New Courses"),
             _bottomIcons(Icons.list, "My Contribution"),
@@ -126,6 +127,7 @@ class _MarketPageState extends State<MarketPage> {
               });
             /*Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => HomePage()));*/
+            currentIndex = index;
           },
         ),
         body: Column(
@@ -408,7 +410,7 @@ class CourseListWidget extends StatelessWidget {
         author: data()['creator'],
         number: data()['length'],
         downloads: data()['downloads'],
-        tags: ["One", "Two", "One", "Two"]);
+        tags: ["W", "M", "3", "K"]);
 
     if (i % 3 == 0)
       list.add(_courceInfo(
@@ -442,7 +444,7 @@ class CourseListWidget extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: height),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(15)),
-        color: textColor.withAlpha(isPrimaryCard ? 200 : 50),
+        color: textColor.withAlpha(isPrimaryCard ? 200 : 45),
       ),
       child: Text(
         text,
