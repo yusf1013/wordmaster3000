@@ -304,7 +304,7 @@ class _LearnCardState extends State<LearnCard> {
                         ),
                         GradientButton(
                           height: height * 0.05,
-                          width: width * 0.4,
+                          width: width * 0.45,
                           startColor: Color(0xFFE0154D),
                           endColor: Color(0xFFFF34AB),
                           text:

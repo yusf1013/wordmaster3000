@@ -130,7 +130,7 @@ class _SpellingCard2State extends State<SpellingCard2> {
       child: Padding(
         padding: EdgeInsets.only(top: 20),
         child: NotificationCard(
-          headerText: "Spelling Bee",
+          headerText: "Spelling Master",
           h2Text:
               "Your Score: $_correct/${widget.wordList.subMeanings.length}\n",
           buttonText: "Go Back",
@@ -163,7 +163,7 @@ class _SpellingCard2State extends State<SpellingCard2> {
         ),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           Text(
-            'Spelling Bee',
+            'Spelling Master',
             style: TextStyle(
               fontSize: 23,
               fontWeight: FontWeight.bold,
