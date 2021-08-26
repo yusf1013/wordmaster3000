@@ -286,7 +286,7 @@ class _WordListWidgetState extends State<WordListWidget> {
             child: child,
             secondaryActions: <Widget>[
               IconSlideAction(
-                caption: 'Deleted',
+                caption: 'Delete',
                 color: Colors.red,
                 icon: Icons.delete_forever,
                 onTap: () {
