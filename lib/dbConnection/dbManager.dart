@@ -16,7 +16,6 @@ class DBManager {
     if (_database == null) {
       print("Tring to open");
       _database = await openDB();
-      print("Opened shit");
     }
     return _database;
   }

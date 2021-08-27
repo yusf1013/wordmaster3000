@@ -321,8 +321,6 @@ class _ProgressCardState extends State<ProgressCard>
               return DailyTraining(
                   UserDataController().getDailyTrainingDetails());
             }));
-            print(
-                "Progress baal ${_currentUser.getDailyTrainingDetails().getProgress()}");
           },
           child: Stack(
             children: <Widget>[

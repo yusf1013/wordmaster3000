@@ -32,22 +32,6 @@ class WordList {
   }
 }
 
-/*class UniqueWordList extends WordList {
-  UniqueWordList(String name, String description,
-      List<FireBaseSubMeaning> subMeanings, String id) : super(name, description, subMeanings, id) ;
-
-  bool addUniqueWord(FireBaseSubMeaning s) {
-    for(var s2 in subMeanings) {
-      if( s.isSameSubMeaning(s2.id, s2.index)) {
-        return false;
-      }
-    }
-    subMeanings.add(s);
-    return true;
-  }
-
-}*/
-
 class FireBaseSubMeaning {
   String id, subMeaning, word;
   int index;

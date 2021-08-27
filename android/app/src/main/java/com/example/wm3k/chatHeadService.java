@@ -129,7 +129,7 @@ public class chatHeadService extends Service {
     public void showPOPup(){
         System.out.println("it is being called");
         //popUp.setContentView(R.layout.dialouge);
-        startService(new Intent(chatHeadService.this,popUpCard.class));
+        startService(new Intent(chatHeadService.this, popUpCard.class));
     }
 
     @Override

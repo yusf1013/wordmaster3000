@@ -10,6 +10,7 @@ import 'package:wm3k/wm3k_design/helper/app_bars.dart';
 import 'loading_screen.dart';
 import 'my_word_list.dart';
 
+// After openning a course from marketplace
 class CoursePage extends StatefulWidget {
   final String id;
 

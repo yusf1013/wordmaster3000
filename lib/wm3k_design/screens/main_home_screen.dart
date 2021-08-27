@@ -70,7 +70,6 @@ class _MainHomePageState extends State<MainHomePage> {
                               },
                             );
                           } else {
-                            print('No data done done shit');
                             return SizedBox(
                               height: 20,
                               width: 20,
@@ -188,6 +187,7 @@ class _MainHomePageState extends State<MainHomePage> {
           searchBar: false,
           backButton: true,
           deletable: false,
+          allowPublish: false,
         ),
       ),
     );
@@ -316,16 +316,6 @@ class _MainHomePageState extends State<MainHomePage> {
         },
         onDelete: (id) {
           _userDataController.unEnrollCourse(id);
-          print("Flutter is SHIT");
-          /*setState(() {
-            catListView = ModalProgressHUD(
-              inAsyncCall: true,
-              color: Colors.black,
-              child: SizedBox(
-                height: 166,
-              ),
-            );
-          });*/
 
           Future.delayed(const Duration(milliseconds: 1000), () {
             getStartLearningView(categoryTypeData);

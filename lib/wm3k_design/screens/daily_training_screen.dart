@@ -104,60 +104,6 @@ class _DailyTrainingScreenState extends State<DailyTrainingScreen> {
   }
 }
 
-// class DailyTrainingScreenLoading extends StatefulWidget {
-//   final DailyTrainingDetails dt;
-//   final List correctOnes;
-//
-//   DailyTrainingScreenLoading(this.dt, this.correctOnes);
-//
-//   @override
-//   _DailyTrainingScreenLoadingState createState() =>
-//       _DailyTrainingScreenLoadingState();
-// }
-//
-// class _DailyTrainingScreenLoadingState
-//     extends State<DailyTrainingScreenLoading> {
-//   Widget screen = Container(
-//     color: Colors.grey,
-//   );
-//   bool spin = true;
-//
-//   void initState() {
-//     init();
-//     super.initState();
-//   }
-//
-//   void init() async {
-//     print("Hold on, hold on");
-//     for (var v in widget.dt.forQuiz.subMeanings) {
-//       int mul = 0;
-//       if (widget.correctOnes.contains(v)) {
-//         print(v.id);
-//         mul = 1;
-//       }
-//       await http.get(
-//           "https://us-central1-wm3k-f920b.cloudfunctions.net/increaseRating?u=${widget.dt.email}&mid=${v.id}&ind=${v.index}&mul=$mul");
-//     }
-//
-//     var u = UserDataController();
-//     await u.generateCLT();
-//     await u.generateWLT();
-//
-//     setState(() {
-//       screen = DailyTraining(widget.dt);
-//       spin = false;
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return ModalProgressHUD(
-//       inAsyncCall: spin,
-//       child: screen,
-//     );
-//   }
-// }
-
 class DailyTraining extends StatefulWidget {
   final DailyTrainingDetails dt;
 
@@ -192,9 +138,6 @@ class _DailyTrainingState extends State<DailyTraining> {
         !isCourseTrainingDisabled(courses), !isListTrainingDisabled(courses));
     bool testTaken = widget.dt.testTaken;
 
-    print("Why?? ${widget.dt.testTaken}");
-    print(widget.dt.wordListTrainingProgressIndex);
-    print(MediaQuery.of(context).size);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -215,7 +158,6 @@ class _DailyTrainingState extends State<DailyTraining> {
                     index: widget.dt.courseTrainingProgressIndex,
                     onPress: (index) async {
                       int ld = widget.dt.courseTrainingList.subMeanings.length;
-                      print("Course training shits - $ld");
                       // await UserDataController().initCDT(false);
                       ld = widget.dt.courseTrainingList.subMeanings.length;
                       if (ld == 0) {
@@ -241,12 +183,8 @@ class _DailyTrainingState extends State<DailyTraining> {
                             MaterialPageRoute(builder: (context) {
                           return MemorizationCard(widget.dt.courseTrainingList);
                         }));
-                        print("Ebar ki problem???");
-                        print("$perfectlyDone");
                         if (perfectlyDone != null && perfectlyDone) {
                           widget.dt.increaseCTP();
-                          print(widget.dt.courseTrainingProgressIndex);
-                          print("jesh");
                           return 1;
                         }
                       } else if (index == 1) {
@@ -313,7 +251,6 @@ class _DailyTrainingState extends State<DailyTraining> {
                     onPress: (index) async {
                       int ld =
                           widget.dt.wordListTrainingList.subMeanings.length;
-                      print("Wordlist training shits - $ld");
                       // await UserDataController().initWDT(false);
                       ld = widget.dt.wordListTrainingList.subMeanings.length;
                       if (ld == 0) {

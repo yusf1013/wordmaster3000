@@ -27,7 +27,7 @@ class AuthController {
   }
 
   void _loadEssentials() async {
-    print("How many times is this shit called?? :( ");
+    print("How many times is this called?? :( ");
     _auth = auth.FirebaseAuth.instance;
     _fireStore = FirebaseFirestore.instance;
     // _user ??= _auth.currentUser;
@@ -632,9 +632,6 @@ class UserDataController {
       return false;
     }
     return true;
-    /*
-    shit shit
-     */
   }
 
   bool hasCourse(String id) {

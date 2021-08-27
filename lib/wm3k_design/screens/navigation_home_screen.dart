@@ -103,13 +103,13 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
 
   static const platform = const MethodChannel('samples.flutter.dev/bubblehead');
   Future<void> _openchathead() async {
-    print("chat head khular jonno call kora hoitese, bal da ki kore allah jne");
+    print("chat head khular jonno call kora hoitese");
     try {
       await platform.invokeMethod('openchathead');
     } on PlatformException catch (e) {
       print("failed to open chathead");
     }
-    _openchathead();
+    // _openchathead();
   }
 
   @override

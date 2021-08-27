@@ -16,9 +16,9 @@ class DrawerUserController extends StatefulWidget {
   }) : super(key: key);
 
   final double drawerWidth; //0.75
-  final Function(DrawerIndex) onDrawerCall; //return shit
+  final Function(DrawerIndex) onDrawerCall;
   final Widget screenView; // my home page
-  final Function(AnimationController) animationController; // return shit
+  final Function(AnimationController) animationController; //
   final Function(bool) drawerIsOpen;
   final AnimatedIconData animatedIconData;
   final Widget menuView;

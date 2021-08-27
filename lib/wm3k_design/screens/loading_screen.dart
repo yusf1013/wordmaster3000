@@ -42,32 +42,3 @@ class _LoadingScreenState extends State<LoadingScreen> {
     );
   }
 }
-
-/*
-class CourseView extends StatelessWidget {
-  final promptText;
-  final bool searchBar, backButton;
-  final Widget header;
-  final Color backgroundColor;
-  final WordList wordList;
-
-  CourseView(
-      {this.promptText = 'Search for a list',
-      this.searchBar = true,
-      this.backButton = false,
-      this.header,
-      this.backgroundColor,
-      this.wordList});
-
-  @override
-  Widget build(BuildContext context) {
-    return MyWordList(
-      promptText: promptText,
-      searchBar: searchBar,
-      backButton: backButton,
-      header: header,
-      backgroundColor: backgroundColor,
-      wordList: wordList,
-    );
-  }
-}*/

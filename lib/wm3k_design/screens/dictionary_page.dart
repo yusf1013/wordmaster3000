@@ -48,7 +48,6 @@ class _DictionaryHomepageState extends State<DictionaryHomepage> {
     _wordLists = _userDataController.getAllWordLists();
     print(_wordLists == null);
     print("end");
-    //Start removing shit from here
   }
 
   void loadWord() async {
@@ -107,8 +106,7 @@ class DictionaryHomePageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final String s = connector.word;
     final String word = '${s[0].toUpperCase()}${s.substring(1)}';
-    //Widget shit = SearchableText("Life is a shit");
-    //categoryUI = getCategoryUI(currentList);
+
     return Container(
       color: DesignCourseAppTheme.nearlyWhite,
       child: Scaffold(
@@ -154,7 +152,6 @@ class DictionaryHomePageWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    //content: "Shit",
                     contentChild: SearchBarUI(
                       padding: EdgeInsets.all(0),
                       widthRatio: 0.88,
@@ -230,7 +227,6 @@ class DictionaryHomePageWidget extends StatelessWidget {
                     ),
                   ),
                   meaningListView,
-                  //SearchableText("Life is a shit"),
                 ],
               ),
             ],
@@ -240,155 +236,6 @@ class DictionaryHomePageWidget extends StatelessWidget {
     );
   }
 }
-
-/*class DictionaryHomePageWidget extends StatefulWidget {
-  final SearchedWord connector;
-  DictionaryHomePageWidget(this.connector);
-
-  @override
-  _DictionaryHomePageStateWidget createState() =>
-      _DictionaryHomePageStateWidget();
-}
-
-class _DictionaryHomePageStateWidget extends State<DictionaryHomePageWidget> {
-  //Widget meaningListView = MeaningListView("Noun");
-  Widget meaningListView;
-
-  @override
-  void initState() {
-    meaningListView =
-        MeaningListView(widget.connector, widget.connector.posList[0]);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final String s = widget.connector.word;
-    final String word = '${s[0].toUpperCase()}${s.substring(1)}';
-    //Widget shit = SearchableText("Life is a shit");
-    //categoryUI = getCategoryUI(currentList);
-    return Container(
-      color: DesignCourseAppTheme.nearlyWhite,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: Stack(
-            //crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  GFAccordion(
-                    //title: 'GF Accordion',
-                    contentbackgroundColor: DesignCourseAppTheme.nearlyWhite,
-                    collapsedTitlebackgroundColor:
-                        DesignCourseAppTheme.nearlyWhite,
-                    expandedTitlebackgroundColor:
-                        DesignCourseAppTheme.nearlyWhite,
-                    titleChild: Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.only(left: 6),
-                          child: GestureDetector(
-                            child: Icon(
-                              Icons.arrow_back_ios,
-                              color: Colors.black,
-                            ),
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(),
-                        ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text('Definition'),
-                            ]),
-                        Expanded(
-                          child: Container(),
-                        ),
-                      ],
-                    ),
-                    //content: "Shit",
-                    contentChild: SearchBarUI(
-                      padding: EdgeInsets.all(0),
-                      widthRatio: 0.88,
-                      onSubmit: (str) {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DictionaryHomepage(str)));
-                      },
-                    ),
-                    collapsedIcon: Icon(Icons.search),
-                    expandedIcon: Icon(Icons.cancel),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Expanded(
-                              child: AutoSizeText(
-                                word,
-                                style: headWord,
-                                maxLines: 1,
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.volume_up,
-                                size: 35,
-                              ),
-                              onPressed: () {},
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 25,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Tabs(
-                      borderWidth: 0.5,
-                      items: widget.connector.getPartsOfSpeechList(),
-                      onPressed: ((String pos) {
-                        setState(() {
-                          meaningListView = pos == "More"
-                              ? MoreListView(widget.connector)
-                              : MeaningListView(widget.connector, pos);
-                        });
-                      }),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      //width: MediaQuery.of(context).size.width * 85,
-                      height: 3,
-                      color: Colors.blue[900],
-                    ),
-                  ),
-                  meaningListView,
-                  //SearchableText("Life is a shit"),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}*/
 
 class Tabs extends StatefulWidget {
   final Function onPressed;
@@ -794,7 +641,6 @@ class _SaveToListButtonState extends State<SaveToListButton> {
 
   @override
   Widget build(BuildContext context) {
-    print("Now this is shit ${widget.meaningID} ${widget.selected}");
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
