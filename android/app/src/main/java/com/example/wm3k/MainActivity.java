@@ -35,23 +35,29 @@ public class MainActivity extends FlutterActivity {
 
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
-    //GeneratedPluginRegistrant.registerWith(flutterEngine);
     super.configureFlutterEngine(flutterEngine);
     new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
-            .setMethodCallHandler(
-                    (call, result) -> {
-                      // Note: this method is invoked on the main thread.
-                      if (call.method.equals("openchathead")) {
-                        System.out.println("need to ask permission");
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-                          Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-                          startActivityForResult(intent, PERMISSION_REQUEST_CODE);
-                        }
-                        else {
-                          showChatHead();
-                        }                      }
-                    }
-            );
+      .setMethodCallHandler(
+          (call, result) -> {
+            // This method is invoked on the main thread.
+            if (call.method.equals("openchathead")) {
+              System.out.println("need to ask permission");
+              // Check permission and 
+              // Minimum android SDK
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                    !Settings.canDrawOverlays(this)) 
+              {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, 
+                  Uri.parse("package:" + getPackageName()));
+
+                startActivityForResult(intent, PERMISSION_REQUEST_CODE);
+              }
+              else {
+                showChatHead();
+              }
+            }
+          }
+      );
   }
 
 

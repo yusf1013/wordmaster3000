@@ -615,7 +615,7 @@ class UserDataController {
 
     try {
       var url =
-          "http://us-central1-wm3k-f920b.cloudfunctions.net/enrollInCourse?u=${_currentUser.email}&cid=$id";
+          "https://us-central1-wm3k-f920b.cloudfunctions.net/enrollInCourse?u=${_currentUser.email}&cid=$id";
       //var url = "https://us-central1-wm3k-f920b.cloudfunctions.net/createCourseDeath?user=hunter@gmail.com&id=hunter@gmail.com,0,405758008";
       print(url);
       var res = await http.get(url);
