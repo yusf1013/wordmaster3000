@@ -135,7 +135,7 @@ class _DailyTrainingState extends State<DailyTraining> {
     }
 
     bool testEnabled = widget.dt.getTestEnabled(
-        !isCourseTrainingDisabled(courses), !isListTrainingDisabled(courses));
+        !isCourseTrainingDisabled(courses), !isListTrainingDisabled(lists));
     bool testTaken = widget.dt.testTaken;
 
     return Scaffold(
@@ -384,7 +384,9 @@ class _DailyTrainingState extends State<DailyTraining> {
   }
 
   bool isListTrainingDisabled(int lists) {
-    return lists == 0 && widget.dt.wordListTrainingList.subMeanings.length == 0;
+    bool one = lists == 0;
+    bool two = widget.dt.wordListTrainingList.subMeanings.length == 0;
+    return one && two;
   }
 
   bool isCourseTrainingDisabled(int courses) {
